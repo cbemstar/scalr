@@ -24,12 +24,12 @@ export function SolutionSection() {
     <section id="services" className="lp-section">
       <div className="lp-shell">
         <FadeIn>
-          <div className="mb-12 max-w-2xl">
-            <p className="lp-kicker">Why this works</p>
-            <h2 className="lp-title mt-3">
+          <div className="lp-section-intro">
+            <p className="lp-kicker mb-3">Why this works</p>
+            <h2 className="lp-title text-balance">
               Not a web designer who knows some marketing.
             </h2>
-            <p className="lp-lead">
+            <p className="lp-lead text-pretty">
               A marketer who builds websites designed to generate leads and revenue. There&apos;s a
               meaningful difference — and you&apos;ll feel it in your enquiry rate.
             </p>
@@ -42,11 +42,13 @@ export function SolutionSection() {
             return (
               <FadeIn key={pillar.title} delay={i * 0.05}>
                 <article className="h-full rounded-2xl border border-border/80 bg-background p-6 shadow-sm">
-                  <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-brand/20 bg-brand/10 text-brand">
+                  <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
                     <Icon className="size-[18px]" strokeWidth={1.75} />
                   </div>
-                  <h3 className="text-base font-semibold tracking-tight">{pillar.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{pillar.copy}</p>
+                  <h3 className="font-heading text-lg font-semibold tracking-tight">{pillar.title}</h3>
+                  <p className="mt-2 text-base leading-relaxed text-muted-foreground md:text-lg">
+                    {pillar.copy}
+                  </p>
                 </article>
               </FadeIn>
             )

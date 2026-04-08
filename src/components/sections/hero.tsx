@@ -1,160 +1,515 @@
 "use client"
 
 import Link from "next/link"
-import {
-  Announcement,
-  AnnouncementTag,
-  AnnouncementTitle,
-} from "@/components/kibo-ui/announcement"
-import { FadeIn } from "@/components/common/fade-in"
-import { buttonVariants } from "@/components/ui/button"
-import { TextRotate } from "@/components/ui/text-rotate"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { useTheme } from "@wrksz/themes/client"
+import { ArrowRight } from "@phosphor-icons/react"
+import gsap from "gsap"
+import { CustomEase } from "gsap/CustomEase"
+import { motion, useReducedMotion } from "framer-motion"
+import { Button } from "@/components/ui/button"
+import { GLSLHills } from "@/components/ui/glsl-hills"
 import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
+import "./crisp-hero.css"
 
-const promisePoints = [
-  "2-week delivery",
-  "Conversion-focused structure",
-  "From $1,499 NZD",
-]
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(CustomEase)
+}
+
+const { heroCrisp } = siteConfig
+
+/** Softer deceleration — family-aligned with loader `expo`, tuned for type */
+const HERO_CONTENT_EASE_NAME = "heroContentReveal"
+let heroContentEaseReady = false
+
+function ensureHeroContentEase() {
+  if (typeof window === "undefined" || heroContentEaseReady) return
+  try {
+    CustomEase.create(
+      HERO_CONTENT_EASE_NAME,
+      "M0,0 C0.05,0.02 0.14,0.98 1,1"
+    )
+    heroContentEaseReady = true
+  } catch {
+    heroContentEaseReady = false
+  }
+}
+
+/** Strip order; index 2 is the “hero” tile that scales up (GLSL hills, not a photo). */
+const LOADER_STRIP_INDICES = [3, 4, 0, 1, 2] as const
+const LOADER_SHADER_STRIP_INDEX = 2
+
+const LOADER_GLSL_PROPS = {
+  speed: 0.38,
+  cameraZ: 118,
+  planeSize: 256,
+} as const
+
+const INTRO_STAGGER_SELECTOR = ".crisp-header__intro-stagger"
+
+/** Rotating line completes the headline (first item matches full headline read in static form). */
+const HERO_ROTATING_PHRASES = [
+  "bring in customers.",
+  ...siteConfig.heroRotatingPhrases,
+] as const
+
+const rotateSpring = { type: "spring" as const, stiffness: 58, damping: 22, mass: 0.85 }
+
+function runCrispLoadingAnimation(
+  container: HTMLElement,
+  onIntroComplete: () => void
+) {
+  ensureHeroContentEase()
+  const contentEase = heroContentEaseReady
+    ? HERO_CONTENT_EASE_NAME
+    : ("expo.out" as const)
+
+  const scrimTargetRaw = getComputedStyle(container)
+    .getPropertyValue("--crisp-scrim-target-opacity")
+    .trim()
+  const scrimTargetOpacity = Number.isFinite(parseFloat(scrimTargetRaw))
+    ? parseFloat(scrimTargetRaw)
+    : 0.84
+
+  const revealImages = container.querySelectorAll<HTMLElement>(
+    ".crisp-loader__group > *"
+  )
+  const isScaleUp = container.querySelectorAll<HTMLElement>(".crisp-loader__media")
+  const isScaleDown = container.querySelectorAll<HTMLElement>(
+    ".crisp-loader__media .is--scale-down"
+  )
+  const isRadius = container.querySelectorAll<HTMLElement>(
+    ".crisp-loader__media.is--scaling.is--radius"
+  )
+  const staggerEls =
+    container.querySelectorAll<HTMLElement>(INTRO_STAGGER_SELECTOR)
+  const sliderScrim = container.querySelector<HTMLElement>(
+    ".crisp-header__slider-scrim"
+  )
+  const loaderRoot = container.querySelector<HTMLElement>(".crisp-loader")
+  const glslReveal = container.querySelector<HTMLElement>(
+    ".crisp-header__glsl-reveal"
+  )
+
+  const tl = gsap.timeline({
+    defaults: { ease: "expo.inOut" },
+  })
+
+  if (revealImages.length) {
+    tl.fromTo(
+      revealImages,
+      { xPercent: 500 },
+      { xPercent: -500, duration: 1.9, stagger: 0.05 }
+    )
+  }
+
+  if (isScaleDown.length) {
+    tl.to(
+      isScaleDown,
+      {
+        scale: 0.5,
+        duration: 1.65,
+        stagger: {
+          each: 0.05,
+          from: "edges",
+          ease: "none",
+        },
+        onComplete: () => {
+          isRadius.forEach((el) => el.classList.remove("is--radius"))
+        },
+      },
+      "-=0.1"
+    )
+  }
+
+  if (isScaleUp.length) {
+    tl.fromTo(
+      isScaleUp,
+      { width: "10em", height: "10em" },
+      { width: "100vw", height: "100dvh", duration: 1.65, ease: "expo.inOut" },
+      "<0.45"
+    )
+  }
+
+  /*
+   * Copy + scrim fade in with the tail of the scale-up — longer, softer ease and stagger
+   * so the overlay and type read as one continuous reveal (not a hard pop).
+   */
+  const contentIn = "heroContentIn"
+  tl.addLabel(contentIn, "-=1.22")
+
+  if (sliderScrim) {
+    tl.fromTo(
+      sliderScrim,
+      { opacity: 0, visibility: "hidden" },
+      {
+        opacity: scrimTargetOpacity,
+        visibility: "visible",
+        duration: 1.95,
+        ease: "power2.out",
+      },
+      contentIn
+    )
+  }
+
+  if (staggerEls.length) {
+    tl.fromTo(
+      staggerEls,
+      { autoAlpha: 0, y: 14 },
+      {
+        autoAlpha: 1,
+        y: 0,
+        duration: 1.72,
+        stagger: { amount: 0.95, from: "start" },
+        ease: contentEase,
+      },
+      `${contentIn}+=0.06`
+    )
+  }
+
+  /*
+   * After the strip / scale slideshow, fade the loader out first, then fade the
+   * backdrop shader in. Overlapping two separate WebGL canvases caused a
+   * phase/contrast mismatch and a glitchy composite; sequential handoff keeps
+   * a single visible hills pass at a time.
+   */
+  const handoff = "heroLoaderToGlsl"
+  const loaderFadeOut = 0.92
+  tl.addLabel(handoff, "-=0.72")
+
+  if (loaderRoot) {
+    tl.to(
+      loaderRoot,
+      {
+        autoAlpha: 0,
+        duration: loaderFadeOut,
+        ease: "power2.out",
+      },
+      handoff
+    )
+  }
+
+  if (glslReveal) {
+    tl.fromTo(
+      glslReveal,
+      { opacity: 0, visibility: "hidden" },
+      {
+        opacity: 1,
+        visibility: "visible",
+        duration: 0.95,
+        ease: "power2.out",
+      },
+      `${handoff}+=${loaderFadeOut}`
+    )
+  }
+
+  tl.call(onIntroComplete, undefined, "+=0.08")
+
+  return { timeline: tl as gsap.core.Timeline }
+}
+
+function HeroRotatingHeadline({
+  introDone,
+  staticHeadline,
+}: {
+  introDone: boolean
+  staticHeadline: string
+}) {
+  const reduce = useReducedMotion()
+  const [phraseIndex, setPhraseIndex] = useState(0)
+
+  useEffect(() => {
+    if (!introDone || reduce) return
+    const id = window.setInterval(() => {
+      setPhraseIndex((n) => (n + 1) % HERO_ROTATING_PHRASES.length)
+    }, 2400)
+    return () => window.clearInterval(id)
+  }, [introDone, reduce])
+
+  if (reduce) {
+    return (
+      <h1 className="crisp-header__h1 crisp-header__intro-stagger">{staticHeadline}</h1>
+    )
+  }
+
+  const label = `Websites that ${HERO_ROTATING_PHRASES[phraseIndex]?.replace(/\.$/, "")}`
+
+  return (
+    <h1
+      className="crisp-header__h1 crisp-header__intro-stagger"
+      aria-label={label}
+    >
+      <span className="crisp-header__h1-prefix">Websites that</span>
+      <span className="crisp-header__h1-rotate" aria-hidden>
+        {HERO_ROTATING_PHRASES.map((phrase, index) => (
+          <motion.span
+            key={phrase}
+            className="crisp-header__h1-rotate-word"
+            initial={false}
+            animate={
+              phraseIndex === index
+                ? { y: 0, opacity: 1 }
+                : {
+                    y: phraseIndex > index ? -72 : 72,
+                    opacity: 0,
+                  }
+            }
+            transition={rotateSpring}
+          >
+            {phrase}
+          </motion.span>
+        ))}
+      </span>
+    </h1>
+  )
+}
 
 export function HeroSection() {
+  const rootRef = useRef<HTMLElement>(null)
+  const [introDone, setIntroDone] = useState(false)
+  const { resolvedTheme } = useTheme()
+  const glslTone = resolvedTheme === "light" ? "light" : "dark"
+
+  const slides = heroCrisp.slideshow
+  const loaderStrip = useMemo(
+    () => LOADER_STRIP_INDICES.map((i) => slides[i]!),
+    [slides]
+  )
+
+  /** Lock document scroll during the intro (nav uses `body`; we use `html` so they do not fight). */
+  useEffect(() => {
+    document.documentElement.style.overflow = introDone ? "" : "hidden"
+    return () => {
+      document.documentElement.style.overflow = ""
+    }
+  }, [introDone])
+
+  useEffect(() => {
+    const container = rootRef.current
+    if (!container) return
+
+    let timeline: gsap.core.Timeline | null = null
+    let cancelled = false
+
+    const stripInlineIntroStyles = () => {
+      const reveals = container.querySelectorAll<HTMLElement>(
+        INTRO_STAGGER_SELECTOR
+      )
+      gsap.set(reveals, { clearProps: "opacity,transform" })
+      const scrim = container.querySelector<HTMLElement>(
+        ".crisp-header__slider-scrim"
+      )
+      if (scrim) gsap.set(scrim, { clearProps: "opacity,visibility" })
+      const loaderEl = container.querySelector<HTMLElement>(".crisp-loader")
+      if (loaderEl) gsap.set(loaderEl, { clearProps: "opacity,visibility" })
+      const glslEl = container.querySelector<HTMLElement>(
+        ".crisp-header__glsl-reveal"
+      )
+      if (glslEl) gsap.set(glslEl, { clearProps: "opacity,visibility" })
+    }
+
+    const completeIntro = () => {
+      if (cancelled) return
+      setIntroDone(true)
+      stripInlineIntroStyles()
+    }
+
+    const prefersReduced =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+
+    if (prefersReduced) {
+      completeIntro()
+      return () => {
+        stripInlineIntroStyles()
+      }
+    }
+
+    let fallbackTimer: ReturnType<typeof setTimeout> | null = null
+    const disarmFallback = () => {
+      if (fallbackTimer != null) {
+        clearTimeout(fallbackTimer)
+        fallbackTimer = null
+      }
+    }
+
+    const start = () => {
+      if (cancelled) return
+      disarmFallback()
+      fallbackTimer = setTimeout(() => {
+        if (cancelled) return
+        timeline?.kill()
+        completeIntro()
+      }, 7000)
+
+      try {
+        const result = runCrispLoadingAnimation(container, () => {
+          disarmFallback()
+          completeIntro()
+        })
+        timeline = result.timeline
+      } catch {
+        disarmFallback()
+        completeIntro()
+      }
+    }
+
+    void document.fonts.ready.then(start)
+
+    return () => {
+      cancelled = true
+      disarmFallback()
+      timeline?.kill()
+      stripInlineIntroStyles()
+    }
+  }, [])
+
   return (
     <section
+      ref={rootRef}
       id="hero"
-      className="relative isolate flex min-h-[100dvh] flex-col justify-center overflow-hidden px-4 py-20 sm:px-6 sm:py-24"
-      style={{
-        backgroundColor: "oklch(0.985 0.006 260)",
-        backgroundImage: `radial-gradient(circle, oklch(0.22 0.03 260 / 0.07) 1px, transparent 1px)`,
-        backgroundSize: "26px 26px",
-      }}
+      className={cn("crisp-header", !introDone && "is--loading")}
+      aria-label="Introduction"
     >
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-brand/35 to-transparent"
-      />
-
-      <div className="lp-shell relative z-10 grid items-start gap-12 lg:grid-cols-12 lg:items-center lg:gap-16">
-        <div className="flex flex-col gap-8 lg:col-span-7">
-          <FadeIn>
-            <Announcement
-              themed
-              variant="outline"
-              className="w-fit max-w-full border-border/80 bg-card/90 text-foreground shadow-sm backdrop-blur-sm"
-            >
-              <AnnouncementTag className="border-emerald-600/15 bg-emerald-600/10 text-emerald-800">
-                New
-              </AnnouncementTag>
-              <AnnouncementTitle className="text-sm text-foreground/90">
-                3-page websites from $1,499 NZD · live in about 2 weeks
-              </AnnouncementTitle>
-            </Announcement>
-          </FadeIn>
-
-          <FadeIn delay={0.06}>
-            <h1 className="font-heading text-4xl font-semibold leading-[1.06] tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-[4rem]">
-              <span className="text-foreground">Websites that </span>
-              <TextRotate
-                texts={[...siteConfig.heroRotatingPhrases]}
-                splitBy="characters"
-                rotationInterval={2800}
-                transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                lineHeightEm={1.06}
-                containerClassName={cn(
-                  "rounded-lg px-2.5 py-1 sm:px-3 sm:py-1.5",
-                  "bg-muted/80 text-brand",
-                  "ring-1 ring-border/70",
-                  "shadow-[inset_0_1px_0_rgba(255,255,255,0.85)]"
-                )}
-                mainClassName="text-brand"
-                elementLevelClassName="text-brand"
-              />
-            </h1>
-          </FadeIn>
-
-          <FadeIn delay={0.1}>
-            <p className="max-w-[56ch] text-lg leading-relaxed text-muted-foreground sm:text-xl">
-              Built for Christchurch small businesses by a marketer, not just a designer.
-            </p>
-          </FadeIn>
-
-          <FadeIn delay={0.14}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-              <Link
-                href="#pricing"
-                string="magnetic"
-                string-id="hero-cta-packages"
-                string-strength={0.24}
-                string-radius={150}
-                className={cn(
-                  buttonVariants({ size: "lg" }),
-                  "st-magnetic bg-brand text-brand-foreground shadow-sm hover:bg-brand/90"
-                )}
-              >
-                See Packages
-              </Link>
-              <a
-                href={siteConfig.contact.calendarUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                string="magnetic"
-                string-id="hero-cta-call"
-                string-strength={0.16}
-                string-radius={130}
-                className="st-magnetic inline-flex h-9 items-center justify-center rounded-lg border border-border bg-background/80 px-8 text-base font-medium text-foreground shadow-sm backdrop-blur-sm transition-colors hover:border-border hover:bg-muted/80"
-              >
-                Book a Free Call
-              </a>
-            </div>
-          </FadeIn>
-
-          <FadeIn delay={0.18}>
-            <p className="text-sm tracking-wide text-muted-foreground/90">
-              Tradies · Cafés · Physios · Lawyers · Retailers
-            </p>
-          </FadeIn>
+      <div className="crisp-header__backdrop">
+        <div className="crisp-header__glsl-reveal" aria-hidden>
+          <GLSLHills {...LOADER_GLSL_PROPS} tone={glslTone} />
         </div>
+      </div>
+      <div className="crisp-header__slider-scrim" aria-hidden />
 
-        <FadeIn delay={0.1} className="lg:col-span-5">
-          <div
-            string="parallax"
-            string-id="nzws-hero-preview"
-            string-parallax={0.12}
-            className="overflow-hidden rounded-[1.75rem] border border-border/80 bg-card/95 shadow-[0_24px_80px_-32px_rgba(15,23,42,0.12),inset_0_1px_0_rgba(255,255,255,0.9)] backdrop-blur-md"
-          >
-            <div className="border-b border-border/70 bg-muted/30 px-6 py-4">
-              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
-                What you get in 14 days
-              </p>
-            </div>
-            <div className="space-y-4 p-6">
-              {promisePoints.map((point) => (
-                <div
-                  key={point}
-                  className="rounded-xl border border-border/70 bg-muted/25 px-4 py-3 text-sm text-foreground/90"
-                >
-                  {point}
+      <div className="crisp-loader" aria-hidden>
+        <div className="crisp-loader__wrap">
+          <div className="crisp-loader__groups">
+            <div className="crisp-loader__group is--duplicate">
+              {loaderStrip.map((img, idx) => (
+                <div key={idx === LOADER_SHADER_STRIP_INDEX ? "d-glsl" : `d-${img.src}`} className="crisp-loader__single">
+                  <div className="crisp-loader__media">
+                    {idx === LOADER_SHADER_STRIP_INDEX ? (
+                      <div
+                        className="crisp-loader__shader-faux"
+                        aria-hidden
+                      />
+                    ) : (
+                      <img
+                        loading="eager"
+                        src={img.src}
+                        alt=""
+                        width={1920}
+                        height={1280}
+                        className="crisp-loader__cover-img"
+                      />
+                    )}
+                  </div>
                 </div>
               ))}
-              <div className="grid grid-cols-3 gap-3 border-t border-border/70 pt-4">
-                <div>
-                  <p className="font-mono text-xl font-semibold text-foreground">47%</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    of NZ businesses have no website
-                  </p>
-                </div>
-                <div>
-                  <p className="font-mono text-xl font-semibold text-foreground">2 wk</p>
-                  <p className="mt-1 text-xs text-muted-foreground">typical delivery</p>
-                </div>
-                <div>
-                  <p className="font-mono text-xl font-semibold text-foreground">$1.5k</p>
-                  <p className="mt-1 text-xs text-muted-foreground">from · 3 pages</p>
-                </div>
-              </div>
+            </div>
+            <div className="crisp-loader__group is--relative">
+              {loaderStrip.map((img, idx) => {
+                const isHeroScale = idx === LOADER_SHADER_STRIP_INDEX
+                const scaleDown = !isHeroScale
+
+                return (
+                  <div
+                    key={isHeroScale ? "r-glsl" : `r-${img.src}`}
+                    className="crisp-loader__single"
+                  >
+                    <div
+                      className={
+                        isHeroScale
+                          ? "crisp-loader__media is--scaling is--radius"
+                          : "crisp-loader__media"
+                      }
+                    >
+                      {isHeroScale ? (
+                        introDone ? null : (
+                          <div className="crisp-loader__shader-host">
+                            <GLSLHills {...LOADER_GLSL_PROPS} tone={glslTone} />
+                          </div>
+                        )
+                      ) : (
+                        <img
+                          loading="eager"
+                          src={img.src}
+                          alt=""
+                          width={1920}
+                          height={1280}
+                          className="crisp-loader__cover-img is--scale-down"
+                        />
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </div>
-        </FadeIn>
+          <div className="crisp-loader__fade" />
+          <div className="crisp-loader__fade is--duplicate" />
+        </div>
+      </div>
+
+      <div className="crisp-header__content">
+        <div className="crisp-header__layout">
+          <div className="crisp-header__stack">
+            <div className="crisp-header__eyebrow-wrap crisp-header__intro-stagger">
+              <span className="crisp-header__eyebrow">{heroCrisp.kicker}</span>
+            </div>
+
+            <HeroRotatingHeadline
+              introDone={introDone}
+              staticHeadline={heroCrisp.headline}
+            />
+
+            <p className="crisp-header__lead crisp-header__intro-stagger">
+              {heroCrisp.lead}
+            </p>
+
+            <p className="crisp-header__trust crisp-header__intro-stagger">
+              {heroCrisp.trustLine}
+            </p>
+
+            <div className="crisp-header__actions crisp-header__intro-stagger">
+              <Button
+                asChild
+                variant="default"
+                size="cta"
+                className="crisp-header__btn-primary st-magnetic"
+              >
+                <Link
+                  href={heroCrisp.ctaPrimary.href}
+                  string="magnetic"
+                  string-id={heroCrisp.ctaPrimary.magneticId}
+                  string-strength={0.22}
+                  string-radius={150}
+                >
+                  {heroCrisp.ctaPrimary.label}
+                  <ArrowRight className="size-4 opacity-90" aria-hidden />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="cta"
+                className="crisp-header__btn-secondary st-magnetic"
+              >
+                <Link
+                  href={heroCrisp.ctaSecondary.href}
+                  string="magnetic"
+                  string-id={heroCrisp.ctaSecondary.magneticId}
+                  string-strength={0.16}
+                  string-radius={130}
+                >
+                  {heroCrisp.ctaSecondary.label}
+                </Link>
+              </Button>
+            </div>
+
+            <p className="crisp-header__footnote crisp-header__intro-stagger">
+              {heroCrisp.note}
+            </p>
+          </div>
+        </div>
       </div>
     </section>
   )

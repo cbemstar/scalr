@@ -1,69 +1,154 @@
 // Section 7: About — people buy from people
+// Layout based on 21st.dev uilayout.contact/about-section-2 (timeline-animation + staggered headline).
 
-import { ShieldCheck } from "lucide-react"
+"use client"
+
+import { LinkedinLogoIcon } from "@phosphor-icons/react/dist/ssr"
+import { ArrowUpRight, Calendar } from "lucide-react"
+import { useRef } from "react"
+import type { Variants } from "framer-motion"
+
 import { FadeIn } from "@/components/common/fade-in"
+import { siteConfig } from "@/config/site"
+import { Button } from "@/components/ui/button"
+import { TimelineContent } from "@/components/ui/timeline-animation"
+import { cn } from "@/lib/utils"
 
-const stats = [
-  { value: "6+", label: "Years in digital marketing" },
-  { value: "2 wk", label: "Typical delivery" },
-  { value: "100%", label: "Satisfaction guarantee" },
-]
+function highlightClass(...extra: string[]) {
+  return cn(
+    "my-2 inline-block rounded-md border-2 border-dotted px-2 py-1 align-middle font-heading xl:min-h-16 xl:px-3 xl:py-0 xl:leading-[4rem]",
+    ...extra
+  )
+}
 
 export function AboutSection() {
+  const heroRef = useRef<HTMLDivElement>(null)
+
+  const revealVariants: Variants = {
+    visible: (i: number) => ({
+      y: 0,
+      opacity: 1,
+      filter: "blur(0px)",
+      transition: {
+        delay: i * 0.12,
+        duration: 0.7,
+      },
+    }),
+    hidden: {
+      filter: "blur(10px)",
+      y: 40,
+      opacity: 0,
+    },
+  }
+
+  const textVariants: Variants = {
+    visible: (i: number) => ({
+      filter: "blur(0px)",
+      opacity: 1,
+      transition: {
+        delay: i * 0.12,
+        duration: 0.7,
+      },
+    }),
+    hidden: {
+      filter: "blur(10px)",
+      opacity: 0,
+    },
+  }
+
   return (
-    <section id="about" className="lp-section bg-muted/20">
-      <div className="mx-auto grid max-w-7xl items-start gap-14 lg:grid-cols-12 lg:gap-16">
-        <FadeIn className="order-2 lg:order-1 lg:col-span-5">
-          <div className="relative mx-auto aspect-[4/5] max-w-md overflow-hidden rounded-[1.35rem] border border-border/80 bg-muted/40 shadow-[0_24px_60px_-32px_rgba(15,23,42,0.2)] lg:mx-0 lg:max-w-none">
-            <div className="flex h-full w-full flex-col items-center justify-center bg-gradient-to-br from-brand/20 via-muted/50 to-background p-8">
-              <div className="flex size-28 items-center justify-center rounded-full border-2 border-brand/25 bg-brand/10">
-                <span className="font-heading text-3xl font-semibold text-brand">KP</span>
-              </div>
-              <p className="mt-4 text-xs text-muted-foreground">Photo coming soon</p>
-            </div>
-          </div>
-        </FadeIn>
+    <section
+      id="about"
+      className="lp-section relative isolate overflow-hidden lp-hero-surface"
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-20 right-[8%] size-[420px] rounded-full bg-primary/[0.06] blur-[100px]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute bottom-0 left-[5%] size-[380px] rounded-full bg-primary/[0.05] blur-[90px]"
+      />
 
-        <FadeIn delay={0.08} className="order-1 lg:order-2 lg:col-span-7">
-          <div>
-            <p className="lp-kicker mb-3">About</p>
-            <h2 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl md:text-[2.35rem]">
-              A marketer who builds websites — not the other way around.
-            </h2>
-            <div className="mt-8 flex flex-col gap-5 leading-relaxed text-muted-foreground">
-              <p>
-                I&apos;ve spent 6+ years in digital marketing — running campaigns, analysing
-                conversion funnels, and figuring out why people click (or don&apos;t). Along the way,
-                I kept noticing the same problem: small businesses with genuinely great products and
-                services losing customers to competitors with better websites.
-              </p>
-              <p>
-                So I started building websites that are designed the way a marketer would design
-                them. Every page has a goal. Every section earns its place. And the analytics are set
-                up from day one so you can see what&apos;s working.
-              </p>
-              <p>
-                Based in Christchurch. Working with small businesses across Canterbury and beyond.
-              </p>
-            </div>
+      <div className="lp-shell relative z-10" ref={heroRef}>
+        <div className="max-w-3xl">
+          <p className="lp-kicker mb-3">About</p>
 
-            <dl className="mt-10 grid grid-cols-3 gap-4 border-y border-border/80 py-8">
-              {stats.map((stat) => (
-                <div key={stat.label}>
-                  <dt className="font-mono text-xl font-semibold tabular-nums text-foreground sm:text-2xl">
-                    {stat.value}
-                  </dt>
-                  <dd className="mt-1 text-xs leading-snug text-muted-foreground">{stat.label}</dd>
-                </div>
-              ))}
-            </dl>
+          <TimelineContent
+            as="h2"
+            animationNum={0}
+            timelineRef={heroRef}
+            customVariants={revealVariants}
+            className="lp-title mb-8 text-balance"
+          >
+            We&apos;re{" "}
+            <TimelineContent
+              as="span"
+              animationNum={1}
+              timelineRef={heroRef}
+              customVariants={textVariants}
+              className={highlightClass("border-primary/50 bg-primary/5 text-primary")}
+            >
+              rethinking
+            </TimelineContent>{" "}
+            how small businesses get online —{" "}
+            <TimelineContent
+              as="span"
+              animationNum={2}
+              timelineRef={heroRef}
+              customVariants={textVariants}
+              className={highlightClass("border-foreground/25 bg-muted/50 text-foreground")}
+            >
+              conversion-first
+            </TimelineContent>{" "}
+            builds, honest pricing, and{" "}
+            <TimelineContent
+              as="span"
+              animationNum={3}
+              timelineRef={heroRef}
+              customVariants={textVariants}
+              className={highlightClass("border-primary/45 bg-background text-primary")}
+            >
+              analytics you can trust
+            </TimelineContent>
+            .
+          </TimelineContent>
 
-            <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
-              <ShieldCheck className="size-4 shrink-0 text-emerald-600" />
-              <span>Satisfaction guarantee on every project</span>
+          <FadeIn delay={0.04}>
+            <p className="lp-lead mt-4 max-w-2xl text-pretty">
+              I&apos;ve spent 6+ years in digital marketing — campaigns, funnels, and why people
+              click. Small businesses with great offers were losing to competitors with better
+              sites. So I build pages with a goal on every screen, analytics from day one, and
+              copy that sounds like you — based in {siteConfig.contact.location.split(",")[0]}.
+            </p>
+          </FadeIn>
+
+          <FadeIn delay={0.08}>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+              <Button asChild variant="default" size="cta">
+                <a href={siteConfig.social.linkedin} target="_blank" rel="noopener noreferrer">
+                  <LinkedinLogoIcon data-icon="inline-start" weight="fill" />
+                  LinkedIn
+                  <ArrowUpRight data-icon="inline-end" />
+                </a>
+              </Button>
+              <Button asChild variant="secondary" size="cta">
+                <a
+                  href={siteConfig.contact.calendarUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <Calendar data-icon="inline-start" aria-hidden />
+                  Book a free call
+                </a>
+              </Button>
             </div>
-          </div>
-        </FadeIn>
+          </FadeIn>
+        </div>
       </div>
     </section>
   )

@@ -1,139 +1,260 @@
-// Section 6: Portfolio — featured case + supporting row (not three equal cards)
+// Section 6: Portfolio — featured project + supporting grid (real client work)
+// Preview images: pulled from each site’s Open Graph / hero CDN assets (stored under /public/images/portfolio).
+
+import Image from "next/image"
+import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr"
 
 import { Badge } from "@/components/ui/badge"
+import { AspectRatio } from "@/components/ui/aspect-ratio"
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { FadeIn } from "@/components/common/fade-in"
 import { cn } from "@/lib/utils"
 
-const portfolioItems = [
+type PortfolioItem = {
+  id: string
+  title: string
+  href: string
+  niche: string
+  description: string
+  tags: string[]
+  /** Local path under public/ */
+  imageSrc: string
+  imageAlt: string
+  imageWidth: number
+  imageHeight: number
+}
+
+const portfolioItems: PortfolioItem[] = [
   {
-    id: "apex-plumbing",
-    title: "Apex Plumbing",
-    niche: "Tradie",
+    id: "signature-homes",
+    title: "Signature Homes",
+    href: "https://signature-homes-duplicate.webflow.io/",
+    niche: "Home builder",
     description:
-      "Lead-generating site for a Christchurch plumber. Bookings form above the fold, Google Reviews embedded, mobile-optimised for on-site searches.",
-    tags: ["Local SEO", "Lead Generation", "Mobile-first"],
-    isConcept: true,
-    surface: "from-slate-800 via-slate-900 to-[oklch(0.22_0.04_198)]",
+      "Showcase site for a home-building brand — clear layouts, strong visuals, and structure built to guide visitors toward enquiry.",
+    tags: ["Webflow", "Brand showcase"],
+    imageSrc: "/images/portfolio/signature-homes.webp",
+    imageAlt: "Signature Homes website — hero imagery of plans and building",
+    imageWidth: 960,
+    imageHeight: 697,
   },
   {
-    id: "three-palms-cafe",
-    title: "Three Palms Café",
+    id: "madras-square",
+    title: "Madras Square",
+    href: "https://www.madrassquare.co.nz/",
     niche: "Hospitality",
     description:
-      "Menu-forward site with online table booking and catering enquiry form. Ranked on first page for 'brunch Christchurch' within 8 weeks.",
-    tags: ["SEO", "Booking Form", "Menu Design"],
-    isConcept: true,
-    surface: "from-emerald-900/90 via-teal-900/85 to-[oklch(0.2_0.05_198)]",
+      "Restaurant and venue presence with menus, atmosphere, and booking paths that match how people decide where to eat.",
+    tags: ["Webflow", "Hospitality"],
+    imageSrc: "/images/portfolio/madras-square.png",
+    imageAlt: "Madras Square — Open Graph preview from the live site",
+    imageWidth: 1200,
+    imageHeight: 630,
   },
   {
-    id: "south-island-physio",
-    title: "South Island Physio",
-    niche: "Health",
+    id: "ask-for-licensed",
+    title: "Ask for Licensed",
+    href: "https://www.askforlicensed.co.nz/",
+    niche: "Trades & licensing",
     description:
-      "Professional, trustworthy design for a physiotherapy practice. Online booking, team profiles, and treatment pages structured for local search.",
-    tags: ["Trust Signals", "Online Booking", "Local SEO"],
-    isConcept: true,
-    surface: "from-stone-800 via-neutral-800 to-[oklch(0.18_0.03_198)]",
+      "Trust-led site for licensed trades — messaging and structure aimed at people comparing providers before they call.",
+    tags: ["Webflow", "Lead generation"],
+    imageSrc: "/images/portfolio/ask-licensed.png",
+    imageAlt: "Ask for Licensed — Open Graph preview from the live site",
+    imageWidth: 1200,
+    imageHeight: 630,
   },
-] as const
+  {
+    id: "made-of-gold",
+    title: "Made of Gold",
+    href: "https://www.madeofgold.co.nz/",
+    niche: "Ecommerce",
+    description:
+      "Product-led ecommerce experience on Webflow — built to browse, compare, and buy without friction.",
+    tags: ["Webflow", "Ecommerce"],
+    imageSrc: "/images/portfolio/made-of-gold.jpg",
+    imageAlt: "Made of Gold jewellery — product photography from the live store",
+    imageWidth: 1080,
+    imageHeight: 1620,
+  },
+  {
+    id: "the-stash",
+    title: "The Stash.xyz",
+    href: "https://www.thestash.xyz/",
+    niche: "Resources",
+    description:
+      "A resources directory built with React and Next.js, deployed on Vercel — fast search, clear categories, built to scale.",
+    tags: ["Next.js", "Vercel", "Directory"],
+    imageSrc: "/images/portfolio/the-stash.png",
+    imageAlt: "The Stash — Open Graph image from thestash.xyz",
+    imageWidth: 1200,
+    imageHeight: 630,
+  },
+]
+
+function PortfolioMedia({
+  item,
+  sizes,
+  priority,
+  className,
+}: {
+  item: PortfolioItem
+  sizes: string
+  priority?: boolean
+  className?: string
+}) {
+  return (
+    <AspectRatio
+      ratio={item.imageWidth / item.imageHeight}
+      className={cn("overflow-hidden bg-muted", className)}
+    >
+      <Image
+        src={item.imageSrc}
+        alt={item.imageAlt}
+        fill
+        sizes={sizes}
+        className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.025] motion-reduce:transform-none motion-reduce:transition-none"
+        priority={priority}
+      />
+    </AspectRatio>
+  )
+}
+
+function PortfolioTags({ item }: { item: PortfolioItem }) {
+  return (
+    <div className="flex min-w-0 flex-1 flex-wrap gap-1.5">
+      {item.tags.map((tag) => (
+        <Badge key={tag} variant="secondary" className="text-xs">
+          {tag}
+        </Badge>
+      ))}
+    </div>
+  )
+}
+
+function PortfolioLinkCue() {
+  return (
+    <p className="inline-flex shrink-0 items-center gap-1.5 text-sm font-medium text-foreground/80 transition-colors duration-300 group-hover:text-foreground motion-reduce:transition-none">
+      Visit Live Site
+      <ArrowUpRightIcon
+        className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+        aria-hidden
+      />
+    </p>
+  )
+}
+
+function FeaturedPortfolioCard({ item }: { item: PortfolioItem }) {
+  return (
+    <a
+      href={item.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group block rounded-4xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary/40"
+    >
+      <Card className="pt-0 transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-primary/10 motion-reduce:transform-none motion-reduce:transition-none lg:grid lg:grid-cols-[minmax(0,1.05fr)_minmax(18rem,0.95fr)] lg:items-stretch lg:gap-0 lg:py-0">
+        <CardContent className="p-0 lg:row-span-2 lg:min-h-0">
+          <PortfolioMedia item={item} sizes="(max-width: 1024px) 100vw, 52vw" priority />
+        </CardContent>
+        <div className="flex min-h-0 flex-col lg:row-span-2 lg:justify-between">
+          <CardHeader className="gap-3 px-6 pt-6 lg:pt-8">
+            <CardAction>
+              <Badge variant="secondary" className="text-[10px] uppercase tracking-[0.18em]">
+                {item.niche}
+              </Badge>
+            </CardAction>
+            <CardTitle className="text-2xl text-balance sm:text-3xl">{item.title}</CardTitle>
+            <CardDescription className="text-pretty text-sm leading-relaxed sm:text-base">
+              {item.description}
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="mt-auto flex-wrap items-center justify-between gap-3 px-6 pb-6 pt-0">
+            <PortfolioTags item={item} />
+            <PortfolioLinkCue />
+          </CardFooter>
+        </div>
+      </Card>
+    </a>
+  )
+}
+
+function PortfolioCard({ item }: { item: PortfolioItem }) {
+  return (
+    <a
+      href={item.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group block rounded-4xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary/40"
+    >
+      <Card
+        size="sm"
+        className="pt-0 transition-[transform,box-shadow] duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/8 motion-reduce:transform-none motion-reduce:transition-none"
+      >
+        <CardContent className="p-0">
+          <PortfolioMedia item={item} sizes="(max-width: 768px) 100vw, 50vw" />
+        </CardContent>
+        <CardHeader className="gap-3">
+          <CardAction>
+            <Badge variant="secondary" className="text-[10px] uppercase tracking-[0.18em]">
+              {item.niche}
+            </Badge>
+          </CardAction>
+          <CardTitle className="text-lg text-balance">{item.title}</CardTitle>
+          <CardDescription className="text-pretty leading-relaxed">{item.description}</CardDescription>
+        </CardHeader>
+        <CardFooter className="flex-wrap items-center justify-between gap-3">
+          <PortfolioTags item={item} />
+          <PortfolioLinkCue />
+        </CardFooter>
+      </Card>
+    </a>
+  )
+}
 
 export function PortfolioSection() {
   const [featured, ...rest] = portfolioItems
 
   return (
-    <section id="portfolio" className="lp-section">
+    <section id="portfolio" className="lp-section relative overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute top-0 right-0 size-[400px] rounded-full bg-primary/[0.04] blur-[100px]" />
       <div className="lp-shell">
         <FadeIn>
-          <div className="mb-14 max-w-2xl">
+          <div className="lp-section-intro">
             <p className="lp-kicker mb-3">Portfolio</p>
-            <h2 className="font-heading text-3xl font-semibold tracking-tight sm:text-4xl md:text-[2.35rem]">
-              Results that speak.
-            </h2>
-            <p className="mt-4 text-lg leading-relaxed text-muted-foreground">
-              Concept sites built for Christchurch businesses — designed to show you exactly what
-              yours could look like.
+            <h2 className="lp-title text-balance">Real sites, live today.</h2>
+            <p className="lp-lead mt-4 text-pretty">
+              A sample of work across Webflow builds and a custom Next.js app — click through to see
+              the full experience.
             </p>
           </div>
         </FadeIn>
 
         <FadeIn delay={0.06}>
-          <article className="group mb-6 overflow-hidden rounded-[1.25rem] border border-border/80 bg-background shadow-sm transition-shadow duration-300 hover:shadow-[0_20px_50px_-28px_rgba(15,23,42,0.15)]">
-            <div className="grid lg:grid-cols-2">
-              <div className="relative aspect-[16/10] min-h-[220px] overflow-hidden lg:aspect-auto lg:min-h-[320px]">
-                <div className={cn("flex h-full w-full bg-gradient-to-br opacity-95", featured.surface)} />
-                <div className="absolute right-3 top-3 flex flex-col items-end gap-1.5">
-                  <Badge className="border-0 bg-black/45 text-xs text-white backdrop-blur-sm hover:bg-black/45">
-                    {featured.niche}
-                  </Badge>
-                  {featured.isConcept && (
-                    <Badge
-                      variant="outline"
-                      className="border-white/25 bg-white/15 text-xs text-white backdrop-blur-sm"
-                    >
-                      Concept
-                    </Badge>
-                  )}
-                </div>
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/65 to-transparent p-5">
-                  <p className="font-heading text-lg font-semibold text-white">{featured.title}</p>
-                </div>
-              </div>
-              <div className="flex flex-col justify-center gap-4 p-6 sm:p-8">
-                <p className="text-sm leading-relaxed text-muted-foreground">{featured.description}</p>
-                <div className="flex flex-wrap gap-1.5">
-                  {featured.tags.map((tag) => (
-                    <Badge key={tag} variant="secondary" className="text-xs">
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </article>
+          <div className="mb-6">
+            <FeaturedPortfolioCard item={featured} />
+          </div>
         </FadeIn>
 
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid items-start gap-6 md:grid-cols-2">
           {rest.map((item, i) => (
             <FadeIn key={item.id} delay={0.06 + i * 0.06}>
-              <article className="group flex h-full flex-col overflow-hidden rounded-[1.25rem] border border-border/80 bg-background shadow-sm transition-shadow duration-300 hover:shadow-md">
-                <div className="relative aspect-[16/10] overflow-hidden">
-                  <div className={cn("h-full w-full bg-gradient-to-br opacity-95", item.surface)} />
-                  <div className="absolute right-3 top-3 flex flex-col items-end gap-1.5">
-                    <Badge className="border-0 bg-black/45 text-xs text-white backdrop-blur-sm hover:bg-black/45">
-                      {item.niche}
-                    </Badge>
-                    {item.isConcept && (
-                      <Badge
-                        variant="outline"
-                        className="border-white/25 bg-white/15 text-xs text-white backdrop-blur-sm"
-                      >
-                        Concept
-                      </Badge>
-                    )}
-                  </div>
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-4">
-                    <p className="font-heading text-sm font-semibold text-white">{item.title}</p>
-                  </div>
-                </div>
-                <div className="flex flex-1 flex-col gap-3 p-5">
-                  <p className="text-sm leading-relaxed text-muted-foreground">{item.description}</p>
-                  <div className="mt-auto flex flex-wrap gap-1.5">
-                    {item.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              </article>
+              <PortfolioCard item={item} />
             </FadeIn>
           ))}
         </div>
 
         <FadeIn delay={0.2}>
           <p className="mx-auto mt-12 max-w-xl text-center text-sm text-muted-foreground">
-            All real client work added as projects complete. These concept sites show you exactly
-            what yours could look like.
+            Prefer Webflow or a custom Next.js stack? Both are in the mix — we pick what fits your
+            budget, content workflow, and how you want to grow.
           </p>
         </FadeIn>
       </div>

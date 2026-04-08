@@ -1,84 +1,69 @@
-import { AlertCircle, Clock, Frown, PhoneMissed, RefreshCw, TrendingDown } from "lucide-react"
-import { FadeIn } from "@/components/common/fade-in"
+"use client"
 
-const painPoints = [
+import {
+  AlertCircle,
+  Clock,
+  Frown,
+  PhoneMissed,
+  RefreshCw,
+  TrendingDown,
+} from "lucide-react"
+import {
+  SoundFamiliarShowcase,
+  type SoundFamiliarItem,
+} from "@/components/ui/team-section-block-shadcnui"
+
+const painPoints: SoundFamiliarItem[] = [
   {
     icon: AlertCircle,
-    headline: "You apologise for it",
+    tag: "Trust",
+    headline: "You apologise for the URL",
     description:
-      'You tell someone your website address and immediately add "it\'s a bit outdated" — undermining trust before they even visit.',
+      "You hand out your link and add “ignore the design” — so visitors start skeptical before they even read your offer.",
+    gradient: "from-amber-500/12 via-amber-500/5 to-transparent",
   },
   {
     icon: TrendingDown,
-    headline: "Losing to competitors",
+    tag: "Conversion",
+    headline: "Traffic that doesn’t convert",
     description:
-      "Your competitor — who you know is less experienced — looks more professional online and wins clients you should be getting.",
+      "You’re sending people from Google, ads, or socials to a page with no clear next step — so clicks never turn into calls or bookings.",
+    gradient: "from-rose-500/12 via-rose-500/5 to-transparent",
   },
   {
     icon: Clock,
-    headline: "Ads going nowhere",
+    tag: "Leads",
+    headline: "Flying blind",
     description:
-      "You've sent traffic from ads or social media to your site and wondered why no one's converting. The site is the problem.",
+      "No GA4, no conversion tracking—so you can’t tell what’s working. You’re guessing while the site quietly underperforms.",
+    gradient: "from-primary/15 via-primary/5 to-transparent",
   },
   {
     icon: PhoneMissed,
-    headline: "Impossible to contact",
+    tag: "Friction",
+    headline: "Contact details buried",
     description:
-      "A customer told you they couldn't find your phone number or hours. Basic information buried or missing entirely.",
+      "Hours, phone, or booking links are hard to find on mobile. People bounce — and you only hear about it when someone actually tells you.",
+    gradient: "from-sky-500/12 via-sky-500/5 to-transparent",
   },
   {
     icon: Frown,
-    headline: "DIY cringe",
+    tag: "Credibility",
+    headline: "Template or DIY fatigue",
     description:
-      "You built it yourself a few years ago and every time you look at it, you cringe. But you never know where to start fixing it.",
+      "You used a generic builder or a tired theme. It looks like everyone else’s — not like a business you’d trust with real money.",
+    gradient: "from-orange-500/12 via-orange-500/5 to-transparent",
   },
   {
     icon: RefreshCw,
-    headline: "Perpetual to-do item",
+    tag: "Momentum",
+    headline: "Stuck on the backlog",
     description:
-      "You've been meaning to sort it out for months. It sits on the list, never at the top, costing you customers every day it stays there.",
+      "A redesign or first launch keeps slipping. Every week without a proper site is a week where sharper competitors win the enquiry.",
+    gradient: "from-emerald-500/12 via-emerald-500/5 to-transparent",
   },
 ]
 
 export function ProblemSection() {
-  return (
-    <section id="problem" className="lp-section bg-muted/20">
-      <div className="lp-shell">
-        <FadeIn>
-          <div className="mb-12 max-w-2xl">
-            <p className="lp-kicker">Sound familiar?</p>
-            <h2 className="lp-title mt-3">
-              Your website is working against you.
-            </h2>
-          </div>
-        </FadeIn>
-
-        <div className="grid gap-4 md:grid-cols-2">
-          {painPoints.map((point, i) => {
-            const Icon = point.icon
-            return (
-              <FadeIn key={point.headline} delay={i * 0.04}>
-                <article className="rounded-2xl border border-border/80 bg-background p-6">
-                  <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-border/80 bg-muted/50 text-muted-foreground">
-                    <Icon className="size-[18px]" strokeWidth={1.75} />
-                  </div>
-                  <h3 className="text-base font-semibold tracking-tight">{point.headline}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {point.description}
-                  </p>
-                </article>
-              </FadeIn>
-            )
-          })}
-        </div>
-
-        <FadeIn delay={0.18}>
-          <p className="mx-auto mt-10 max-w-3xl border-l-4 border-brand pl-5 text-base font-medium leading-relaxed sm:text-lg">
-            You&apos;re not imagining it. A bad website is actively costing you customers every
-            single day.
-          </p>
-        </FadeIn>
-      </div>
-    </section>
-  )
+  return <SoundFamiliarShowcase items={painPoints} />
 }

@@ -1,0 +1,571 @@
+/*
+ * Sterling kinetic nav — scoped under .sterling-kinetic-nav.
+ */
+
+.sterling-kinetic-nav {
+  --header-float: max(0.65rem, env(safe-area-inset-top));
+  --header-pill-max: min(34rem, 100%);
+}
+
+.sterling-kinetic-nav .sg-w-inline-block {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.sterling-kinetic-nav .site-header-wrapper {
+  position: fixed;
+  top: var(--header-float);
+  left: max(1rem, env(safe-area-inset-left));
+  right: max(1rem, env(safe-area-inset-right));
+  z-index: 100;
+  width: 100%;
+  max-width: var(--header-pill-max);
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 9999px;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid color-mix(in oklch, var(--foreground) 11%, transparent);
+  box-shadow:
+    0 8px 32px color-mix(in oklch, var(--foreground) 7%, transparent),
+    0 2px 12px color-mix(in oklch, var(--foreground) 4%, transparent),
+    inset 0 1px 0 color-mix(in oklch, var(--foreground) 12%, transparent);
+  background: transparent;
+}
+
+.sterling-kinetic-nav .site-header-wrapper--scrolled {
+  box-shadow:
+    0 12px 40px color-mix(in oklch, var(--foreground) 9%, transparent),
+    0 2px 16px color-mix(in oklch, var(--foreground) 5%, transparent),
+    inset 0 1px 0 color-mix(in oklch, var(--foreground) 14%, transparent);
+}
+
+/*
+ * @mael-667/liquid-glass-react — SVG displacement + ::before blur + ::after specular.
+ * Overrides: width (library defaults to fit-content), theme color, pill radius.
+ */
+.sterling-kinetic-nav .sterling-liquid-glass.liquidGlassLarge {
+  width: 100% !important;
+  max-width: 100%;
+  min-width: 0;
+  color: var(--foreground) !important;
+  font-size: inherit !important;
+  text-shadow: none !important;
+  border-radius: 9999px !important;
+  z-index: 1;
+  background-color: transparent;
+  background-image:
+    radial-gradient(
+      ellipse 130% 90% at 50% -30%,
+      color-mix(in oklch, var(--primary) 14%, transparent),
+      transparent 58%
+    ),
+    linear-gradient(
+      165deg,
+      color-mix(in oklch, var(--background) 58%, transparent) 0%,
+      color-mix(in oklch, var(--background) 44%, transparent) 100%
+    );
+  background-size: auto;
+}
+
+.sterling-kinetic-nav .sterling-liquid-glass--scrolled.liquidGlassLarge {
+  background-image:
+    radial-gradient(
+      ellipse 100% 70% at 50% -40%,
+      color-mix(in oklch, var(--primary) 10%, transparent),
+      transparent 50%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklch, var(--background) 64%, transparent) 0%,
+      color-mix(in oklch, var(--background) 50%, transparent) 100%
+    );
+}
+
+.sterling-kinetic-nav .sterling-liquid-glass.liquidGlassLarge::before,
+.sterling-kinetic-nav .sterling-liquid-glass.liquidGlassLarge::after {
+  border-radius: 9999px !important;
+}
+
+/* Match prior nav: stronger blur + saturation on the library’s backdrop layer */
+.sterling-kinetic-nav .sterling-liquid-glass.blur-7::before {
+  backdrop-filter: blur(7px) saturate(1.85) !important;
+  -webkit-backdrop-filter: blur(7px) saturate(1.85) !important;
+}
+
+.sterling-kinetic-nav .site-header-wrapper--menu-open {
+  z-index: 110;
+}
+
+/*
+ * Must stack above LiquidGlass ::before (z-index 9) and ::after (z-index 11).
+ * The library sets .liquidGlassLarge>* { z-index: 12 }; a lower z-index here
+ * overrides that and paints the bar chrome on top of the logo / controls.
+ */
+.sterling-kinetic-nav .site-header-inner {
+  position: relative;
+  z-index: 12;
+  width: 100%;
+}
+
+.sterling-kinetic-nav .sterling-kinetic-nav__inner {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+@media (min-width: 640px) {
+  .sterling-kinetic-nav .sterling-kinetic-nav__inner {
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+}
+
+.sterling-kinetic-nav .nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 2.875rem;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .sterling-kinetic-nav .nav-row {
+    min-height: 3.125rem;
+    gap: 0.625rem;
+  }
+}
+
+/* ─── Logo ─── */
+
+.sterling-kinetic-nav .nav-logo-row {
+  font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--foreground);
+  text-decoration: none;
+  flex-shrink: 0;
+  transition: color 0.2s ease;
+}
+
+/* React Bits–style shiny text: sweeping highlight (see reactbits.dev/text-animations/shiny-text) */
+.sterling-kinetic-nav .nav-logo-shiny {
+  display: inline-block;
+  background-image: linear-gradient(
+    120deg,
+    var(--foreground) 0%,
+    var(--foreground) 35%,
+    color-mix(in oklch, var(--foreground) 45%, white 55%) 50%,
+    var(--foreground) 65%,
+    var(--foreground) 100%
+  );
+  background-size: 200% auto;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: sg-nav-logo-shine 2.2s linear infinite;
+}
+
+@keyframes sg-nav-logo-shine {
+  0% {
+    background-position: 150% center;
+  }
+  100% {
+    background-position: -50% center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sterling-kinetic-nav .nav-logo-shiny {
+    animation: none;
+    background: none;
+    color: var(--foreground);
+    -webkit-text-fill-color: var(--foreground);
+  }
+}
+
+.sterling-kinetic-nav .nav-logo-row:focus-visible {
+  outline: 2px solid color-mix(in oklch, var(--primary) 35%, transparent);
+  outline-offset: 6px;
+  border-radius: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .sterling-kinetic-nav .nav-logo-row {
+    font-size: 0.9375rem;
+  }
+}
+
+.sterling-kinetic-nav .nav-logo-row:hover .nav-logo-shiny {
+  background-image: linear-gradient(
+    120deg,
+    var(--primary) 0%,
+    var(--primary) 35%,
+    color-mix(in oklch, var(--primary) 40%, white 60%) 50%,
+    var(--primary) 65%,
+    var(--primary) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sterling-kinetic-nav .nav-logo-row:hover .nav-logo-shiny {
+    background: none;
+    color: var(--primary);
+    -webkit-text-fill-color: var(--primary);
+  }
+}
+
+/* ─── Right cluster ─── */
+
+.sterling-kinetic-nav .nav-row__right {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 640px) {
+  .sterling-kinetic-nav .nav-row__right {
+    gap: 0.5rem;
+  }
+}
+
+/* ─── Menu toggle ─── */
+
+.sterling-kinetic-nav .nav-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  min-height: 2rem;
+  padding: 0.28rem 0.6rem;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sterling-kinetic-nav .nav-close-btn:hover {
+  background: var(--muted);
+}
+
+.sterling-kinetic-nav .nav-close-btn:focus-visible {
+  outline: 2px solid color-mix(in oklch, var(--primary) 35%, transparent);
+  outline-offset: 2px;
+  background: color-mix(in oklch, var(--primary) 8%, var(--background));
+}
+
+/*
+ * Text-slide toggle: two <p> elements stacked vertically inside a
+ * fixed-height container with overflow hidden. GSAP slides them by
+ * yPercent: -100 to swap "Menu" → "Close". The container height MUST
+ * match the line-box height of one <p> exactly — using rem to avoid
+ * em-inheritance mismatches.
+ */
+.sterling-kinetic-nav .menu-button-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 1.125rem;
+  overflow: hidden;
+  position: relative;
+}
+
+.sterling-kinetic-nav .menu-button-text .p-large {
+  margin: 0;
+  flex: 0 0 1.125rem;
+  height: 1.125rem;
+  line-height: 1.125rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+@media (min-width: 640px) {
+  .sterling-kinetic-nav .menu-button-text {
+    height: 1.25rem;
+  }
+
+  .sterling-kinetic-nav .menu-button-text .p-large {
+    flex: 0 0 1.25rem;
+    height: 1.25rem;
+    line-height: 1.25rem;
+    font-size: 0.875rem;
+  }
+}
+
+.sterling-kinetic-nav .icon-wrap {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sterling-kinetic-nav .menu-button-icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* ─── Fullscreen overlay ─── */
+
+.sterling-kinetic-nav .fullscreen-menu-container {
+  position: relative;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.sterling-kinetic-nav .fullscreen-menu-container .nav-overlay-wrapper,
+.sterling-kinetic-nav .fullscreen-menu-container .overlay,
+.sterling-kinetic-nav .fullscreen-menu-container .menu-content,
+.sterling-kinetic-nav .fullscreen-menu-container .nav-link {
+  pointer-events: auto;
+}
+
+.sterling-kinetic-nav .nav-overlay-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: none;
+}
+
+.sterling-kinetic-nav .nav-overlay-wrapper .overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  cursor: pointer;
+  background: color-mix(in oklch, var(--foreground) 30%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.sterling-kinetic-nav .menu-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: min(100%, 520px);
+  height: 100%;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  will-change: transform;
+}
+
+.sterling-kinetic-nav .menu-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.sterling-kinetic-nav .backdrop-layer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(101%);
+  will-change: transform;
+}
+
+.sterling-kinetic-nav .backdrop-layer.first {
+  z-index: 1;
+  background: color-mix(in oklch, var(--foreground) 94%, var(--background));
+}
+
+.sterling-kinetic-nav .backdrop-layer.second {
+  z-index: 2;
+  background: color-mix(in oklch, var(--foreground) 88%, var(--background));
+}
+
+.sterling-kinetic-nav .backdrop-layer:not(.first):not(.second) {
+  z-index: 3;
+  background: var(--background);
+}
+
+.sterling-kinetic-nav .ambient-background-shapes {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.sterling-kinetic-nav .bg-shape {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sterling-kinetic-nav .bg-shape.active {
+  opacity: 1;
+}
+
+/* ─── Menu content ─── */
+
+.sterling-kinetic-nav .menu-content-wrapper {
+  position: relative;
+  z-index: 5;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(5rem, 12vh, 7rem) min(var(--container-padding, 2em), 1.5rem) clamp(2rem, 6vh, 3rem);
+  /*
+   * Sliding backdrop layers use ~94% foreground — same token as link text, so
+   * foreground-on-foreground was invisible. Use popover surface + ink (overlay tokens).
+   */
+  background: var(--popover);
+  color: var(--popover-foreground);
+}
+
+.sterling-kinetic-nav .menu-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+}
+
+.sterling-kinetic-nav .menu-list-item {
+  overflow: visible;
+  border-top: 1px solid color-mix(in oklch, var(--border) 30%, transparent);
+}
+
+.sterling-kinetic-nav .menu-list-item:last-child {
+  border-bottom: 1px solid color-mix(in oklch, var(--border) 30%, transparent);
+}
+
+.sterling-kinetic-nav .nav-link {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  text-decoration: none;
+  color: var(--popover-foreground);
+  transition: color 0.2s ease;
+}
+
+.sterling-kinetic-nav .nav-link:hover {
+  color: var(--primary);
+}
+
+.sterling-kinetic-nav .nav-link:focus-visible {
+  outline: 2px solid color-mix(in oklch, var(--primary) 35%, transparent);
+  outline-offset: 6px;
+  border-radius: 0.75rem;
+}
+
+.sterling-kinetic-nav .nav-link-index {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  color: color-mix(in oklch, var(--popover-foreground) 58%, var(--muted-foreground));
+  min-width: 1.5rem;
+  letter-spacing: 0.02em;
+  opacity: 1;
+}
+
+.sterling-kinetic-nav .nav-link-text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(1.75rem, 5.5vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  color: var(--popover-foreground);
+}
+
+/* GSAP used to leave opacity:0 on links when timelines were killed — harden open state */
+.sterling-kinetic-nav .nav-overlay-wrapper[data-nav="open"] .menu-content .nav-link {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sterling-kinetic-nav .nav-link-hover-bg {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 1px;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: var(--primary);
+  transition: transform 0.35s var(--cubic-default, cubic-bezier(0.65, 0.05, 0, 1));
+}
+
+.sterling-kinetic-nav .nav-link:hover .nav-link-hover-bg {
+  transform: scaleX(1);
+}
+
+/* ─── Menu footer ─── */
+
+.sterling-kinetic-nav .menu-footer {
+  position: relative;
+  z-index: 5;
+  padding: 0 min(var(--container-padding, 2em), 1.5rem) clamp(1.5rem, 4vh, 2.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  background: var(--popover);
+  color: var(--popover-foreground);
+}
+
+.sterling-kinetic-nav .menu-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.sterling-kinetic-nav .menu-footer-label {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: color-mix(in oklch, var(--popover-foreground) 62%, var(--muted-foreground));
+}
+
+.sterling-kinetic-nav .menu-footer-value {
+  font-size: 0.8125rem;
+  color: var(--popover-foreground);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.sterling-kinetic-nav .menu-footer-value:hover {
+  color: var(--primary);
+}
+
+.sterling-kinetic-nav .menu-footer-value:focus-visible {
+  outline: 2px solid color-mix(in oklch, var(--primary) 35%, transparent);
+  outline-offset: 4px;
+  border-radius: 0.375rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sterling-kinetic-nav .nav-link-hover-bg {
+    transition: none;
+  }
+
+  .sterling-kinetic-nav .menu-content,
+  .sterling-kinetic-nav .backdrop-layer {
+    will-change: auto;
+  }
+}

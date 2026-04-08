@@ -51,8 +51,8 @@ export function NicheMarquee() {
               <span
                 className={cn(
                   "size-1.5 shrink-0 rounded-full",
-                  i % 3 === 0 && "bg-brand/80",
-                  i % 3 === 1 && "bg-brand/50",
+                  i % 3 === 0 && "bg-primary/80",
+                  i % 3 === 1 && "bg-primary/50",
                   i % 3 === 2 && "bg-foreground/25"
                 )}
                 aria-hidden
@@ -82,8 +82,8 @@ export function NicheMarquee() {
               <span
                 className={cn(
                   "size-1.5 shrink-0 rounded-full",
-                  i % 3 === 0 && "bg-brand/80",
-                  i % 3 === 1 && "bg-brand/50",
+                  i % 3 === 0 && "bg-primary/80",
+                  i % 3 === 1 && "bg-primary/50",
                   i % 3 === 2 && "bg-foreground/25"
                 )}
                 aria-hidden

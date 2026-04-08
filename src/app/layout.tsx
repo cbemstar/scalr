@@ -1,28 +1,30 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Outfit, Nunito_Sans } from "next/font/google";
+import { Geist, Geist_Mono, Open_Sans } from "next/font/google";
+import { LenisProvider } from "@/components/providers/lenis-provider";
+import { LiquidGlassRegistryProvider } from "@/components/providers/liquid-glass-provider";
 import { StringTuneProvider } from "@/components/providers/string-tune-provider";
-import { ThemeProvider } from "@/components/providers/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@wrksz/themes/next";
 import { siteConfig } from "@/config/site";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
-const nunitoSans = Nunito_Sans({subsets:['latin'],variable:'--font-sans'});
+const geistSans = Geist({
+  subsets: ["latin"],
+  variable: "--font-sans",
+  display: "swap",
+});
 
-const outfitHeading = Outfit({
+const openSans = Open_Sans({
   subsets: ["latin"],
   variable: "--font-heading",
   display: "swap",
 });
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
   subsets: ["latin"],
+  variable: "--font-mono",
+  display: "swap",
 });
 
 export const viewport: Viewport = {
@@ -55,7 +57,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
@@ -64,19 +66,28 @@ export default function RootLayout({
     <html
       lang="en-NZ"
       className={cn(
-              "h-full",
-              "antialiased",
-              geistSans.variable,
-              geistMono.variable,
-              outfitHeading.variable
-            , "font-sans", nunitoSans.variable)}
+        "h-full antialiased font-sans",
+        geistSans.variable,
+        openSans.variable,
+        geistMono.variable
+      )}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-background text-foreground">
-        <ThemeProvider>
-          <StringTuneProvider>
-            <TooltipProvider>{children}</TooltipProvider>
-          </StringTuneProvider>
+      <body className="flex min-h-full flex-col bg-background text-foreground">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          storage="localStorage"
+          disableTransitionOnChange
+        >
+          <LiquidGlassRegistryProvider>
+            <LenisProvider>
+              <StringTuneProvider>
+                <TooltipProvider>{children}</TooltipProvider>
+              </StringTuneProvider>
+            </LenisProvider>
+          </LiquidGlassRegistryProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -85,9 +85,9 @@ const Dock = React.forwardRef<HTMLDivElement, DockProps>(
       >
         <motion.div
           className={cn(
-            "inline-flex w-fit max-w-full flex-nowrap items-center gap-1 overflow-x-auto rounded-2xl border border-border/70 bg-background/92 p-2 shadow-[0_-10px_40px_-12px_rgba(15,23,42,0.2)] ring-1 ring-black/[0.04] backdrop-blur-lg transition-shadow duration-300",
+            "inline-flex w-fit max-w-full flex-nowrap items-center gap-1 overflow-x-auto rounded-2xl border border-border/70 bg-background/92 p-2 shadow-[0_-10px_40px_-12px_color-mix(in_oklch,var(--foreground)_18%,transparent)] ring-1 ring-border/40 backdrop-blur-lg transition-shadow duration-300",
             "supports-[backdrop-filter]:bg-background/88",
-            "hover:shadow-[0_-14px_48px_-14px_rgba(15,23,42,0.24)]",
+            "hover:shadow-[0_-14px_48px_-14px_color-mix(in_oklch,var(--foreground)_22%,transparent)]",
             "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
             barClassName
           )}

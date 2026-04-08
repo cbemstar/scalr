@@ -19,8 +19,6 @@ import {
 
 import { cn } from "@/lib/utils"
 
-const layoutSpring = { type: "spring", damping: 28, stiffness: 380 } as const
-
 interface TextRotateProps {
   texts: string[]
   rotationInterval?: number
@@ -32,24 +30,13 @@ interface TextRotateProps {
   staggerDuration?: number
   staggerFrom?: "first" | "last" | "center" | number | "random"
   transition?: Transition
-  loop?: boolean
-  auto?: boolean
+  loop?: boolean // Whether to start from the first text when the last one is reached
+  auto?: boolean // Whether to start the animation automatically
   splitBy?: "words" | "characters" | "lines" | string
   onNext?: (index: number) => void
   mainClassName?: string
   splitLevelClassName?: string
   elementLevelClassName?: string
-  /**
-   * Highlight surface behind the rotating text (registry-style).
-   * Sizes to the active phrase; use `layout` animation so it morphs between phrases.
-   */
-  containerClassName?: string
-  /**
-   * When true, reserve space using the longest phrase (no width/height jump, larger empty pill).
-   * Default false — pill hugs the current line like the original demo.
-   */
-  stableSize?: boolean
-  lineHeightEm?: number
 }
 
 export interface TextRotateRef {
@@ -84,25 +71,20 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
       mainClassName,
       splitLevelClassName,
       elementLevelClassName,
-      containerClassName,
-      stableSize = false,
-      lineHeightEm = 1.06,
+      ...props
     },
     ref
   ) => {
     const [currentTextIndex, setCurrentTextIndex] = useState(0)
     const reduceMotion = useReducedMotion()
 
-    const longestPhrase = useMemo(
-      () => texts.reduce((a, b) => (a.length >= b.length ? a : b)),
-      [texts]
-    )
-
+    // handy function to split text into characters with support for unicode and emojis
     const splitIntoCharacters = (text: string): string[] => {
       if (typeof Intl !== "undefined" && "Segmenter" in Intl) {
         const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" })
         return Array.from(segmenter.segment(text), ({ segment }) => segment)
       }
+      // Fallback for browsers that don't support Intl.Segmenter
       return Array.from(text)
     }
 
@@ -140,49 +122,38 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
       [staggerFrom, staggerDuration]
     )
 
-    const handleIndexChange = useCallback(
-      (newIndex: number) => {
-        setCurrentTextIndex(newIndex)
-        onNext?.(newIndex)
-      },
-      [onNext]
-    )
+    // Helper function to handle index changes and trigger callback
+    const handleIndexChange = useCallback((newIndex: number) => {
+      setCurrentTextIndex(newIndex)
+      onNext?.(newIndex)
+    }, [onNext])
 
     const next = useCallback(() => {
-      const nextIndex =
-        currentTextIndex === texts.length - 1
-          ? loop
-            ? 0
-            : currentTextIndex
-          : currentTextIndex + 1
-
+      const nextIndex = currentTextIndex === texts.length - 1
+        ? (loop ? 0 : currentTextIndex)
+        : currentTextIndex + 1
+      
       if (nextIndex !== currentTextIndex) {
         handleIndexChange(nextIndex)
       }
     }, [currentTextIndex, texts.length, loop, handleIndexChange])
 
     const previous = useCallback(() => {
-      const prevIndex =
-        currentTextIndex === 0
-          ? loop
-            ? texts.length - 1
-            : currentTextIndex
-          : currentTextIndex - 1
-
+      const prevIndex = currentTextIndex === 0
+        ? (loop ? texts.length - 1 : currentTextIndex)
+        : currentTextIndex - 1
+      
       if (prevIndex !== currentTextIndex) {
         handleIndexChange(prevIndex)
       }
     }, [currentTextIndex, texts.length, loop, handleIndexChange])
 
-    const jumpTo = useCallback(
-      (index: number) => {
-        const validIndex = Math.max(0, Math.min(index, texts.length - 1))
-        if (validIndex !== currentTextIndex) {
-          handleIndexChange(validIndex)
-        }
-      },
-      [texts.length, currentTextIndex, handleIndexChange]
-    )
+    const jumpTo = useCallback((index: number) => {
+      const validIndex = Math.max(0, Math.min(index, texts.length - 1))
+      if (validIndex !== currentTextIndex) {
+        handleIndexChange(validIndex)
+      }
+    }, [texts.length, currentTextIndex, handleIndexChange])
 
     const reset = useCallback(() => {
       if (currentTextIndex !== 0) {
@@ -190,24 +161,20 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
       }
     }, [currentTextIndex, handleIndexChange])
 
-    useImperativeHandle(
-      ref,
-      () => ({
-        next,
-        previous,
-        jumpTo,
-        reset,
-      }),
-      [next, previous, jumpTo, reset]
-    )
+    // Expose all navigation functions via ref
+    useImperativeHandle(ref, () => ({
+      next,
+      previous,
+      jumpTo,
+      reset,
+    }), [next, previous, jumpTo, reset])
+
 
     useEffect(() => {
       if (!auto || reduceMotion) return
       const intervalId = setInterval(next, rotationInterval)
       return () => clearInterval(intervalId)
     }, [next, rotationInterval, auto, reduceMotion])
-
-    const maskStyle = { height: `${lineHeightEm}em` } as const
 
     const initialAnim = reduceMotion ? { opacity: 0 } : initial
     const animateAnim = reduceMotion ? { opacity: 1 } : animate
@@ -216,17 +183,26 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
       ? { duration: 0.2, ease: "easeOut" as const }
       : transition
 
-    const animatedBlock = (
-      <>
+    return (
+      <motion.span
+        className={cn("flex flex-wrap whitespace-pre-wrap", mainClassName)}
+        {...props}
+        layout
+        transition={transition}
+      >
         <span className="sr-only">{texts[currentTextIndex]}</span>
 
-        <AnimatePresence mode={animatePresenceMode} initial={animatePresenceInitial}>
+        <AnimatePresence
+          mode={animatePresenceMode}
+          initial={animatePresenceInitial}
+        >
           <motion.div
             key={currentTextIndex}
             className={cn(
-              "flex flex-wrap content-baseline items-baseline",
+              "flex flex-wrap",
               splitBy === "lines" && "w-full flex-col"
             )}
+            layout
             aria-hidden="true"
           >
             {(splitBy === "characters"
@@ -243,108 +219,42 @@ const TextRotate = forwardRef<TextRotateRef, TextRotateProps>(
               return (
                 <span
                   key={wordIndex}
-                  className={cn("inline-flex items-baseline", splitLevelClassName)}
+                  className={cn("inline-flex", splitLevelClassName)}
                 >
                   {wordObj.characters.map((char, charIndex) => (
-                    <span
+                    <motion.span
+                      initial={initialAnim}
+                      animate={animateAnim}
+                      exit={exitAnim}
                       key={charIndex}
-                      className="inline-flex overflow-hidden align-baseline"
-                      style={maskStyle}
+                      transition={{
+                        ...transitionAnim,
+                        delay: reduceMotion
+                          ? 0
+                          : getStaggerDelay(
+                              previousCharsCount + charIndex,
+                              array.reduce(
+                                (sum, word) => sum + word.characters.length,
+                                0
+                              )
+                            ),
+                      }}
+                      className={cn(
+                        "inline-block overflow-visible pb-[0.2em] align-bottom",
+                        elementLevelClassName
+                      )}
                     >
-                      <motion.span
-                        initial={initialAnim}
-                        animate={animateAnim}
-                        exit={exitAnim}
-                        transition={{
-                          ...transitionAnim,
-                          delay: reduceMotion
-                            ? 0
-                            : getStaggerDelay(
-                                previousCharsCount + charIndex,
-                                array.reduce(
-                                  (sum, word) => sum + word.characters.length,
-                                  0
-                                )
-                              ),
-                        }}
-                        className={cn(
-                          "inline-flex min-h-full items-end leading-none will-change-transform",
-                          elementLevelClassName
-                        )}
-                      >
-                        {char}
-                      </motion.span>
-                    </span>
+                      {char}
+                    </motion.span>
                   ))}
                   {wordObj.needsSpace && (
-                    <span
-                      className="inline-flex overflow-hidden align-baseline"
-                      style={maskStyle}
-                    >
-                      <span className="inline-flex min-h-full items-end leading-none">&nbsp;</span>
-                    </span>
+                    <span className="whitespace-pre"> </span>
                   )}
                 </span>
               )
             })}
           </motion.div>
         </AnimatePresence>
-      </>
-    )
-
-    const inner = (
-      <span className={cn("inline-flex flex-wrap whitespace-pre-wrap", mainClassName)}>
-        {animatedBlock}
-      </span>
-    )
-
-    if (!containerClassName && !stableSize) {
-      return inner
-    }
-
-    if (stableSize && !containerClassName) {
-      return (
-        <span className="inline-grid shrink-0 align-baseline [grid-template-areas:stack]">
-          <span
-            className="invisible col-start-1 row-start-1 select-none whitespace-pre-wrap [grid-area:stack]"
-            aria-hidden
-          >
-            {longestPhrase}
-          </span>
-          <span className="col-start-1 row-start-1 min-w-0 [grid-area:stack]">{inner}</span>
-        </span>
-      )
-    }
-
-    if (stableSize && containerClassName) {
-      return (
-        <span
-          className={cn(
-            "inline-grid shrink-0 align-baseline [grid-template-areas:stack]",
-            containerClassName
-          )}
-        >
-          <span
-            className="invisible col-start-1 row-start-1 select-none whitespace-pre-wrap [grid-area:stack]"
-            aria-hidden
-          >
-            {longestPhrase}
-          </span>
-          <span className="col-start-1 row-start-1 flex min-w-0 [grid-area:stack]">{inner}</span>
-        </span>
-      )
-    }
-
-    return (
-      <motion.span
-        layout
-        transition={{ layout: reduceMotion ? { duration: 0 } : layoutSpring }}
-        className={cn(
-          "inline-flex overflow-hidden align-baseline",
-          containerClassName
-        )}
-      >
-        {inner}
       </motion.span>
     )
   }

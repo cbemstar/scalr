@@ -1,68 +1,63 @@
-import { Pencil, Phone, Rocket } from "lucide-react"
 import { FadeIn } from "@/components/common/fade-in"
+import { VercepProcessShowcase } from "@/components/sections/vercep-process-showcase"
+import type { VercepFeatureItem } from "@/components/ui/vercep-feature-1"
 
-const steps = [
+const steps: VercepFeatureItem[] = [
   {
-    number: "01",
-    icon: Phone,
+    step: "01",
+    icon: "phone",
     title: "Book a Free Call",
     description:
       "15 minutes. We look at your current situation, what you need, and which package fits. No pressure, no pitch.",
   },
   {
-    number: "02",
-    icon: Pencil,
+    step: "02",
+    icon: "pencil",
     title: "We Build",
     description:
       "You get a mockup first. Once you're happy with the direction, we build the full site — delivered in 2–3 weeks.",
   },
   {
-    number: "03",
-    icon: Rocket,
+    step: "03",
+    icon: "launch",
     title: "You Launch",
     description:
       "Training session included so you can make simple updates yourself. GA4, SEO, and conversion tracking already set up.",
   },
 ]
 
+/** Questions prospects often ask — used in the marquee bands above the three steps. */
+const processMarqueeItems = [
+  "How do I get more enquiries from my website?",
+  "Will my site work on phones?",
+  "How much does a small business website cost in NZ?",
+  "Do you handle hosting and the domain?",
+  "How long until I can go live?",
+  "Will Google show my business in local search?",
+  "Can I update the site myself after launch?",
+  "What if I don't have professional photos yet?",
+  "Do you set up analytics and contact forms?",
+  "Is there ongoing support after launch?",
+  "Which package is right for a tradie or café?",
+  "How do I know the site will convert visitors?",
+]
+
 export function HowItWorksSection() {
   return (
-    <section id="process" className="lp-section bg-muted/20">
+    <section id="how-we-work" className="lp-section bg-muted/20">
       <div className="lp-shell">
         <FadeIn>
-          <div className="mb-12 max-w-2xl">
-            <p className="lp-kicker">The process</p>
-            <h2 className="lp-title mt-3">Three steps. No tech overwhelm.</h2>
-            <p className="lp-lead">
-              No chasing you for content for months on end.
-            </p>
-          </div>
+          <VercepProcessShowcase
+            eyebrow="The process"
+            title="Three steps. No tech overwhelm."
+            description="No chasing you for content for months on end. We filter out the noise, focus on what matters for Christchurch small businesses, and get you live without the usual agency runaround."
+            marqueeItems={processMarqueeItems}
+            steps={steps}
+          />
         </FadeIn>
 
-        <div className="grid gap-5 md:grid-cols-3">
-          {steps.map((step, i) => {
-            const Icon = step.icon
-            return (
-              <FadeIn key={step.number} delay={i * 0.06}>
-                <article className="h-full rounded-2xl border border-border/80 bg-background p-6">
-                  <div className="mb-5 flex items-center justify-between">
-                    <span className="font-mono text-sm text-brand">{step.number}</span>
-                    <div className="flex size-9 items-center justify-center rounded-lg bg-muted/70 text-muted-foreground">
-                      <Icon className="size-4" strokeWidth={1.75} />
-                    </div>
-                  </div>
-                  <h3 className="text-base font-semibold tracking-tight">{step.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {step.description}
-                  </p>
-                </article>
-              </FadeIn>
-            )
-          })}
-        </div>
-
-        <FadeIn delay={0.15}>
-          <p className="mt-12 text-sm text-muted-foreground">
+        <FadeIn delay={0.1}>
+          <p className="mt-12 max-w-2xl text-base text-muted-foreground md:text-lg">
             From first call to live website:{" "}
             <span className="font-semibold text-foreground">2 weeks. Not months.</span>
           </p>

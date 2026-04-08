@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 32" role="img" aria-label="Finsweet">
+  <title>Finsweet</title>
+  <style>
+    .fs-text { fill: #FF6B35; }
+    @media (prefers-color-scheme: dark) {
+      .fs-text { fill: #FF8A5C; }
+    }
+  </style>
+  <text
+    class="fs-text"
+    x="0"
+    y="24"
+    font-family="ui-sans-serif, system-ui, -apple-system, sans-serif"
+    font-size="20"
+    font-weight="600"
+    letter-spacing="-0.02em"
+  >finsweet</text>
+</svg>

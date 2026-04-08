@@ -5,11 +5,12 @@
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { HeroSection } from "@/components/sections/hero";
-import { NicheMarquee } from "@/components/sections/niche-marquee";
+import { PlatformsLogoCloud } from "@/components/sections/platforms-logo-cloud";
 import { ProblemSection } from "@/components/sections/problem";
 import { DreamStateSection } from "@/components/sections/dream-state";
 import { SolutionSection } from "@/components/sections/solution";
 import { HowItWorksSection } from "@/components/sections/how-it-works";
+import { HowStudioWorksSection } from "@/components/sections/how-studio-works";
 import { PortfolioSection } from "@/components/sections/portfolio";
 import { AboutSection } from "@/components/sections/about";
 import { PricingSection } from "@/components/sections/pricing";
@@ -22,8 +23,7 @@ export default function Home() {
     <div
       className={cn(
         "flex min-h-[100dvh] flex-col",
-        /* Space for fixed bottom dock + safe area (all breakpoints) */
-        "pb-[calc(5.75rem+env(safe-area-inset-bottom,0px))]"
+        "pb-[max(1rem,env(safe-area-inset-bottom,0px))]"
       )}
     >
       <SiteHeader />
@@ -31,7 +31,7 @@ export default function Home() {
         {/* Section 1: Hero — stop the scroll, drive one action */}
         <HeroSection />
 
-        <NicheMarquee />
+        <PlatformsLogoCloud />
 
         {/* Section 2: Problem Agitation — make the prospect feel seen */}
         <ProblemSection />
@@ -44,6 +44,9 @@ export default function Home() {
 
         {/* Section 5: How It Works — 3 steps, remove complexity */}
         <HowItWorksSection />
+
+        {/* Section 5b: How Scalr works (features grid) */}
+        <HowStudioWorksSection />
 
         {/* Section 6: Portfolio / Social Proof */}
         <PortfolioSection />
