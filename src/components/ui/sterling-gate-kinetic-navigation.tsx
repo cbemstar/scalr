@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { MouseEvent, useEffect, useLayoutEffect, useRef, useState } from "react"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { LinkedinLogoIcon } from "@phosphor-icons/react"
 import gsap from "gsap"
 import { CustomEase } from "gsap/CustomEase"
@@ -70,6 +71,7 @@ export function SterlingGateKineticNavigation({
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const pathname = usePathname()
   /** Skip running the “close” timeline on the first paint (avoids GSAP inline styles on links before any open). */
   const skipInitialCloseTimeline = useRef(true)
   const { resolvedTheme } = useTheme()
@@ -353,6 +355,17 @@ export function SterlingGateKineticNavigation({
 
   const toggleMenu = () => setIsMenuOpen((p) => !p)
   const closeMenu = () => setIsMenuOpen(false)
+  const goToHero = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (pathname !== "/") return
+    event.preventDefault()
+
+    const hero = document.getElementById("hero")
+    if (hero) {
+      hero.scrollIntoView({ behavior: "smooth", block: "start" })
+      return
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" })
+  }
 
   return (
     <div ref={containerRef} className="sterling-kinetic-nav">
@@ -378,9 +391,10 @@ export function SterlingGateKineticNavigation({
             <div className="sterling-kinetic-nav__inner">
               <nav className="nav-row" aria-label="Top bar">
                 <Link
-                  href="/"
+                  href="/#hero"
                   className="nav-logo-row sg-w-inline-block"
                   aria-label="Home"
+                  onClick={goToHero}
                 >
                   <span className="nav-logo-shiny">{siteConfig.name}</span>
                 </Link>
