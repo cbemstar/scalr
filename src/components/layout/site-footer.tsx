@@ -113,7 +113,7 @@ export function SiteFooter({ className }: { className?: string }) {
     <footer className={cn("relative w-full", className)}>
       <div
         ref={panelRef}
-        className="sticky z-10 flex w-full flex-col border-t border-border/60 bg-background max-h-[100dvh] overflow-y-auto overscroll-contain"
+        className="sticky z-10 flex w-full flex-col border-t border-border/60 bg-background max-h-[100dvh] overflow-y-auto"
         data-lenis-prevent
         style={{ top: stickTop }}
       >
