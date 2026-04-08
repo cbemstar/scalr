@@ -7,6 +7,13 @@
   --header-pill-max: min(34rem, 100%);
 }
 
+/* Tighter pill below desktop so the bar does not read as a full-bleed strip */
+@media (max-width: 1023px) {
+  .sterling-kinetic-nav {
+    --header-pill-max: min(31rem, calc(100vw - 2.25rem));
+  }
+}
+
 .sterling-kinetic-nav .sg-w-inline-block {
   display: inline-block;
   max-width: 100%;
@@ -530,9 +537,13 @@
 }
 
 @media (max-width: 639px) {
+  .sterling-kinetic-nav {
+    --header-pill-max: min(22.5rem, calc(100vw - 2rem));
+  }
+
   .sterling-kinetic-nav .site-header-wrapper {
-    left: max(0.625rem, env(safe-area-inset-left));
-    right: max(0.625rem, env(safe-area-inset-right));
+    left: max(0.875rem, env(safe-area-inset-left));
+    right: max(0.875rem, env(safe-area-inset-right));
   }
 
   .sterling-kinetic-nav .sterling-kinetic-nav__inner {

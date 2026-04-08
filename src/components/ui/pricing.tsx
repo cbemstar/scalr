@@ -190,18 +190,95 @@ function orderedUnionFeatures(plans: InteractivePricingPlan[]): string[] {
   return order
 }
 
+function PlanComparisonMobileCards({ plans }: { plans: InteractivePricingPlan[] }) {
+  const featureRows = useMemo(() => orderedUnionFeatures(plans), [plans])
+
+  return (
+    <div className="flex flex-col gap-4" role="list">
+      <p className="sr-only">
+        Each plan is listed in its own card. Compare build price, hosting, and included items without
+        horizontal scrolling.
+      </p>
+      {plans.map((plan) => (
+        <div
+          key={plan.name}
+          role="listitem"
+          className={cn(
+            "rounded-xl border border-border/70 bg-background/90 p-4 shadow-sm",
+            plan.isPopular && "border-primary/35 bg-primary/5 ring-1 ring-primary/15"
+          )}
+        >
+          <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border/60 pb-3">
+            <h3 className="font-heading text-base font-semibold text-primary">{plan.name}</h3>
+            {plan.isPopular ? (
+              <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
+                Recommended
+              </span>
+            ) : null}
+          </div>
+          <dl className="mt-3 divide-y divide-border/40 text-sm text-muted-foreground">
+            <div className="flex items-baseline justify-between gap-3 py-2.5 first:pt-0">
+              <dt className="text-foreground">One-time build</dt>
+              <dd className="font-mono tabular-nums text-foreground">{nzd.format(plan.buildPrice)}</dd>
+            </div>
+            <div className="flex items-baseline justify-between gap-3 py-2.5">
+              <dt className="text-foreground">Hosting &amp; support / mo</dt>
+              <dd className="font-mono tabular-nums text-foreground">{nzd.format(plan.monthlyPrice)}</dd>
+            </div>
+            <div className="flex items-baseline justify-between gap-3 py-2.5">
+              <dt className="text-foreground">Scope</dt>
+              <dd className="text-right text-foreground">{plan.pages}</dd>
+            </div>
+            <div className="flex items-baseline justify-between gap-3 py-2.5">
+              <dt className="text-foreground">Typical timeline</dt>
+              <dd className="text-right text-foreground">{plan.deliveryDays}</dd>
+            </div>
+            <div className="flex flex-col gap-1 py-2.5">
+              <dt className="text-foreground">Payment</dt>
+              <dd className="text-xs leading-snug text-muted-foreground">{plan.paymentTerms || "—"}</dd>
+            </div>
+          </dl>
+          <p className="mt-4 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            Included in this package
+          </p>
+          <ul className="mt-2 space-y-2">
+            {featureRows.map((feature) => {
+              const included = plan.features.includes(feature)
+              return (
+                <li key={feature} className="flex items-start gap-2.5 text-sm leading-snug">
+                  {included ? (
+                    <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                  ) : (
+                    <span
+                      className="mt-0.5 inline-flex w-4 shrink-0 justify-center text-muted-foreground/45"
+                      aria-hidden
+                    >
+                      —
+                    </span>
+                  )}
+                  <span className={cn(!included && "text-muted-foreground/75")}>{feature}</span>
+                </li>
+              )
+            })}
+          </ul>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
   const featureRows = useMemo(() => orderedUnionFeatures(plans), [plans])
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-border/70 bg-muted/10">
+    <div className="isolate overflow-x-auto overscroll-x-contain rounded-xl border border-border/70 bg-muted/10 [-webkit-overflow-scrolling:touch]">
       <table className="w-full min-w-[36rem] border-collapse text-left text-xs sm:text-sm">
         <caption className="sr-only">Comparison of build packages and included items</caption>
         <thead>
           <tr className="border-b border-border/80 bg-muted/40">
             <th
               scope="col"
-              className="sticky left-0 z-[1] min-w-[10rem] bg-muted/40 px-3 py-3 font-semibold text-foreground"
+              className="sticky left-0 z-20 min-w-[10rem] border-r border-border/60 bg-muted/40 px-3 py-3 text-left font-semibold text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.35)]"
             >
               Item
             </th>
@@ -226,7 +303,10 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
         </thead>
         <tbody className="text-muted-foreground">
           <tr className="border-b border-border/60 bg-background/80">
-            <th scope="row" className="sticky left-0 bg-background/95 px-3 py-2.5 font-medium text-foreground">
+            <th
+              scope="row"
+              className="sticky left-0 z-20 border-r border-border/60 bg-background/95 px-3 py-2.5 text-left font-medium text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)]"
+            >
               One-time build
             </th>
             {plans.map((plan) => (
@@ -236,7 +316,10 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
             ))}
           </tr>
           <tr className="border-b border-border/60">
-            <th scope="row" className="sticky left-0 bg-background/95 px-3 py-2.5 font-medium text-foreground">
+            <th
+              scope="row"
+              className="sticky left-0 z-20 border-r border-border/60 bg-background/95 px-3 py-2.5 text-left font-medium text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)]"
+            >
               Hosting &amp; support / mo
             </th>
             {plans.map((plan) => (
@@ -246,7 +329,10 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
             ))}
           </tr>
           <tr className="border-b border-border/60">
-            <th scope="row" className="sticky left-0 bg-background/95 px-3 py-2.5 font-medium text-foreground">
+            <th
+              scope="row"
+              className="sticky left-0 z-20 border-r border-border/60 bg-background/95 px-3 py-2.5 text-left font-medium text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)]"
+            >
               Scope
             </th>
             {plans.map((plan) => (
@@ -256,7 +342,10 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
             ))}
           </tr>
           <tr className="border-b border-border/60">
-            <th scope="row" className="sticky left-0 bg-background/95 px-3 py-2.5 font-medium text-foreground">
+            <th
+              scope="row"
+              className="sticky left-0 z-20 border-r border-border/60 bg-background/95 px-3 py-2.5 text-left font-medium text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)]"
+            >
               Typical timeline
             </th>
             {plans.map((plan) => (
@@ -266,7 +355,10 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
             ))}
           </tr>
           <tr className="border-b border-border/60">
-            <th scope="row" className="sticky left-0 bg-background/95 px-3 py-2.5 font-medium text-foreground">
+            <th
+              scope="row"
+              className="sticky left-0 z-20 border-r border-border/60 bg-background/95 px-3 py-2.5 text-left font-medium text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)]"
+            >
               Payment
             </th>
             {plans.map((plan) => (
@@ -279,7 +371,7 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
             <tr key={feature} className="border-b border-border/40 last:border-0">
               <th
                 scope="row"
-                className="sticky left-0 max-w-[14rem] bg-background/95 px-3 py-2 text-left text-xs font-normal leading-snug text-foreground sm:text-sm"
+                className="sticky left-0 z-20 max-w-[14rem] border-r border-border/60 bg-background/95 px-3 py-2 text-left text-xs font-normal leading-snug text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)] sm:text-sm"
               >
                 {feature}
               </th>
@@ -338,10 +430,21 @@ export function InteractivePricing({ plans }: InteractivePricingProps) {
             </AccordionTrigger>
             <AccordionContent className="px-4 pb-5 sm:px-5">
               <p className="mb-4 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                Side-by-side view of build price, hosting, scope, and every listed inclusion. Use it to see
-                how packages differ before you book a call.
+                <span className="md:hidden">
+                  Each plan is expanded below — scroll to compare build price, hosting, and inclusions without
+                  sideways scrolling.
+                </span>
+                <span className="hidden md:inline">
+                  Side-by-side view of build price, hosting, scope, and every listed inclusion. Use it to see how
+                  packages differ before you book a call.
+                </span>
               </p>
-              <PlanComparisonTable plans={plans} />
+              <div className="md:hidden">
+                <PlanComparisonMobileCards plans={plans} />
+              </div>
+              <div className="hidden md:block">
+                <PlanComparisonTable plans={plans} />
+              </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
