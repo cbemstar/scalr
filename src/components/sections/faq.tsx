@@ -92,15 +92,15 @@ export function FAQSection() {
         <Accordion type="single" defaultValue="1" collapsible className="w-full">
           {faqItems.map((item) => (
             <AccordionItem value={item.id} key={item.id} className="last:border-b">
-              <AccordionTrigger className="text-left pl-6 md:pl-14 overflow-hidden text-foreground/20 duration-200 hover:no-underline cursor-pointer -space-y-6 data-[state=open]:space-y-0 data-[state=open]:text-primary [&>svg]:hidden">
-                <div className="flex flex-1 items-start gap-4">
+              <AccordionTrigger className="cursor-pointer overflow-hidden pl-4 text-left text-foreground/20 duration-200 hover:no-underline sm:pl-6 md:pl-14 data-[state=open]:text-primary [&>svg]:hidden">
+                <div className="flex flex-1 items-start gap-3 sm:gap-4">
                   <p className="text-xs">{item.id}</p>
-                  <h3 className="uppercase relative text-left text-xl sm:text-2xl md:text-3xl">
+                  <h3 className="relative text-left text-lg uppercase sm:text-xl md:text-2xl lg:text-3xl">
                     {item.question}
                   </h3>
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="text-muted-foreground text-base leading-relaxed pb-6 pl-6 md:px-20">
+              <AccordionContent className="pb-6 pl-4 text-base leading-relaxed text-muted-foreground sm:pl-6 md:px-20">
                 {item.answer}
               </AccordionContent>
             </AccordionItem>

@@ -171,7 +171,7 @@ export function SoundFamiliarShowcase({ items, className }: SoundFamiliarShowcas
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-40px" }}
-          className="grid auto-rows-[350px] gap-6 sm:grid-cols-2 lg:grid-cols-3"
+          className="grid auto-rows-[minmax(18rem,auto)] gap-5 sm:auto-rows-[350px] sm:grid-cols-2 sm:gap-6 lg:grid-cols-3"
         >
           {items.map((item) => (
             <PainPointCard key={item.headline} item={item} />
@@ -191,7 +191,7 @@ export function SoundFamiliarShowcase({ items, className }: SoundFamiliarShowcas
             like the safer choice.
           </p>
 
-          <Card className="mx-auto flex w-full max-w-2xl flex-col items-center gap-5 rounded-3xl border border-border/60 bg-card/90 px-8 py-8 text-center shadow-[0_20px_60px_-32px_color-mix(in_oklch,var(--foreground)_20%,transparent)] backdrop-blur-xl sm:flex-row sm:text-left">
+          <Card className="mx-auto flex w-full max-w-2xl flex-col items-center gap-5 rounded-3xl border border-border/60 bg-card/90 px-5 py-6 text-center shadow-[0_20px_60px_-32px_color-mix(in_oklch,var(--foreground)_20%,transparent)] backdrop-blur-xl sm:flex-row sm:px-8 sm:py-8 sm:text-left">
             <div className="flex-1 space-y-2">
               <h3 className="font-heading text-xl font-semibold tracking-tight text-foreground">
                 Pricing is on the page — no mystery quotes

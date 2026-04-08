@@ -16,7 +16,7 @@ export function Features() {
           {/* ── Card 1: Experience stat ── */}
           <Card className="relative col-span-full flex h-full overflow-hidden lg:col-span-2">
             <CardContent className="relative m-auto size-fit pt-6">
-              <div className="relative flex h-24 w-56 items-center">
+              <div className="relative flex h-24 w-full max-w-56 items-center">
                 <svg
                   className="text-muted absolute inset-0 size-full"
                   viewBox="0 0 254 104"

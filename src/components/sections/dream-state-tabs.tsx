@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ArrowLeft01Icon, ArrowRight01Icon } from "@hugeicons/core-free-icons"
 import { HugeiconsIcon } from "@hugeicons/react"
 import { motion } from "motion/react"
@@ -12,8 +12,6 @@ export type DreamOutcome = {
   /** One line that reinforces this outcome — not repeated across cards */
   takeaway: string
 }
-
-const MANUAL_NAV_LOCK_MS = 700
 
 function formatStep(value: number) {
   return String(value).padStart(2, "0")
@@ -36,13 +34,13 @@ function DreamOutcomeCard({
     <motion.article
       aria-hidden={!isActive}
       className={cn(
-        "absolute inset-y-0 left-0 flex w-[min(100%,34rem)] origin-center flex-col justify-between overflow-hidden rounded-[2rem] border p-6 shadow-[0_32px_80px_var(--dream-shadow-deep)] backdrop-blur-xl sm:p-8 lg:p-10",
+        "absolute inset-y-0 left-0 flex w-full max-w-[34rem] origin-center flex-col justify-between overflow-y-auto overflow-x-hidden rounded-[1.5rem] border p-5 shadow-[0_32px_80px_var(--dream-shadow-deep)] backdrop-blur-xl sm:rounded-[2rem] sm:p-8 lg:p-10",
         "border-[color:var(--dream-border-soft)] bg-[color:var(--dream-surface-card)]",
         "shadow-[inset_0_1px_0_0_var(--dream-border-soft)]"
       )}
       initial={false}
       animate={{
-        x: `${offset * 68}%`,
+        x: `${offset * 56}%`,
         y: `${Math.abs(offset) * 3}%`,
         scale: isActive ? 1 : Math.abs(offset) === 1 ? 0.92 : 0.86,
         rotate: isActive ? 0 : offset > 0 ? -4 : 4,
@@ -71,7 +69,7 @@ function DreamOutcomeCard({
       </div>
 
       <div className="relative z-10 mt-8 flex flex-1 flex-col justify-center">
-        <h3 className="max-w-[14ch] font-heading text-3xl font-semibold leading-[1.02] tracking-[-0.04em] text-[color:var(--dream-text)] sm:text-4xl lg:text-[3rem]">
+        <h3 className="max-w-[14ch] font-heading text-2xl font-semibold leading-[1.05] tracking-[-0.04em] text-[color:var(--dream-text)] sm:text-4xl lg:text-[3rem]">
           {outcome.headline}
         </h3>
         <p className="mt-5 max-w-[34ch] text-base leading-relaxed text-[color:var(--dream-body)] sm:text-lg">
@@ -90,17 +88,12 @@ function DreamOutcomeCard({
 
 export function DreamStateTabs({
   outcomes,
-  scrollRootRef,
-  scrollPinRef,
 }: {
   outcomes: DreamOutcome[]
-  scrollRootRef: RefObject<HTMLElement | null>
-  scrollPinRef: RefObject<HTMLElement | null>
 }) {
   const [activeIndex, setActiveIndex] = useState(0)
   const [direction, setDirection] = useState(1)
   const activeIndexRef = useRef(0)
-  const ignoreScrollSyncUntil = useRef(0)
   const lastIndex = Math.max(0, outcomes.length - 1)
 
   useEffect(() => {
@@ -113,7 +106,6 @@ export function DreamStateTabs({
       const clamped = Math.min(lastIndex, Math.max(0, nextIndex))
       if (clamped === activeIndexRef.current) return
 
-      ignoreScrollSyncUntil.current = Date.now() + MANUAL_NAV_LOCK_MS
       setDirection(clamped > activeIndexRef.current ? 1 : -1)
       setActiveIndex(clamped)
     },
@@ -122,58 +114,6 @@ export function DreamStateTabs({
 
   const handleNext = useCallback(() => setIndex(activeIndexRef.current + 1), [setIndex])
   const handlePrev = useCallback(() => setIndex(activeIndexRef.current - 1), [setIndex])
-
-  useEffect(() => {
-    if (outcomes.length <= 1) return
-
-    const updateFromScroll = () => {
-      if (Date.now() < ignoreScrollSyncUntil.current) return
-      if (typeof window === "undefined") return
-
-      const root = scrollRootRef.current
-      if (!root) return
-
-      const rootTop = root.getBoundingClientRect().top + window.scrollY
-      const rootHeight = root.offsetHeight
-      const pinHeight = scrollPinRef.current?.offsetHeight ?? window.innerHeight
-      const scrollRange = Math.max(1, rootHeight - pinHeight)
-      const scrolledPastTop = window.scrollY - rootTop
-      const progress = Math.min(1, Math.max(0, scrolledPastTop / scrollRange))
-      const nextIndex = Math.min(lastIndex, Math.floor(progress * outcomes.length))
-      const previousIndex = activeIndexRef.current
-
-      if (nextIndex !== previousIndex) {
-        setDirection(nextIndex > previousIndex ? 1 : -1)
-        setActiveIndex(nextIndex)
-      }
-    }
-
-    let raf = 0
-    const onScroll = () => {
-      cancelAnimationFrame(raf)
-      raf = requestAnimationFrame(updateFromScroll)
-    }
-
-    window.addEventListener("scroll", onScroll, { passive: true })
-    window.addEventListener("resize", onScroll, { passive: true })
-
-    const resizeObserver =
-      typeof ResizeObserver !== "undefined"
-        ? new ResizeObserver(() => onScroll())
-        : null
-
-    if (resizeObserver && scrollRootRef.current) resizeObserver.observe(scrollRootRef.current)
-    if (resizeObserver && scrollPinRef.current) resizeObserver.observe(scrollPinRef.current)
-
-    updateFromScroll()
-
-    return () => {
-      resizeObserver?.disconnect()
-      cancelAnimationFrame(raf)
-      window.removeEventListener("scroll", onScroll)
-      window.removeEventListener("resize", onScroll)
-    }
-  }, [lastIndex, outcomes.length, scrollPinRef, scrollRootRef])
 
   if (outcomes.length === 0) return null
 
@@ -188,7 +128,7 @@ export function DreamStateTabs({
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-[color:var(--dream-kicker)]">
                 Imagine this instead
               </p>
-              <h2 className="mt-4 max-w-[12ch] font-heading text-4xl font-semibold leading-[0.96] tracking-[-0.05em] text-balance text-[color:var(--dream-text)] sm:text-5xl lg:text-[4.25rem]">
+              <h2 className="mt-4 max-w-[12ch] font-heading text-3xl font-semibold leading-[1.02] tracking-[-0.05em] text-balance text-[color:var(--dream-text)] sm:text-5xl lg:text-[4.25rem]">
                 Imagine a website that works while you sleep.
               </h2>
               <p className="mt-5 max-w-[34ch] text-base leading-relaxed text-[color:var(--dream-body)] sm:text-lg">
@@ -199,13 +139,13 @@ export function DreamStateTabs({
 
             <div className="mt-10 space-y-6">
               <div className="flex items-end gap-4">
-                <div className="overflow-hidden">
+                <div className="min-h-[5.5rem] overflow-visible sm:min-h-[7rem]">
                   <motion.span
                     key={activeIndex}
                     initial={{ y: direction > 0 ? 40 : -40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                  className="block font-heading text-[3.25rem] leading-none tracking-[-0.08em] text-[color:var(--dream-text)] tabular-nums sm:text-[4.5rem]"
+                    className="block font-heading text-[3.25rem] leading-[1.06] tracking-[-0.08em] text-[color:var(--dream-text)] tabular-nums sm:text-[4.5rem]"
                   >
                     {formatStep(activeIndex + 1)}
                   </motion.span>
@@ -253,7 +193,7 @@ export function DreamStateTabs({
             </div>
           </div>
 
-          <div className="relative min-h-[26rem] overflow-hidden rounded-[1.75rem] border border-[color:var(--dream-border-soft)] bg-[color:var(--dream-surface-stack)] p-4 sm:min-h-[30rem] sm:p-5 lg:min-h-[34rem]">
+          <div className="relative min-h-[30rem] overflow-hidden rounded-[1.25rem] border border-[color:var(--dream-border-soft)] bg-[color:var(--dream-surface-stack)] p-3 sm:min-h-[32rem] sm:rounded-[1.75rem] sm:p-5 lg:min-h-[36rem]">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[color:var(--dream-stack-vignette)] to-transparent" />
             <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[color:var(--dream-stack-vignette)] to-transparent" />
 

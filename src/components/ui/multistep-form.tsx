@@ -28,6 +28,26 @@ const PACKAGE_OPTIONS = siteConfig.packages.map((pkg) => ({
   description: pkg.tagline,
 }))
 
+const PLATFORM_OPTIONS = [
+  { value: "webflow", label: "Webflow" },
+  { value: "wordpress", label: "WordPress" },
+  { value: "shopify", label: "Shopify" },
+  { value: "nextjs", label: "Custom build (Next.js)" },
+  { value: "unsure", label: "Not sure, need guidance" },
+] as const
+
+const CONTENT_OPTIONS = [
+  { value: "ready", label: "Yes, I can provide content and images" },
+  { value: "partial", label: "Some content is ready, some needs work" },
+  { value: "none", label: "No, I need full content support" },
+] as const
+
+const COPY_OPTIONS = [
+  { value: "have-copy", label: "I already have website copy" },
+  { value: "need-help", label: "I need copywriting support" },
+  { value: "unsure", label: "Not sure yet" },
+] as const
+
 const TIMELINE_OPTIONS = [
   { value: "asap", label: "As soon as possible" },
   { value: "2-weeks", label: "Within 2 weeks" },
@@ -39,12 +59,16 @@ const CURRENT_SITE_OPTIONS = [
   { value: "none", label: "I don't have a website yet" },
   { value: "outdated", label: "I have one but it's outdated" },
   { value: "rebuild", label: "I have one but want a full rebuild" },
+  { value: "webflow", label: "I have a Webflow site" },
   { value: "unsure", label: "Not sure what I need" },
 ] as const
 
 type FormData = {
   businessType: string
   packageInterest: string
+  platformPreference: string
+  contentReadiness: string
+  copywritingSupport: string
   timeline: string
   currentSite: string
   name: string
@@ -56,6 +80,9 @@ type FormData = {
 const INITIAL_DATA: FormData = {
   businessType: "",
   packageInterest: "",
+  platformPreference: "",
+  contentReadiness: "",
+  copywritingSupport: "",
   timeline: "",
   currentSite: "",
   name: "",
@@ -64,7 +91,7 @@ const INITIAL_DATA: FormData = {
   message: "",
 }
 
-const STEP_COUNT = 4
+const STEP_COUNT = 5
 
 function StepIndicator({ current, total }: { current: number; total: number }) {
   return (
@@ -161,8 +188,14 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
       case 1:
         return !!data.packageInterest
       case 2:
-        return !!data.timeline && !!data.currentSite
+        return (
+          !!data.platformPreference &&
+          !!data.contentReadiness &&
+          !!data.copywritingSupport
+        )
       case 3:
+        return !!data.timeline && !!data.currentSite
+      case 4:
         return !!data.name.trim() && !!data.email.trim()
       default:
         return false
@@ -258,6 +291,16 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
               />
             )}
             {step === 2 && (
+              <StepDiscovery
+                platformPreference={data.platformPreference}
+                contentReadiness={data.contentReadiness}
+                copywritingSupport={data.copywritingSupport}
+                onPlatform={(v) => update("platformPreference", v)}
+                onContent={(v) => update("contentReadiness", v)}
+                onCopy={(v) => update("copywritingSupport", v)}
+              />
+            )}
+            {step === 3 && (
               <StepProjectDetails
                 timeline={data.timeline}
                 currentSite={data.currentSite}
@@ -265,7 +308,7 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
                 onCurrentSite={(v) => update("currentSite", v)}
               />
             )}
-            {step === 3 && (
+            {step === 4 && (
               <StepContact
                 data={data}
                 onChange={update}
@@ -275,13 +318,13 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
         </AnimatePresence>
       </div>
 
-      <div className="mt-8 flex items-center justify-between gap-3">
+      <div className="mt-8 flex flex-col-reverse items-stretch justify-between gap-3 sm:flex-row sm:items-center">
         <Button
           variant="ghost"
           size="sm"
           onClick={goPrev}
           disabled={step === 0}
-          className={cn(step === 0 && "invisible")}
+          className={cn("w-full sm:w-auto", step === 0 && "invisible")}
         >
           <ArrowLeft className="size-4" />
           Back
@@ -293,6 +336,7 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
             size="cta"
             onClick={goNext}
             disabled={!canAdvance}
+            className="w-full sm:w-auto"
           >
             Continue
             <ArrowRight className="size-4" />
@@ -303,6 +347,7 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
             size="cta"
             onClick={handleSubmit}
             disabled={!canAdvance || submitting}
+            className="w-full sm:w-auto"
           >
             {submitting ? (
               <>
@@ -434,6 +479,83 @@ function StepProjectDetails({
               key={opt.value}
               selected={currentSite === opt.value}
               onClick={() => onCurrentSite(opt.value)}
+              label={opt.label}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function StepDiscovery({
+  platformPreference,
+  contentReadiness,
+  copywritingSupport,
+  onPlatform,
+  onContent,
+  onCopy,
+}: {
+  platformPreference: string
+  contentReadiness: string
+  copywritingSupport: string
+  onPlatform: (v: string) => void
+  onContent: (v: string) => void
+  onCopy: (v: string) => void
+}) {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="font-heading text-xl font-semibold tracking-tight">
+          Platform & content readiness
+        </h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          A quick filter so I can scope delivery and support correctly.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium text-foreground">
+          Do you have a platform preference?
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {PLATFORM_OPTIONS.map((opt) => (
+            <OptionCard
+              key={opt.value}
+              selected={platformPreference === opt.value}
+              onClick={() => onPlatform(opt.value)}
+              label={opt.label}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium text-foreground">
+          Can you share content and images for the site?
+        </p>
+        <div className="grid gap-2">
+          {CONTENT_OPTIONS.map((opt) => (
+            <OptionCard
+              key={opt.value}
+              selected={contentReadiness === opt.value}
+              onClick={() => onContent(opt.value)}
+              label={opt.label}
+            />
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium text-foreground">
+          How about copywriting support?
+        </p>
+        <div className="grid gap-2 sm:grid-cols-2">
+          {COPY_OPTIONS.map((opt) => (
+            <OptionCard
+              key={opt.value}
+              selected={copywritingSupport === opt.value}
+              onClick={() => onCopy(opt.value)}
               label={opt.label}
             />
           ))}

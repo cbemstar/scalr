@@ -155,7 +155,7 @@ export function SiteFooter({ className }: { className?: string }) {
               </AnimatedContainer>
 
               {/* Link groups */}
-              <div className="grid w-full max-w-3xl grid-cols-2 gap-8 md:grid-cols-3 lg:gap-10">
+              <div className="grid w-full max-w-3xl grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:gap-10">
                 {linkGroups.map((group, i) => (
                   <AnimatedContainer key={group.label} delay={0.1 + i * 0.08}>
                     <p className="lp-kicker mb-3">
