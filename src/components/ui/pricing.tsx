@@ -5,6 +5,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react"
 import Link from "next/link"
 import { Check, Flame, Sparkles } from "lucide-react"
 import NumberFlow from "@number-flow/react"
+import posthog from "posthog-js"
 
 import {
   Accordion,
@@ -423,7 +424,14 @@ export function InteractivePricing({ plans }: InteractivePricingProps) {
           ))}
         </div>
 
-        <Accordion type="single" collapsible className="mt-8 rounded-2xl border border-border/70 bg-muted/15">
+        <Accordion
+          type="single"
+          collapsible
+          className="mt-8 rounded-2xl border border-border/70 bg-muted/15"
+          onValueChange={(value) => {
+            if (value === "compare") posthog.capture("pricing_comparison_opened")
+          }}
+        >
           <AccordionItem value="compare" className="border-0">
             <AccordionTrigger className="px-4 py-4 text-sm font-semibold hover:no-underline sm:px-5 sm:text-base">
               Compare all plans in detail
@@ -436,7 +444,7 @@ export function InteractivePricing({ plans }: InteractivePricingProps) {
                 </span>
                 <span className="hidden md:inline">
                   Side-by-side view of build price, hosting, scope, and every listed inclusion. Use it to see how
-                  packages differ before you book a call.
+                  packages differ before you reach out.
                 </span>
               </p>
               <div className="md:hidden">
@@ -552,7 +560,17 @@ function PricingCardBody({ plan }: { plan: InteractivePricingPlan }) {
           variant={plan.isPopular ? "default" : "secondary"}
           className="h-10 w-full text-sm"
         >
-          <Link href={plan.href}>{plan.cta}</Link>
+          <Link
+            href={plan.href}
+            onClick={() =>
+              posthog.capture("pricing_cta_clicked", {
+                plan_name: plan.name,
+                plan_price: plan.buildPrice,
+              })
+            }
+          >
+            {plan.cta}
+          </Link>
         </Button>
       </div>
     </>

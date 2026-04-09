@@ -5,6 +5,7 @@
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { HeroSection } from "@/components/sections/hero";
+import { TrustSignalSection } from "@/components/sections/trust-signal-section";
 import { PlatformsLogoCloud } from "@/components/sections/platforms-logo-cloud";
 import { ProblemSection } from "@/components/sections/problem";
 import { DreamStateSection } from "@/components/sections/dream-state";
@@ -30,6 +31,8 @@ export default function Home() {
       <main className="flex-1">
         {/* Section 1: Hero — stop the scroll, drive one action */}
         <HeroSection />
+
+        <TrustSignalSection />
 
         <PlatformsLogoCloud />
 

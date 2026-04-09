@@ -7,6 +7,7 @@ import { ArrowRight } from "@phosphor-icons/react"
 import gsap from "gsap"
 import { CustomEase } from "gsap/CustomEase"
 import { motion, useReducedMotion } from "framer-motion"
+import posthog from "posthog-js"
 import { Button } from "@/components/ui/button"
 import { GLSLHills } from "@/components/ui/glsl-hills"
 import { siteConfig } from "@/config/site"
@@ -482,6 +483,12 @@ export function HeroSection() {
                   string-id={heroCrisp.ctaPrimary.magneticId}
                   string-strength={0.22}
                   string-radius={150}
+                  onClick={() =>
+                    posthog.capture("hero_cta_clicked", {
+                      label: heroCrisp.ctaPrimary.label,
+                      variant: "primary",
+                    })
+                  }
                 >
                   {heroCrisp.ctaPrimary.label}
                   <ArrowRight className="size-4 opacity-90" aria-hidden />
@@ -499,6 +506,12 @@ export function HeroSection() {
                   string-id={heroCrisp.ctaSecondary.magneticId}
                   string-strength={0.16}
                   string-radius={130}
+                  onClick={() =>
+                    posthog.capture("hero_cta_clicked", {
+                      label: heroCrisp.ctaSecondary.label,
+                      variant: "secondary",
+                    })
+                  }
                 >
                   {heroCrisp.ctaSecondary.label}
                 </Link>

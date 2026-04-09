@@ -1,5 +1,6 @@
 "use client"
 
+import posthog from "posthog-js"
 import { FadeIn } from "@/components/common/fade-in"
 import { MultistepInquiryForm } from "@/components/ui/multistep-form"
 import { siteConfig } from "@/config/site"
@@ -60,6 +61,7 @@ export function FinalCTASection() {
                   </p>
                   <a
                     href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
+                    onClick={() => posthog.capture("contact_phone_clicked", { source: "contact" })}
                     className="text-sm font-semibold text-foreground underline-offset-2 hover:underline"
                   >
                     Call {siteConfig.contact.phone}

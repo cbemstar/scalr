@@ -1,5 +1,8 @@
+"use client"
+
 // Section 9: FAQ
 
+import posthog from "posthog-js"
 import {
   Accordion,
   AccordionContent,
@@ -25,7 +28,7 @@ const faqItems = [
     id: "3",
     question: "What technology do you build with?",
     answer:
-      "I build with React/Next.js for custom sites or Webflow for clients who want to manage their own content visually. Both options produce fast, mobile-responsive, secure websites. We'll discuss which platform fits your needs on the initial call — the build price is the same either way.",
+      "I build with React/Next.js for custom sites or Webflow for clients who want to manage their own content visually. Both options produce fast, mobile-responsive, secure websites. We'll discuss which platform fits your needs when we first talk — the build price is the same either way.",
   },
   {
     id: "4",
@@ -49,7 +52,7 @@ const faqItems = [
     id: "7",
     question: "Can I make changes to the site after launch?",
     answer:
-      "Yes. You get a training session showing you how to make basic content updates yourself. For anything beyond that — new pages, design changes, technical work — the care plans include a set amount of update time each month, or you can book ad-hoc support.",
+      "Yes. You get a training session showing you how to make basic content updates yourself. For anything beyond that — new pages, design changes, technical work — the care plans include a set amount of update time each month, or you can request ad-hoc support.",
   },
   {
     id: "8",
@@ -89,7 +92,18 @@ export function FAQSection() {
           <p className="lp-lead mt-4">If something isn&apos;t covered here, just ask.</p>
         </div>
 
-        <Accordion type="single" defaultValue="1" collapsible className="w-full">
+        <Accordion
+          type="single"
+          defaultValue="1"
+          collapsible
+          className="w-full"
+          onValueChange={(value) => {
+            if (value) {
+              const item = faqItems.find((i) => i.id === value)
+              if (item) posthog.capture("faq_item_opened", { question: item.question })
+            }
+          }}
+        >
           {faqItems.map((item) => (
             <AccordionItem value={item.id} key={item.id} className="last:border-b">
               <AccordionTrigger className="cursor-pointer overflow-hidden pl-4 text-left text-foreground/20 duration-200 hover:no-underline sm:pl-6 md:pl-14 data-[state=open]:text-primary [&>svg]:hidden">

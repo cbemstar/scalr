@@ -4,10 +4,11 @@
 "use client"
 
 import { LinkedinLogoIcon } from "@phosphor-icons/react/dist/ssr"
-import { ArrowUpRight, Calendar } from "lucide-react"
+import { ArrowUpRight, Phone } from "lucide-react"
 import { useRef } from "react"
 import type { Variants } from "framer-motion"
 
+import posthog from "posthog-js"
 import { FadeIn } from "@/components/common/fade-in"
 import { siteConfig } from "@/config/site"
 import { Button } from "@/components/ui/button"
@@ -130,7 +131,12 @@ export function AboutSection() {
           <FadeIn delay={0.08}>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
               <Button asChild variant="default" size="cta">
-                <a href={siteConfig.social.linkedin} target="_blank" rel="noopener noreferrer">
+                <a
+                  href={siteConfig.social.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => posthog.capture("linkedin_clicked", { source: "about" })}
+                >
                   <LinkedinLogoIcon data-icon="inline-start" weight="fill" />
                   LinkedIn
                   <ArrowUpRight data-icon="inline-end" />
@@ -138,12 +144,11 @@ export function AboutSection() {
               </Button>
               <Button asChild variant="secondary" size="cta">
                 <a
-                  href={siteConfig.contact.calendarUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
+                  onClick={() => posthog.capture("contact_phone_clicked", { source: "about" })}
                 >
-                  <Calendar data-icon="inline-start" aria-hidden />
-                  Book a free call
+                  <Phone data-icon="inline-start" aria-hidden />
+                  Call {siteConfig.contact.phone}
                 </a>
               </Button>
             </div>

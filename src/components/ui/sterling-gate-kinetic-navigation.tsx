@@ -3,11 +3,12 @@
 import { MouseEvent, useEffect, useLayoutEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LinkedinLogoIcon } from "@phosphor-icons/react"
+import { LinkedinLogoIcon, Phone } from "@phosphor-icons/react"
 import gsap from "gsap"
 import { CustomEase } from "gsap/CustomEase"
 import { LiquidGlass } from "@mael-667/liquid-glass-react"
 import { useTheme } from "@wrksz/themes/client"
+import posthog from "posthog-js"
 import { ThemeToggle } from "@/components/layout/theme-toggle"
 import { buttonVariants } from "@/components/ui/button"
 import { siteConfig } from "@/config/site"
@@ -190,9 +191,6 @@ export function SterlingGateKineticNavigation({
     const overlay = root.querySelector<HTMLElement>(".overlay")
     const bgPanels = root.querySelectorAll<HTMLElement>(".backdrop-layer")
     /** Scope to the drawer only — never header controls */
-    const menuLinks = root.querySelectorAll<HTMLElement>(
-      ".menu-content .nav-link"
-    )
     const fadeTargets = root.querySelectorAll<HTMLElement>("[data-menu-fade]")
     const menuButton = root.querySelector<HTMLElement>(".nav-close-btn")
     const menuButtonTexts = menuButton?.querySelectorAll("p")
@@ -206,9 +204,9 @@ export function SterlingGateKineticNavigation({
     if (isMenuOpen) {
       navWrap!.setAttribute("data-nav", "open")
 
-      /* Drop stale GSAP props (opacity/transform) left by killed timelines or Strict Mode */
-      if (menuLinks.length) {
-        gsap.set(menuLinks, { clearProps: "opacity,transform" })
+      /* Drop stale GSAP props on every fade target (nav rows + footer) */
+      if (fadeTargets.length) {
+        gsap.set(fadeTargets, { clearProps: "opacity,transform" })
       }
 
       gsap.set(menu!, { xPercent: 120 })
@@ -216,7 +214,7 @@ export function SterlingGateKineticNavigation({
       if (overlay) gsap.set(overlay, { autoAlpha: 0 })
       if (menuButtonTexts?.length) gsap.set(menuButtonTexts, { yPercent: 0 })
       if (menuButtonIcon) gsap.set(menuButtonIcon, { rotate: 0 })
-      if (fadeTargets.length) gsap.set(fadeTargets, { autoAlpha: 0, yPercent: 28 })
+      if (fadeTargets.length) gsap.set(fadeTargets, { autoAlpha: 0, yPercent: 20 })
 
       const t0 = 0
       tl.set(navWrap!, { display: "block" }, t0)
@@ -269,14 +267,14 @@ export function SterlingGateKineticNavigation({
       if (fadeTargets.length) {
         tl.fromTo(
           fadeTargets,
-          { autoAlpha: 0, yPercent: 28 },
+          { autoAlpha: 0, yPercent: 20 },
           {
             autoAlpha: 1,
             yPercent: 0,
-            stagger: 0.035,
+            stagger: 0.04,
             ease: easeMenuIn,
-            duration: 0.4,
-            clearProps: "all",
+            duration: 0.38,
+            clearProps: "opacity,transform",
           },
           afterBackdrop
         )
@@ -573,11 +571,15 @@ export function SterlingGateKineticNavigation({
                       key={item.href}
                       className="menu-list-item"
                       data-shape={shape}
+                      data-menu-fade
                     >
                       <Link
                         href={item.href}
                         className="nav-link sg-w-inline-block"
-                        onClick={closeMenu}
+                        onClick={() => {
+                          posthog.capture("nav_link_clicked", { label: item.label, href: item.href })
+                          closeMenu()
+                        }}
                       >
                         <span className="nav-link-index">{padIndex(i + 1)}</span>
                         <p className="nav-link-text">{item.label}</p>
@@ -608,12 +610,23 @@ export function SterlingGateKineticNavigation({
                 <ThemeToggle className="size-10 hover:bg-muted/80" />
               </div>
               <div className="menu-footer-row">
-                <span className="menu-footer-label">Get in touch</span>
+                <span className="menu-footer-label">Email</span>
                 <a
                   href={`mailto:${siteConfig.contact.email}`}
                   className="menu-footer-value"
                 >
                   {siteConfig.contact.email}
+                </a>
+              </div>
+              <div className="menu-footer-row">
+                <span className="menu-footer-label">Phone</span>
+                <a
+                  href={`tel:${siteConfig.contact.phone.replace(/\s/g, "")}`}
+                  className="menu-footer-value inline-flex items-center gap-2"
+                  onClick={closeMenu}
+                >
+                  <Phone className="size-4 shrink-0" weight="fill" aria-hidden />
+                  {siteConfig.contact.phone}
                 </a>
               </div>
               <div className="menu-footer-row">

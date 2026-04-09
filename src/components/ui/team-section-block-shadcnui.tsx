@@ -162,7 +162,7 @@ export function SoundFamiliarShowcase({ items, className }: SoundFamiliarShowcas
             Whether you&apos;re on a DIY template, a five-year-old redesign, or no site
             at all, the pattern is the same: trust leaks before you get a chance to
             pitch. If any of this hits home, you&apos;re who Scalr is for — new
-            builds and full redesigns, with clear packages from $699 NZD.
+            builds and full redesigns, with clear packages from $999 NZD.
           </p>
         </motion.div>
 

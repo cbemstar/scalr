@@ -45,6 +45,21 @@ export function PricingSection() {
               Every package shows the one-time build cost and the optional monthly
               hosting fee side by side — no toggles, no surprises.
             </p>
+            <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
+              <a
+                href={siteConfig.heroStat.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-primary"
+                title={siteConfig.heroStat.titleAttr}
+              >
+                {siteConfig.heroStat.linkLabel}
+              </a>{" "}
+              reports that nearly half of NZ businesses don&apos;t have a website,
+              while most consumers still see a website as the main way to engage
+              with a business. Fixed scopes and prices are for owners who want to
+              close that gap without a quoting runaround.
+            </p>
           </div>
         </FadeIn>
 

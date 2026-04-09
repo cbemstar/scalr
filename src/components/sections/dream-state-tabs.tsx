@@ -17,14 +17,29 @@ function formatStep(value: number) {
   return String(value).padStart(2, "0")
 }
 
+/** px — drag distance to commit a slide */
+const SWIPE_OFFSET_THRESHOLD = 52
+/** px/ms — flick velocity to commit a slide */
+const SWIPE_VELOCITY_THRESHOLD = 0.28
+
 function DreamOutcomeCard({
   outcome,
   index,
   activeIndex,
+  totalOutcomes,
+  onSwipeNext,
+  onSwipePrev,
+  canSwipeNext,
+  canSwipePrev,
 }: {
   outcome: DreamOutcome
   index: number
   activeIndex: number
+  totalOutcomes: number
+  onSwipeNext: () => void
+  onSwipePrev: () => void
+  canSwipeNext: boolean
+  canSwipePrev: boolean
 }) {
   const offset = index - activeIndex
   const isActive = offset === 0
@@ -33,10 +48,41 @@ function DreamOutcomeCard({
   return (
     <motion.article
       aria-hidden={!isActive}
+      aria-label={
+        isActive
+          ? `Outcome ${index + 1} of ${totalOutcomes}. Drag or swipe horizontally to see other outcomes.`
+          : undefined
+      }
+      drag={isActive ? "x" : false}
+      dragConstraints={{ left: -120, right: 120 }}
+      dragElastic={0.14}
+      dragDirectionLock
+      dragSnapToOrigin
+      onDragEnd={
+        isActive
+          ? (_, info) => {
+              const { offset: dragOffset, velocity } = info
+              const ox = dragOffset.x
+              const vx = velocity.x
+              if (
+                canSwipeNext &&
+                (ox < -SWIPE_OFFSET_THRESHOLD || vx < -SWIPE_VELOCITY_THRESHOLD)
+              ) {
+                onSwipeNext()
+              } else if (
+                canSwipePrev &&
+                (ox > SWIPE_OFFSET_THRESHOLD || vx > SWIPE_VELOCITY_THRESHOLD)
+              ) {
+                onSwipePrev()
+              }
+            }
+          : undefined
+      }
       className={cn(
         "absolute inset-y-0 left-0 flex w-full max-w-[34rem] origin-center flex-col justify-between overflow-y-auto overflow-x-hidden rounded-[1.5rem] border p-5 shadow-[0_32px_80px_var(--dream-shadow-deep)] backdrop-blur-xl sm:rounded-[2rem] sm:p-8 lg:p-10",
         "border-[color:var(--dream-border-soft)] bg-[color:var(--dream-surface-card)]",
-        "shadow-[inset_0_1px_0_0_var(--dream-border-soft)]"
+        "shadow-[inset_0_1px_0_0_var(--dream-border-soft)]",
+        isActive && "cursor-grab active:cursor-grabbing"
       )}
       initial={false}
       animate={{
@@ -193,9 +239,19 @@ export function DreamStateTabs({
             </div>
           </div>
 
-          <div className="relative min-h-[30rem] overflow-hidden rounded-[1.25rem] border border-[color:var(--dream-border-soft)] bg-[color:var(--dream-surface-stack)] p-3 sm:min-h-[32rem] sm:rounded-[1.75rem] sm:p-5 lg:min-h-[36rem]">
+          <div
+            className="relative min-h-[30rem] overflow-hidden rounded-[1.25rem] border border-[color:var(--dream-border-soft)] bg-[color:var(--dream-surface-stack)] p-3 sm:min-h-[32rem] sm:rounded-[1.75rem] sm:p-5 lg:min-h-[36rem]"
+            role="region"
+            aria-roledescription="carousel"
+            aria-label="Outcome cards — drag or swipe to change"
+          >
             <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-[color:var(--dream-stack-vignette)] to-transparent" />
             <div className="pointer-events-none absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[color:var(--dream-stack-vignette)] to-transparent" />
+
+            <p className="sr-only">
+              You can drag the front card left or right, or swipe on a touchscreen, to move between
+              outcomes. Previous and next buttons are also available.
+            </p>
 
             <div className="relative h-full">
               {outcomes.map((outcome, index) => (
@@ -204,6 +260,11 @@ export function DreamStateTabs({
                   outcome={outcome}
                   index={index}
                   activeIndex={activeIndex}
+                  totalOutcomes={outcomes.length}
+                  onSwipeNext={handleNext}
+                  onSwipePrev={handlePrev}
+                  canSwipeNext={activeIndex < lastIndex}
+                  canSwipePrev={activeIndex > 0}
                 />
               ))}
             </div>

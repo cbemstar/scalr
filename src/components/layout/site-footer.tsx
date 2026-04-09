@@ -3,9 +3,10 @@
 import React, { useLayoutEffect, useRef, useState } from "react"
 import Link from "next/link"
 import { motion, useReducedMotion } from "motion/react"
+import posthog from "posthog-js"
 import { cn } from "@/lib/utils"
 import { siteConfig } from "@/config/site"
-import { Mail, CalendarDays, MapPin } from "lucide-react"
+import { Mail, MapPin, Phone } from "lucide-react"
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
@@ -17,7 +18,7 @@ const linkGroups = [
   {
     label: "Services",
     links: [
-      { title: "Landing Page — $699",  href: "#pricing" },
+      { title: "Landing Page — $999",  href: "#pricing" },
       { title: "Starter — $1,499",     href: "#pricing" },
       { title: "Standard — $2,500",    href: "#pricing" },
       { title: "Premium — $4,500",     href: "#pricing" },
@@ -25,11 +26,15 @@ const linkGroups = [
     ],
   },
   {
-    label: "Get in touch",
+    label: "Contact",
     links: [
-      { title: siteConfig.contact.email,    href: `mailto:${siteConfig.contact.email}`, icon: Mail },
-      { title: "Get in touch",             href: "#contact",                             icon: CalendarDays },
-      { title: siteConfig.contact.location, href: "#contact",                            icon: MapPin },
+      { title: siteConfig.contact.email, href: `mailto:${siteConfig.contact.email}`, icon: Mail },
+      {
+        title: siteConfig.contact.phone,
+        href: `tel:${siteConfig.contact.phone.replace(/\s/g, "")}`,
+        icon: Phone,
+      },
+      { title: siteConfig.contact.location, href: "#contact", icon: MapPin },
     ],
   },
 ]
@@ -145,6 +150,7 @@ export function SiteFooter({ className }: { className?: string }) {
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={title}
+                      onClick={() => posthog.capture("linkedin_clicked", { source: "footer" })}
                       className="flex size-8 items-center justify-center rounded-lg border border-border/70 bg-muted/30 text-muted-foreground transition-colors hover:border-primary/30 hover:bg-primary/5 hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary/30"
                     >
                       {svg}
@@ -163,10 +169,20 @@ export function SiteFooter({ className }: { className?: string }) {
                     <ul className="space-y-2">
                       {group.links.map((link) => {
                         const Icon = (link as { icon?: React.ComponentType<{ className?: string }> }).icon ?? null
+                        const handleClick = () => {
+                          if (link.href.startsWith("mailto:")) {
+                            posthog.capture("contact_email_clicked", { source: "footer" })
+                          } else if (link.href.startsWith("tel:")) {
+                            posthog.capture("contact_phone_clicked", { source: "footer" })
+                          } else if (group.label === "Services") {
+                            posthog.capture("footer_service_link_clicked", { label: link.title })
+                          }
+                        }
                         return (
                           <li key={link.title}>
                             <a
                               href={link.href}
+                              onClick={handleClick}
                               className="inline-flex items-center gap-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-primary/25"
                             >
                               {Icon && <Icon className="size-3.5 shrink-0 text-primary/60" />}

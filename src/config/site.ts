@@ -9,7 +9,7 @@ export const siteConfig = {
   name: "Scalr",
   tagline: "Websites That Bring In Customers",
   description:
-    "Affordable websites for new cafés, tradies, barbers, and local shops in Christchurch. Built by a marketer, not a big agency. From $699 NZD.",
+    "Affordable websites for new cafés, tradies, barbers, and local shops in Christchurch. Built by a marketer, not a big agency. From $999 NZD.",
 
   /** Hero kicker (single line) */
   heroKicker: "Redesigns & new builds",
@@ -18,12 +18,40 @@ export const siteConfig = {
    * Stat in hero — InternetNZ/Yabble 2025 (.nz consumers and businesses research).
    * @see https://internetnz.nz/dotnz-research/2025-nz-consumers-and-businesses-research/
    */
+  /** Citation link shared by pricing + trust section */
   heroStat: {
     url: "https://internetnz.nz/dotnz-research/2025-nz-consumers-and-businesses-research/",
-    /** Visible link text — full study title in titleAttr for hover/tooltip. */
     linkLabel: "InternetNZ (2025)",
     titleAttr:
       "2025 .nz consumers and businesses research — Yabble survey of 750 NZ businesses, commissioned by InternetNZ",
+  },
+
+  /**
+   * Trust / research strip (below hero) — InternetNZ/Yabble 2025 findings.
+   * @see https://internetnz.nz/dotnz-research/2025-nz-consumers-and-businesses-research/
+   */
+  trustSection: {
+    kicker: "NZ reality check",
+    title: "Customers decide on trust first",
+    lead: "National research — not a sales pitch.",
+    primaryBeforeLink:
+      "Most people still use a website to decide if you're trustworthy — yet nearly half of NZ businesses don't have one, according to ",
+    primaryAfterLink:
+      ". Clear packages so getting online isn't a guessing game.",
+    supporting: [
+      {
+        eyebrow: "Sole traders",
+        headline: "4 in 10",
+        body: "have a website — many small operators are still only on socials or the phone book.",
+      },
+      {
+        eyebrow: "Consumers",
+        headline: "3 in 4",
+        body: "say a website is the most important way to engage with a business — ahead of social or email.",
+      },
+    ],
+    attributionName: "InternetNZ · Yabble",
+    attributionDetail: "750 NZ businesses · Aug 2025",
   },
 
   /** Hero H1 — lines after “Websites that …” (rotate; keep sentence case) */
@@ -41,14 +69,14 @@ export const siteConfig = {
    * Replace `slideshow[].src` with `/images/your-file.webp` when you add brand photography to `public/`.
    */
   heroCrisp: {
-    /** Short line — who + differentiation (conversion-minded, not “agency”) */
-    kicker: "Christchurch · marketer-led builds",
+    /** Short line — differentiation (conversion-minded, not “agency”) */
+    kicker: "Marketer-led builds",
     /** Aligns with site tagline; answers “what do I get?” for local SMB search intent */
     headline: "Websites that bring in customers",
     lead:
-      "New sites and redesigns for cafés, tradies, barbers, and local shops. Clear packages from $699 NZD.",
+      "New sites and redesigns for cafés, tradies, barbers, and local shops. Clear packages from $999 NZD.",
     /** One scannable trust line instead of chips — saves vertical space in the hero card */
-    trustLine: "From $699 NZD · typical delivery 1–2 weeks · goals before pixels",
+    trustLine: "From $999 NZD · typical delivery 1–2 weeks · goals before pixels",
     note: "Clear reply within 24 hours. No pressure.",
     /**
      * Verified 200 from images.unsplash.com. The first image is the settled hero
@@ -93,7 +121,7 @@ export const siteConfig = {
     },
     utilityLinks: [
       { label: "See Recent Work", href: "#portfolio" },
-      { label: "Email Us", href: "mailto:hello@scalr.nz" },
+      { label: "Email Us", href: "mailto:karan@scalr.co.nz" },
     ] as const,
   },
 
@@ -102,10 +130,9 @@ export const siteConfig = {
 
   // ─── Contact ─────────────────────────────────────────────────────────────────
   contact: {
-    email: "hello@scalr.nz",
-    phone: "+64 21 000 0000", // update
+    email: "karan@scalr.co.nz",
+    phone: "+64 28 851 30071",
     location: "Christchurch, New Zealand",
-    calendarUrl: "https://cal.com/your-link", // Calendly / Cal.com link
   },
 
   // ─── Packages ────────────────────────────────────────────────────────────────
@@ -113,7 +140,7 @@ export const siteConfig = {
     {
       id: "landing",
       name: "Landing Page",
-      price: 699,
+      price: 999,
       currency: "NZD",
       tagline: "Your first step online — a single conversion-focused page",
       deliveryDays: "1 week",

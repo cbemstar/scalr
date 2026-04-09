@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useCallback } from "react"
+import { useState, useCallback, useRef } from "react"
+import posthog from "posthog-js"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, ArrowRight, Check, Loader2, Phone } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -71,6 +72,7 @@ type FormData = {
   copywritingSupport: string
   timeline: string
   currentSite: string
+  websiteUrl: string
   name: string
   email: string
   phone: string
@@ -85,6 +87,7 @@ const INITIAL_DATA: FormData = {
   copywritingSupport: "",
   timeline: "",
   currentSite: "",
+  websiteUrl: "",
   name: "",
   email: "",
   phone: "",
@@ -167,16 +170,32 @@ const slideVariants = {
   exit: (dir: number) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
 }
 
+const STEP_NAMES = [
+  "business_type",
+  "package",
+  "discovery",
+  "project_details",
+  "contact",
+] as const
+
 export function MultistepInquiryForm({ className }: { className?: string }) {
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState(1)
   const [data, setData] = useState<FormData>(INITIAL_DATA)
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const formStartedRef = useRef(false)
 
   const update = useCallback(
     <K extends keyof FormData>(field: K, value: FormData[K]) => {
-      setData((prev) => ({ ...prev, [field]: value }))
+      setData((prev) => {
+        if (!formStartedRef.current) {
+          formStartedRef.current = true
+          posthog.capture("inquiry_form_started")
+        }
+        return { ...prev, [field]: value }
+      })
     },
     []
   )
@@ -205,6 +224,10 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
   const goNext = () => {
     if (!canAdvance) return
     if (step < STEP_COUNT - 1) {
+      posthog.capture("inquiry_form_step_completed", {
+        step_number: step,
+        step_name: STEP_NAMES[step],
+      })
       setDirection(1)
       setStep((s) => s + 1)
     }
@@ -220,10 +243,36 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
   const handleSubmit = async () => {
     if (!canAdvance) return
     setSubmitting(true)
-    // Simulate form submission — wire up to your API route
-    await new Promise((r) => setTimeout(r, 1200))
-    setSubmitting(false)
-    setSubmitted(true)
+    setSubmitError(null)
+    posthog.capture("inquiry_form_submitted", {
+      business_type: data.businessType,
+      package_interest: data.packageInterest,
+      platform_preference: data.platformPreference,
+      timeline: data.timeline,
+      current_site: data.currentSite,
+    })
+    try {
+      const res = await fetch("/api/inquiry", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      })
+      const payload = (await res.json()) as { error?: string }
+      if (!res.ok) {
+        setSubmitError(
+          payload.error ??
+            "Something went wrong sending your details. Please try again."
+        )
+        return
+      }
+      setSubmitted(true)
+    } catch {
+      setSubmitError(
+        "Network error — check your connection and try again, or call us directly."
+      )
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   if (submitted) {
@@ -304,8 +353,10 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
               <StepProjectDetails
                 timeline={data.timeline}
                 currentSite={data.currentSite}
+                websiteUrl={data.websiteUrl}
                 onTimeline={(v) => update("timeline", v)}
                 onCurrentSite={(v) => update("currentSite", v)}
+                onWebsiteUrl={(v) => update("websiteUrl", v)}
               />
             )}
             {step === 4 && (
@@ -317,6 +368,12 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
           </motion.div>
         </AnimatePresence>
       </div>
+
+      {submitError && step === STEP_COUNT - 1 && (
+        <p role="alert" className="mt-6 text-sm text-destructive">
+          {submitError}
+        </p>
+      )}
 
       <div className="mt-8 flex flex-col-reverse items-stretch justify-between gap-3 sm:flex-row sm:items-center">
         <Button
@@ -409,7 +466,7 @@ function StepPackage({
           Which package interests you?
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Pick the closest fit — we can always adjust on a call.
+          Pick the closest fit — we can always adjust when we talk.
         </p>
       </div>
       <div className="grid gap-2.5">
@@ -434,14 +491,20 @@ function StepPackage({
 function StepProjectDetails({
   timeline,
   currentSite,
+  websiteUrl,
   onTimeline,
   onCurrentSite,
+  onWebsiteUrl,
 }: {
   timeline: string
   currentSite: string
+  websiteUrl: string
   onTimeline: (v: string) => void
   onCurrentSite: (v: string) => void
+  onWebsiteUrl: (v: string) => void
 }) {
+  const showWebsiteUrl = currentSite !== "" && currentSite !== "none"
+
   return (
     <div className="space-y-6">
       <div>
@@ -478,12 +541,36 @@ function StepProjectDetails({
             <OptionCard
               key={opt.value}
               selected={currentSite === opt.value}
-              onClick={() => onCurrentSite(opt.value)}
+              onClick={() => {
+                onCurrentSite(opt.value)
+                if (opt.value === "none") onWebsiteUrl("")
+              }}
               label={opt.label}
             />
           ))}
         </div>
       </div>
+
+      {showWebsiteUrl && (
+        <div className="space-y-2">
+          <Label htmlFor="inquiry-website-url">
+            Current website URL{" "}
+            <span className="font-normal text-muted-foreground">(optional)</span>
+          </Label>
+          <Input
+            id="inquiry-website-url"
+            type="url"
+            inputMode="url"
+            autoComplete="url"
+            placeholder="https://yourbusiness.co.nz"
+            value={websiteUrl}
+            onChange={(e) => onWebsiteUrl(e.target.value)}
+          />
+          <p className="text-xs text-muted-foreground">
+            Paste your live site link if you have one — I&apos;ll review it before we talk.
+          </p>
+        </div>
+      )}
     </div>
   )
 }
@@ -614,7 +701,7 @@ function StepContact({
         <Input
           id="inquiry-phone"
           type="tel"
-          placeholder="+64 21 000 0000"
+          placeholder="+64 28 851 30071"
           value={data.phone}
           onChange={(e) => onChange("phone", e.target.value)}
         />

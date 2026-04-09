@@ -6,9 +6,9 @@ const steps: VercepFeatureItem[] = [
   {
     step: "01",
     icon: "phone",
-    title: "Book a Free Call",
+    title: "Get in touch",
     description:
-      "15 minutes. We look at your current situation, what you need, and which package fits. No pressure, no pitch.",
+      "A short chat by phone or email — your situation, what you need, and which package fits. No pressure, no pitch.",
   },
   {
     step: "02",
@@ -58,7 +58,7 @@ export function HowItWorksSection() {
 
         <FadeIn delay={0.1}>
           <p className="mt-12 max-w-2xl text-base text-muted-foreground md:text-lg">
-            From first call to live website:{" "}
+            From first conversation to live website:{" "}
             <span className="font-semibold text-foreground">2 weeks. Not months.</span>
           </p>
         </FadeIn>
