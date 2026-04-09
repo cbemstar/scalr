@@ -52,7 +52,7 @@ const faqItems = [
     id: "7",
     question: "Can I make changes to the site after launch?",
     answer:
-      "Yes. You get a training session showing you how to make basic content updates yourself. For anything beyond that — new pages, design changes, technical work — the care plans include a set amount of update time each month, or you can request ad-hoc support.",
+      "Yes. You get a training session showing you how to make basic content updates yourself. For anything beyond that — new pages, design changes, technical work — the care plans include a set amount of update time each month, or you can request ad-hoc support at $150/hour (1-hour minimum, billed in 30-minute increments).",
   },
   {
     id: "8",
