@@ -15,7 +15,7 @@ const pillars = [
   {
     icon: Eye,
     title: "Transparent pricing",
-    copy: "No quoting games. No surprise invoices. Three clear packages with everything included — published right here on this page.",
+    copy: "No quoting games. No surprise invoices. Standard-site packages and Shopify ecommerce tiers — everything we include is published on this page with a simple comparison.",
   },
 ]
 

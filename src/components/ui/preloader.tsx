@@ -7,7 +7,7 @@ import { siteConfig } from "@/config/site"
 
 const phrases = [
   { main: siteConfig.name, sub: null },
-  { main: "Websites from $999", sub: "one-time build · no hidden fees" },
+  { main: "Sites from $999 · Shopify from $6,499", sub: "full pricing on the page · no guessing" },
   { main: "Live in 1–2 weeks", sub: "typical timeline for most packages" },
   { main: "Built to convert", sub: "conversion-focused design" },
   { main: "Not just look good", sub: "performance + aesthetics" },

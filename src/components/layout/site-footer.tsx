@@ -5,7 +5,7 @@ import Link from "next/link"
 import { motion, useReducedMotion } from "motion/react"
 import posthog from "posthog-js"
 import { cn } from "@/lib/utils"
-import { siteConfig } from "@/config/site"
+import { getFooterPricingLinks, siteConfig } from "@/config/site"
 import { Mail, MapPin, Phone } from "lucide-react"
 
 // ─── Data ────────────────────────────────────────────────────────────────────
@@ -25,14 +25,8 @@ const linkGroups = [
     ],
   },
   {
-    label: "Services",
-    links: [
-      { title: "Landing Page — $999", href: "/#pricing" },
-      { title: "Starter — $1,499", href: "/#pricing" },
-      { title: "Standard — $2,500", href: "/#pricing" },
-      { title: "Premium — $4,500", href: "/#pricing" },
-      { title: "Care Plans", href: "/#pricing" },
-    ],
+    label: "Pricing",
+    links: getFooterPricingLinks(),
   },
   {
     label: "Contact",
@@ -183,8 +177,8 @@ export function SiteFooter({ className }: { className?: string }) {
                             posthog.capture("contact_email_clicked", { source: "footer" })
                           } else if (link.href.startsWith("tel:")) {
                             posthog.capture("contact_phone_clicked", { source: "footer" })
-                          } else if (group.label === "Services") {
-                            posthog.capture("footer_service_link_clicked", { label: link.title })
+                          } else if (group.label === "Pricing") {
+                            posthog.capture("footer_pricing_link_clicked", { label: link.title })
                           } else if (group.label === "Legal") {
                             posthog.capture("footer_legal_link_clicked", {
                               label: link.title,

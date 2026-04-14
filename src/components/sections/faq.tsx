@@ -28,7 +28,7 @@ const faqItems = [
     id: "3",
     question: "What technology do you build with?",
     answer:
-      "I build with React/Next.js for custom sites or Webflow for clients who want to manage their own content visually. Both options produce fast, mobile-responsive, secure websites. We'll discuss which platform fits your needs when we first talk — the build price is the same either way.",
+      "I build with React/Next.js for custom sites or Webflow for clients who want to manage their own content visually. For ecommerce I typically use Shopify (your Shopify subscription is separate from the build fee). All options produce fast, mobile-responsive, secure sites — we pick the right stack when we first talk. Custom/Webflow marketing-site build prices are listed as standard packages; Shopify stores have their own ecommerce tiers on the Pricing section.",
   },
   {
     id: "4",
@@ -77,7 +77,7 @@ const faqItems = [
     id: "11",
     question: "What's included in the care plans?",
     answer:
-      "Basic Care ($99/month): hosting, uptime monitoring, 30 minutes of updates. Growth Care ($199/month): everything in Basic + 1 hour of updates, monthly analytics report, SEO health check. Premium Care ($349/month): everything in Growth + 2 hours of work, monthly strategy call, SEO reporting.",
+      "Standard sites: Basic Care ($99/month) — hosting, uptime monitoring, 30 minutes of updates. Growth Care ($199/month) — everything in Basic + 1 hour of updates, monthly analytics report, SEO health check. Premium Care ($349/month) — everything in Growth + 2 hours of work, monthly strategy call, SEO reporting. Shopify: Commerce Light ($229/month), Commerce Growth ($329/month), Commerce Premium ($479/month) — theme tweaks, catalogue help, and troubleshooting; your Shopify plan is still paid to Shopify. See Pricing for the full lists.",
   },
 ]
 

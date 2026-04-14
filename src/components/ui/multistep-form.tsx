@@ -24,12 +24,20 @@ const BUSINESS_TYPES = [
   { value: "other", label: "Something else" },
 ] as const
 
-const PACKAGE_OPTIONS = siteConfig.packages.map((pkg) => ({
-  value: pkg.id,
-  label: pkg.name,
-  price: `$${pkg.price.toLocaleString()} NZD`,
-  description: pkg.tagline,
-}))
+const PACKAGE_OPTIONS = [
+  ...siteConfig.packages.map((pkg) => ({
+    value: `standard:${pkg.id}`,
+    label: `${pkg.name} (standard site)`,
+    price: `$${pkg.price.toLocaleString()} NZD`,
+    description: pkg.tagline,
+  })),
+  ...siteConfig.ecommercePackages.map((pkg) => ({
+    value: `shopify:${pkg.id}`,
+    label: `${pkg.name} (Shopify)`,
+    price: `$${pkg.price.toLocaleString()} NZD`,
+    description: pkg.tagline,
+  })),
+]
 
 const PLATFORM_OPTIONS = [
   { value: "webflow", label: "Webflow" },

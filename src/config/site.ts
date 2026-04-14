@@ -9,7 +9,7 @@ export const siteConfig = {
   name: "Scalr",
   tagline: "Websites That Bring In Customers",
   description:
-    "Affordable websites for new cafés, tradies, barbers, and local shops in Christchurch. Built by a marketer, not a big agency. From $999 NZD.",
+    "Affordable standard sites and Shopify ecommerce for cafés, tradies, barbers, and local shops in Christchurch. Standard sites from $999 NZD; Shopify builds from $6,499 NZD. Built by a marketer, not a big agency.",
 
   /** Hero kicker (single line) */
   heroKicker: "Redesigns & new builds",
@@ -74,10 +74,10 @@ export const siteConfig = {
     /** Aligns with site tagline; answers “what do I get?” for local SMB search intent */
     headline: "Websites that bring in customers",
     lead:
-      "New sites and redesigns for cafés, tradies, barbers, and local shops. Clear packages from $999 NZD.",
+      "New sites and redesigns for cafés, tradies, barbers, and local shops. Standard packages from $999 NZD; Shopify ecommerce from $6,499 NZD — everything is on the Pricing section.",
     /** One scannable trust line instead of chips — saves vertical space in the hero card */
     trustLine:
-      "From $999 NZD · about 1–4 weeks by package (see Pricing) · goals before pixels",
+      "From $999 NZD (standard sites) · Shopify from $6,499 NZD · about 1–6 weeks by package · goals before pixels",
     note: "Clear reply within 24 hours. No pressure.",
     /**
      * Verified 200 from images.unsplash.com. The first image is the settled hero
@@ -603,6 +603,32 @@ export function buildDeliveryTimelineFaqAnswer(): string {
     .map((p) => `${p.name}: about ${p.deliveryDays}`)
     .join(". ")
   return `${byPackage}. The biggest variable is how quickly you provide feedback and content — the faster you respond, the faster we launch.`
+}
+
+/**
+ * Footer “Pricing” links — derived from `packages` + `ecommercePackages` so titles
+ * stay in sync with the pricing section.
+ */
+export function getFooterPricingLinks(): { title: string; href: string }[] {
+  const fmt = (n: number) =>
+    new Intl.NumberFormat("en-NZ", {
+      style: "currency",
+      currency: "NZD",
+      maximumFractionDigits: 0,
+    }).format(n)
+
+  return [
+    { title: "Compare plans", href: "/#pricing" },
+    ...siteConfig.packages.map((p) => ({
+      title: `Standard · ${p.name} · ${fmt(p.price)}`,
+      href: "/#pricing",
+    })),
+    ...siteConfig.ecommercePackages.map((p) => ({
+      title: `Shopify · ${p.name} · ${fmt(p.price)}`,
+      href: "/#pricing",
+    })),
+    { title: "Care plans", href: "/#pricing" },
+  ]
 }
 
 export type Package = (typeof siteConfig.packages)[number];

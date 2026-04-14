@@ -57,7 +57,7 @@ export default function Home() {
         {/* Section 7: About — people buy from people */}
         <AboutSection />
 
-        {/* Section 8: Pricing — transparent 3-tier with Standard highlighted */}
+        {/* Section 8: Pricing — standard sites & ecommerce toggles; compare + care plans */}
         <PricingSection />
 
         {/* Section 9: FAQ — preempt every objection */}
