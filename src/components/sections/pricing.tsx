@@ -35,6 +35,7 @@ function toMarketingPlans(): InteractivePricingPlan[] {
     pages: pkg.pages,
     deliveryDays: pkg.deliveryDays,
     features: [...pkg.features],
+    comparison: pkg.comparison,
     paymentTerms: pkg.paymentTerms,
     cta: pkg.cta,
     href: "/#contact",
@@ -53,6 +54,7 @@ function toCommercePlans(): InteractivePricingPlan[] {
     pages: pkg.pages,
     deliveryDays: pkg.deliveryDays,
     features: [...pkg.features],
+    comparison: pkg.comparison,
     paymentTerms: pkg.paymentTerms,
     cta: pkg.cta,
     href: "/#contact",
@@ -86,13 +88,12 @@ export function PricingSection() {
               {commerceMode ? (
                 <>
                   Shopify packages pair a one-time build with optional monthly commerce care — same
-                  transparency as our marketing-site pricing. Your Shopify subscription is separate.
+                  transparency as standard sites. Your Shopify subscription is separate.
                 </>
               ) : (
                 <>
                   Every package shows the one-time build cost and the optional monthly hosting fee
-                  side by side — use the toggle to compare ecommerce when you&apos;re ready to sell
-                  online.
+                  side by side — flip to ecommerce when you&apos;re ready to sell products online.
                 </>
               )}
             </p>
@@ -119,7 +120,7 @@ export function PricingSection() {
               id="pricing-mode-label"
               className="text-center text-xs font-medium uppercase tracking-widest text-muted-foreground"
             >
-              Show prices for
+              Pricing for
             </p>
             <div
               className="flex w-full max-w-lg flex-wrap items-center justify-center gap-2 rounded-2xl border border-border/70 bg-muted/20 px-3 py-2.5 shadow-sm sm:gap-3 sm:px-4"
@@ -130,7 +131,7 @@ export function PricingSection() {
                 type="button"
                 onClick={() => {
                   setCommerceMode(false)
-                  posthog.capture("pricing_mode_changed", { mode: "marketing" })
+                  posthog.capture("pricing_mode_changed", { mode: "standard_sites" })
                 }}
                 className={cn(
                   "min-h-9 flex-1 rounded-lg px-3 py-2 text-center text-sm transition-colors sm:flex-none sm:px-4",
@@ -139,7 +140,7 @@ export function PricingSection() {
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                Marketing sites
+                Standard Sites
               </button>
               <Switch
                 id="pricing-mode"
@@ -147,21 +148,21 @@ export function PricingSection() {
                 onCheckedChange={(checked) => {
                   setCommerceMode(checked)
                   posthog.capture("pricing_mode_changed", {
-                    mode: checked ? "commerce" : "marketing",
+                    mode: checked ? "ecommerce" : "standard_sites",
                   })
                 }}
                 className="shrink-0"
                 aria-label={
                   commerceMode
-                    ? "Switch to marketing website pricing"
-                    : "Switch to Shopify ecommerce pricing"
+                    ? "Switch to Standard Sites pricing"
+                    : "Switch to Ecommerce pricing"
                 }
               />
               <button
                 type="button"
                 onClick={() => {
                   setCommerceMode(true)
-                  posthog.capture("pricing_mode_changed", { mode: "commerce" })
+                  posthog.capture("pricing_mode_changed", { mode: "ecommerce" })
                 }}
                 className={cn(
                   "min-h-9 flex-1 rounded-lg px-3 py-2 text-center text-sm transition-colors sm:flex-none sm:px-4",
@@ -170,7 +171,7 @@ export function PricingSection() {
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                Shopify ecommerce
+                Ecommerce
               </button>
             </div>
           </div>

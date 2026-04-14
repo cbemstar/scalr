@@ -147,6 +147,13 @@ export const siteConfig = {
       deliveryDays: "1 week",
       pages: "1 page",
       popular: false,
+      comparison: {
+        pickIf:
+          "You only need one strong page right now — like a digital poster with a clear way to get in touch.",
+        youGet:
+          "One live page that works on phones, with a contact form and the basics so people can find you on Google.",
+        afterLaunch: "One round of tweaks after you see it online, plus help connecting your domain name.",
+      },
       features: [
         "Single-page design built to convert",
         "Mobile-responsive layout",
@@ -168,6 +175,13 @@ export const siteConfig = {
       deliveryDays: "2 weeks",
       pages: "3 pages",
       popular: false,
+      comparison: {
+        pickIf:
+          "You want a proper small website — Home, About, and Contact — and you are not trying to sell products online here.",
+        youGet:
+          "Three clear pages with a contact form and the foundations so Google can list your business sensibly.",
+        afterLaunch: "A short handover call so you know how to ask for content changes down the track.",
+      },
       features: [
         "Home, About & Contact pages",
         "Mobile-responsive design",
@@ -190,6 +204,13 @@ export const siteConfig = {
       deliveryDays: "2–3 weeks",
       pages: "5–7 pages",
       popular: true,
+      comparison: {
+        pickIf:
+          "You want to change words yourself, show up better in local Google results, and see which enquiries come from the site.",
+        youGet:
+          "Roughly five to seven pages, a simple area you can edit yourself (like blog or portfolio posts), and tracking for forms and calls.",
+        afterLaunch: "A training session plus three months of Growth Care rolled in so you are not on your own.",
+      },
       features: [
         "Up to 7 custom pages",
         "Blog or portfolio CMS (you can update content yourself)",
@@ -212,6 +233,13 @@ export const siteConfig = {
       deliveryDays: "3–4 weeks",
       pages: "8–12 pages",
       popular: false,
+      comparison: {
+        pickIf:
+          "You want help with the words, a more polished feel, and a sharper look at how the site fits your marketing.",
+        youGet:
+          "More pages, help drafting copy, subtle motion where it helps, and a light marketing once-over — not just a skin on a template.",
+        afterLaunch: "Longer training, three months of Growth Care, and space for extra revision during the build.",
+      },
       features: [
         "Up to 12 fully custom pages",
         "Animations & micro-interactions",
@@ -229,7 +257,7 @@ export const siteConfig = {
   ],
 
   /**
-   * Shopify ecommerce builds — priced above marketing-site packages to reflect
+   * Shopify ecommerce builds — priced above standard site packages to reflect
    * catalog, checkout, shipping, and ops workload. Platform subscription is paid
    * by the client to Shopify; “commerce care” is your optional retainer.
    */
@@ -243,6 +271,14 @@ export const siteConfig = {
       deliveryDays: "2–3 weeks",
       pages: "~40 SKUs · core collections",
       popular: false,
+      comparison: {
+        pickIf:
+          "You are getting serious about selling online and need a real shop — but your range is still manageable.",
+        youGet:
+          "A branded Shopify store with a solid batch of products, working checkout, and New Zealand shipping and tax set up sensibly.",
+        afterLaunch:
+          "Launch training so you can add products yourself; optional monthly care if you want me on speed dial.",
+      },
       features: [
         "Shopify store setup on your account (guided)",
         "Premium theme customised to your brand",
@@ -267,6 +303,14 @@ export const siteConfig = {
       deliveryDays: "3–4 weeks",
       pages: "~120 SKUs · multi-collection",
       popular: true,
+      comparison: {
+        pickIf:
+          "You have a larger range, run sales or bundles, or want your store hooked up to email marketing properly.",
+        youGet:
+          "Room for many more products, smarter groupings, promos where they fit, and connections to email or SMS tools.",
+        afterLaunch:
+          "A longer strategy-style handover plus three months of Commerce Growth Care included in the build price.",
+      },
       features: [
         "Everything in Storefront scope, scaled to your catalog plan",
         "Up to ~120 SKUs · collection architecture & merchandising",
@@ -290,6 +334,13 @@ export const siteConfig = {
       deliveryDays: "4–5 weeks",
       pages: "Large catalog · multi-channel",
       popular: false,
+      comparison: {
+        pickIf:
+          "Wholesale-style pricing, a big catalog, more than one sales channel, or stock that has to stay in sync matters to you.",
+        youGet:
+          "Tighter structure for lots of products, stronger rules for who sees what price, and harder testing before launch.",
+        afterLaunch: "Priority support while we build, plus three months of Scale Care so rollout is not chaotic.",
+      },
       features: [
         "IA & filtering tuned for larger inventories",
         "B2B / wholesale pricing rules (within standard Shopify)",
@@ -312,6 +363,14 @@ export const siteConfig = {
       deliveryDays: "5–6 weeks",
       pages: "Integrations-first · custom scope",
       popular: false,
+      comparison: {
+        pickIf:
+          "You already know you need heavy custom work, unusual integrations, or something that does not fit a neat box.",
+        youGet:
+          "A written scope before we start — custom sections, serious integrations, and checkout decisions documented for your team.",
+        afterLaunch:
+          "Premium care included after launch; anything outside the signed scope gets a separate quote so bills stay predictable.",
+      },
       features: [
         "Advanced theme work & bespoke sections (per brief)",
         "Deep integrations: subscriptions, ERP, or custom apps (scoped)",

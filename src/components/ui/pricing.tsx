@@ -150,6 +150,15 @@ function InteractiveStarfield({
   )
 }
 
+export type PlanComparisonCopy = {
+  /** Plain-English — who this package is for */
+  pickIf: string
+  /** Plain-English — what they walk away with */
+  youGet: string
+  /** Plain-English — support and what happens after go-live */
+  afterLaunch: string
+}
+
 export type InteractivePricingPlan = {
   /** Stable key when switching between price books */
   id?: string
@@ -160,6 +169,8 @@ export type InteractivePricingPlan = {
   pages: string
   deliveryDays: string
   features: string[]
+  /** Short sentences for the main comparison — avoids long checkmark lists */
+  comparison: PlanComparisonCopy
   paymentTerms: string
   cta: string
   href: string
@@ -195,20 +206,35 @@ function orderedUnionFeatures(plans: InteractivePricingPlan[]): string[] {
   return order
 }
 
+function comparisonRowTitles(priceBook: "marketing" | "commerce"): PlanComparisonCopy {
+  if (priceBook === "commerce") {
+    return {
+      pickIf: "Pick this if…",
+      youGet: "When we're done, your shop can…",
+      afterLaunch: "After launch…",
+    }
+  }
+  return {
+    pickIf: "Pick this if…",
+    youGet: "When we're done, you have…",
+    afterLaunch: "After launch…",
+  }
+}
+
 function PlanComparisonMobileCards({
   plans,
   monthlyRowLabel,
+  rowTitles,
 }: {
   plans: InteractivePricingPlan[]
   monthlyRowLabel: string
+  rowTitles: PlanComparisonCopy
 }) {
-  const featureRows = useMemo(() => orderedUnionFeatures(plans), [plans])
-
   return (
     <div className="flex flex-col gap-4" role="list">
       <p className="sr-only">
-        Each plan is listed in its own card. Compare build price, monthly care, and included items without
-        horizontal scrolling.
+        Each plan is listed in its own card. Compare prices, plain-English fit, then open the technical
+        checklist if you need it.
       </p>
       {plans.map((plan) => (
         <div
@@ -237,7 +263,7 @@ function PlanComparisonMobileCards({
               <dd className="font-mono tabular-nums text-foreground">{nzd.format(plan.monthlyPrice)}</dd>
             </div>
             <div className="flex items-baseline justify-between gap-3 py-2.5">
-              <dt className="text-foreground">Scope</dt>
+              <dt className="text-foreground">Size (rough guide)</dt>
               <dd className="text-right text-foreground">{plan.pages}</dd>
             </div>
             <div className="flex items-baseline justify-between gap-3 py-2.5">
@@ -249,62 +275,55 @@ function PlanComparisonMobileCards({
               <dd className="text-xs leading-snug text-muted-foreground">{plan.paymentTerms || "—"}</dd>
             </div>
           </dl>
-          <p className="mt-4 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-            Included in this package
-          </p>
-          <ul className="mt-2 space-y-2">
-            {featureRows.map((feature) => {
-              const included = plan.features.includes(feature)
-              return (
-                <li key={feature} className="flex items-start gap-2.5 text-sm leading-snug">
-                  {included ? (
-                    <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
-                  ) : (
-                    <span
-                      className="mt-0.5 inline-flex w-4 shrink-0 justify-center text-muted-foreground/45"
-                      aria-hidden
-                    >
-                      —
-                    </span>
-                  )}
-                  <span className={cn(!included && "text-muted-foreground/75")}>{feature}</span>
-                </li>
-              )
-            })}
-          </ul>
+          <div className="mt-4 space-y-3 border-t border-border/50 pt-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">{rowTitles.pickIf}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-foreground">{plan.comparison.pickIf}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">{rowTitles.youGet}</p>
+              <p className="mt-1.5 text-sm leading-relaxed text-foreground">{plan.comparison.youGet}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-primary">
+                {rowTitles.afterLaunch}
+              </p>
+              <p className="mt-1.5 text-sm leading-relaxed text-foreground">{plan.comparison.afterLaunch}</p>
+            </div>
+          </div>
         </div>
       ))}
     </div>
   )
 }
 
-function PlanComparisonTable({
+function PlanComparisonSimpleTable({
   plans,
   monthlyRowLabel,
+  rowTitles,
 }: {
   plans: InteractivePricingPlan[]
   monthlyRowLabel: string
+  rowTitles: PlanComparisonCopy
 }) {
-  const featureRows = useMemo(() => orderedUnionFeatures(plans), [plans])
-
   return (
     <div className="isolate overflow-x-auto overscroll-x-contain rounded-xl border border-border/70 bg-muted/10 [-webkit-overflow-scrolling:touch]">
       <table className="w-full min-w-[36rem] border-collapse text-left text-xs sm:text-sm">
-        <caption className="sr-only">Comparison of build packages and included items</caption>
+        <caption className="sr-only">Compare plans using plain language, then open the checklist for details</caption>
         <thead>
           <tr className="border-b border-border/80 bg-muted/40">
             <th
               scope="col"
               className="sticky left-0 z-20 min-w-[10rem] border-r border-border/60 bg-muted/40 px-3 py-3 text-left font-semibold text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.35)]"
             >
-              Item
+              Topic
             </th>
             {plans.map((plan) => (
               <th
                 key={plan.id ?? plan.name}
                 scope="col"
                 className={cn(
-                  "px-3 py-3 text-center font-heading font-semibold text-primary",
+                  "min-w-[11rem] px-3 py-3 text-center font-heading font-semibold text-primary",
                   plan.isPopular && "bg-primary/5 text-primary"
                 )}
               >
@@ -350,10 +369,10 @@ function PlanComparisonTable({
               scope="row"
               className="sticky left-0 z-20 border-r border-border/60 bg-background/95 px-3 py-2.5 text-left font-medium text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)]"
             >
-              Scope
+              Size (rough guide)
             </th>
             {plans.map((plan) => (
-              <td key={plan.id ?? plan.name} className="px-3 py-2.5 text-center">
+              <td key={plan.id ?? plan.name} className="px-3 py-2.5 text-center text-foreground">
                 {plan.pages}
               </td>
             ))}
@@ -366,7 +385,7 @@ function PlanComparisonTable({
               Typical timeline
             </th>
             {plans.map((plan) => (
-              <td key={plan.id ?? plan.name} className="px-3 py-2.5 text-center">
+              <td key={plan.id ?? plan.name} className="px-3 py-2.5 text-center text-foreground">
                 {plan.deliveryDays}
               </td>
             ))}
@@ -379,11 +398,95 @@ function PlanComparisonTable({
               Payment
             </th>
             {plans.map((plan) => (
-              <td key={plan.id ?? plan.name} className="max-w-[12rem] px-3 py-2.5 text-center text-xs leading-snug">
+              <td key={plan.id ?? plan.name} className="max-w-[13rem] px-3 py-2.5 text-center text-xs leading-snug text-foreground">
                 {plan.paymentTerms || "—"}
               </td>
             ))}
           </tr>
+          <tr className="border-b border-border/60 bg-primary/[0.03]">
+            <th
+              scope="row"
+              className="sticky left-0 z-20 align-top border-r border-border/60 bg-background/95 px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-primary shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)] sm:text-[11px]"
+            >
+              {rowTitles.pickIf}
+            </th>
+            {plans.map((plan) => (
+              <td
+                key={plan.id ?? plan.name}
+                className="px-3 py-2.5 text-left text-xs leading-relaxed text-foreground sm:text-sm"
+              >
+                {plan.comparison.pickIf}
+              </td>
+            ))}
+          </tr>
+          <tr className="border-b border-border/60 bg-primary/[0.03]">
+            <th
+              scope="row"
+              className="sticky left-0 z-20 align-top border-r border-border/60 bg-background/95 px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-primary shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)] sm:text-[11px]"
+            >
+              {rowTitles.youGet}
+            </th>
+            {plans.map((plan) => (
+              <td
+                key={plan.id ?? plan.name}
+                className="px-3 py-2.5 text-left text-xs leading-relaxed text-foreground sm:text-sm"
+              >
+                {plan.comparison.youGet}
+              </td>
+            ))}
+          </tr>
+          <tr className="border-b border-border/40 bg-primary/[0.03]">
+            <th
+              scope="row"
+              className="sticky left-0 z-20 align-top border-r border-border/60 bg-background/95 px-3 py-2.5 text-left text-xs font-semibold uppercase tracking-wide text-primary shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)] sm:text-[11px]"
+            >
+              {rowTitles.afterLaunch}
+            </th>
+            {plans.map((plan) => (
+              <td
+                key={plan.id ?? plan.name}
+                className="px-3 py-2.5 text-left text-xs leading-relaxed text-foreground sm:text-sm"
+              >
+                {plan.comparison.afterLaunch}
+              </td>
+            ))}
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function PlanComparisonFeatureMatrix({ plans }: { plans: InteractivePricingPlan[] }) {
+  const featureRows = useMemo(() => orderedUnionFeatures(plans), [plans])
+
+  return (
+    <div className="isolate overflow-x-auto overscroll-x-contain rounded-xl border border-border/70 bg-muted/5 [-webkit-overflow-scrolling:touch]">
+      <table className="w-full min-w-[36rem] border-collapse text-left text-xs sm:text-sm">
+        <caption className="sr-only">Detailed line-by-line checklist per plan</caption>
+        <thead>
+          <tr className="border-b border-border/80 bg-muted/40">
+            <th
+              scope="col"
+              className="sticky left-0 z-20 min-w-[10rem] border-r border-border/60 bg-muted/40 px-3 py-3 text-left font-semibold text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.12)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.35)]"
+            >
+              Line item
+            </th>
+            {plans.map((plan) => (
+              <th
+                key={plan.id ?? plan.name}
+                scope="col"
+                className={cn(
+                  "px-3 py-3 text-center font-heading font-semibold text-primary",
+                  plan.isPopular && "bg-primary/5 text-primary"
+                )}
+              >
+                {plan.name}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="text-muted-foreground">
           {featureRows.map((feature) => (
             <tr key={feature} className="border-b border-border/40 last:border-0">
               <th
@@ -420,6 +523,7 @@ export function InteractivePricing({
 }: InteractivePricingProps) {
   const isCommerce = priceBook === "commerce"
   const monthlyRowLabel = isCommerce ? "Commerce care / mo" : "Hosting & support / mo"
+  const comparisonLabels = useMemo(() => comparisonRowTitles(priceBook), [priceBook])
 
   const containerRef = useRef<HTMLDivElement>(null)
   const [mousePosition, setMousePosition] = useState<{
@@ -463,25 +567,44 @@ export function InteractivePricing({
         >
           <AccordionItem value="compare" className="border-0">
             <AccordionTrigger className="px-4 py-4 text-sm font-semibold hover:no-underline sm:px-5 sm:text-base">
-              Compare all plans in detail
+              How to pick a plan — simple comparison
             </AccordionTrigger>
             <AccordionContent className="px-4 pb-5 sm:px-5">
               <p className="mb-4 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                <span className="md:hidden">
-                  Each plan is expanded below — scroll to compare build price, monthly care, and inclusions
-                  without sideways scrolling.
-                </span>
-                <span className="hidden md:inline">
-                  Side-by-side view of build price, monthly care, scope, and every listed inclusion. Use it to
-                  see how packages differ before you reach out.
-                </span>
+                Start with the three plain-English rows (who it fits, what you get, what happens after launch).
+                Open the technical checklist only if you want every line item spelled out — most people do not
+                need it to choose.
               </p>
               <div className="md:hidden">
-                <PlanComparisonMobileCards plans={plans} monthlyRowLabel={monthlyRowLabel} />
+                <PlanComparisonMobileCards
+                  plans={plans}
+                  monthlyRowLabel={monthlyRowLabel}
+                  rowTitles={comparisonLabels}
+                />
               </div>
               <div className="hidden md:block">
-                <PlanComparisonTable plans={plans} monthlyRowLabel={monthlyRowLabel} />
+                <PlanComparisonSimpleTable
+                  plans={plans}
+                  monthlyRowLabel={monthlyRowLabel}
+                  rowTitles={comparisonLabels}
+                />
               </div>
+
+              <details className="group mt-6 rounded-xl border border-border/60 bg-muted/10">
+                <summary className="cursor-pointer list-none px-4 py-3 text-sm font-medium text-foreground [&::-webkit-details-marker]:hidden">
+                  <span className="flex items-center justify-between gap-2">
+                    Full technical checklist (line by line)
+                    <span className="text-xs font-normal text-muted-foreground group-open:hidden">Show</span>
+                    <span className="hidden text-xs font-normal text-muted-foreground group-open:inline">Hide</span>
+                  </span>
+                </summary>
+                <div className="border-t border-border/60 px-3 pb-4 pt-3 sm:px-4">
+                  <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+                    Same information as in a proposal — useful if you are comparing nitty-gritty inclusions.
+                  </p>
+                  <PlanComparisonFeatureMatrix plans={plans} />
+                </div>
+              </details>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
