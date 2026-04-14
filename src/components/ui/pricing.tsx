@@ -544,7 +544,7 @@ export function InteractivePricing({
     >
       <InteractiveStarfield mousePosition={mousePosition} containerRef={containerRef} />
       <div className="relative z-10 px-4 md:px-6">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 xl:items-stretch xl:gap-3">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 xl:items-stretch xl:gap-x-3 xl:gap-y-6">
           {plans.map((plan, index) => (
             <PricingCard
               key={plan.id ?? plan.name}
@@ -660,73 +660,85 @@ function PricingCardBody({
   const isCommerce = priceBook === "commerce"
   return (
     <>
-      <div className="flex min-h-[3rem] items-start justify-between gap-2">
-        <CardTitle className="font-heading text-lg font-semibold tracking-tight text-primary sm:text-xl">
-          {plan.name}
-        </CardTitle>
-        {badgeForPlan(plan) ?? (
-          <span className="invisible h-6 w-[5.5rem] shrink-0" aria-hidden />
-        )}
-      </div>
+      {/*
+        Row-aligned layout: fixed min-heights + line-clamp so all four columns share the same
+        horizontal “lanes” at xl; bottom block uses mt-auto so CTAs line up when cards stretch.
+      */}
+      <div className="flex min-h-0 flex-1 flex-col gap-5">
+        {/* Row 1: plan name + badge slot */}
+        <div className="flex min-h-[3.25rem] shrink-0 items-start justify-between gap-2">
+          <CardTitle className="font-heading text-lg font-semibold tracking-tight text-primary sm:text-xl">
+            {plan.name}
+          </CardTitle>
+          {badgeForPlan(plan) ?? (
+            <span className="invisible h-6 w-[5.5rem] shrink-0" aria-hidden />
+          )}
+        </div>
 
-      <div className="flex min-h-[4.5rem] flex-col justify-start gap-1.5 pt-1">
-        <span className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground/90">
-          {plan.pages} · {plan.deliveryDays}
-        </span>
-        <CardDescription className="text-pretty text-xs leading-snug text-muted-foreground sm:text-sm">
-          {plan.tagline}
-        </CardDescription>
-      </div>
-
-      <div className="flex min-h-[4.75rem] flex-col justify-end gap-0.5 border-b border-border/50 pb-3 sm:min-h-[5rem]">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Build cost
-        </span>
-        <div className="flex flex-wrap items-baseline gap-1">
-          <span className="font-mono text-2xl font-semibold tabular-nums text-foreground sm:text-3xl">
-            <NumberFlow
-              value={plan.buildPrice}
-              format={{
-                style: "currency",
-                currency: "NZD",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }}
-            />
+        {/* Row 2: scope · timeline + tagline (clamped so row height matches across cards) */}
+        <div className="flex min-h-[7.5rem] shrink-0 flex-col justify-start gap-1.5 sm:min-h-[7.75rem]">
+          <span className="shrink-0 text-[11px] font-medium uppercase tracking-wider text-muted-foreground/90">
+            {plan.pages} · {plan.deliveryDays}
           </span>
-          <span className="text-xs font-normal text-muted-foreground sm:text-sm">one-time</span>
+          <CardDescription
+            title={plan.tagline}
+            className="line-clamp-4 text-pretty text-xs leading-snug text-muted-foreground sm:text-sm"
+          >
+            {plan.tagline}
+          </CardDescription>
+        </div>
+
+        {/* Row 3: build */}
+        <div className="flex min-h-[5.25rem] shrink-0 flex-col justify-end gap-0.5 border-b border-border/50 pb-3">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            Build cost
+          </span>
+          <div className="flex flex-wrap items-baseline gap-1">
+            <span className="font-mono text-2xl font-semibold tabular-nums text-foreground sm:text-3xl">
+              <NumberFlow
+                value={plan.buildPrice}
+                format={{
+                  style: "currency",
+                  currency: "NZD",
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }}
+              />
+            </span>
+            <span className="text-xs font-normal text-muted-foreground sm:text-sm">one-time</span>
+          </div>
+        </div>
+
+        {/* Row 4: monthly care / hosting */}
+        <div className="flex min-h-[5rem] shrink-0 flex-col justify-end gap-0.5 pb-1">
+          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+            {isCommerce ? "Commerce care" : "Hosting & support"}
+          </span>
+          <div className="flex flex-wrap items-baseline gap-1">
+            <span className="font-mono text-xl font-semibold tabular-nums text-foreground sm:text-2xl">
+              <NumberFlow
+                value={plan.monthlyPrice}
+                format={{
+                  style: "currency",
+                  currency: "NZD",
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 0,
+                }}
+              />
+            </span>
+            <span className="text-xs text-muted-foreground sm:text-sm">
+              {isCommerce ? "/mo · Shopify plan separate" : "/mo · cancel anytime"}
+            </span>
+          </div>
         </div>
       </div>
 
-      <div className="flex min-h-[4.25rem] flex-col justify-end gap-0.5 pt-1 pb-3 sm:min-h-[4.5rem]">
-        <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          {isCommerce ? "Commerce care" : "Hosting & support"}
-        </span>
-        <div className="flex flex-wrap items-baseline gap-1">
-          <span className="font-mono text-xl font-semibold tabular-nums text-foreground sm:text-2xl">
-            <NumberFlow
-              value={plan.monthlyPrice}
-              format={{
-                style: "currency",
-                currency: "NZD",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0,
-              }}
-            />
-          </span>
-          <span className="text-xs text-muted-foreground sm:text-sm">
-            {isCommerce ? "/mo · Shopify plan separate" : "/mo · cancel anytime"}
-          </span>
-        </div>
-      </div>
-
-      <Separator className="my-1" />
-
-      <div className="flex min-h-[2.75rem] items-center pt-1">
+      <div className="mt-auto flex w-full min-w-0 shrink-0 flex-col gap-3 pt-1">
+        <Separator className="shrink-0" />
         <Button
           asChild
           variant={plan.isPopular ? "default" : "secondary"}
-          className="h-10 w-full text-sm"
+          className="h-10 w-full shrink-0 text-sm"
         >
           <Link
             href={plan.href}
@@ -760,7 +772,7 @@ function PricingCard({
   const cardInner = (
     <Card
       className={cn(
-        "relative flex h-full min-h-0 flex-col gap-4 gap-y-5 rounded-2xl p-5 shadow-none ring-0 sm:p-6",
+        "relative flex h-full min-h-0 flex-col rounded-2xl p-5 shadow-none ring-0 sm:p-6",
         plan.isPopular
           ? "border-0 bg-transparent"
           : "border border-border bg-card shadow-md ring-1 ring-foreground/5"
@@ -772,7 +784,7 @@ function PricingCard({
 
   const wrapped =
     plan.isPopular ? (
-      <ShineBorder borderWidth={2} duration={5} className="flex h-full min-h-0 flex-col">
+      <ShineBorder borderWidth={2} duration={5} className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col">
         {cardInner}
       </ShineBorder>
     ) : (

@@ -58,11 +58,11 @@ export function ShineBorder({
 }: ShineBorderProps) {
   return (
     <div
-      className={cn("relative isolate rounded-2xl", className)}
+      className={cn("relative isolate flex min-h-0 flex-col rounded-2xl", className)}
       style={{ padding: borderWidth }}
     >
       <AnimatedCardBorder duration={duration} />
-      <div className="relative z-[1] h-full overflow-hidden rounded-2xl bg-card">
+      <div className="relative z-[1] flex h-full min-h-0 flex-col overflow-hidden rounded-2xl bg-card">
         {children}
       </div>
     </div>
