@@ -228,6 +228,105 @@ export const siteConfig = {
     },
   ],
 
+  /**
+   * Shopify ecommerce builds — priced above marketing-site packages to reflect
+   * catalog, checkout, shipping, and ops workload. Platform subscription is paid
+   * by the client to Shopify; “commerce care” is your optional retainer.
+   */
+  ecommercePackages: [
+    {
+      id: "shopify-storefront",
+      name: "Storefront",
+      price: 6499,
+      currency: "NZD",
+      tagline: "Launch-ready Shopify — premium theme, catalog, and a checkout you trust",
+      deliveryDays: "2–3 weeks",
+      pages: "~40 SKUs · core collections",
+      popular: false,
+      features: [
+        "Shopify store setup on your account (guided)",
+        "Premium theme customised to your brand",
+        "Up to ~40 products · variants, imagery guidance",
+        "Collections, navigation & on-site search",
+        "NZ shipping zones · tax & policies (core scenarios)",
+        "Shopify Payments / checkout · test orders & handover doc",
+        "Google Analytics 4 + purchase events",
+        "Essential apps shortlist (reviews, etc.) — paid apps billed by vendors",
+        "Two revision rounds",
+        "45-minute launch training",
+      ],
+      paymentTerms: "50% to book · 50% before go-live",
+      cta: "Get in touch",
+    },
+    {
+      id: "shopify-growth",
+      name: "Growth",
+      price: 8999,
+      currency: "NZD",
+      tagline: "Merchandised for scale — larger catalog, promos, and marketing connections",
+      deliveryDays: "3–4 weeks",
+      pages: "~120 SKUs · multi-collection",
+      popular: true,
+      features: [
+        "Everything in Storefront scope, scaled to your catalog plan",
+        "Up to ~120 SKUs · collection architecture & merchandising",
+        "Discounts, bundles, or gift cards (within package scope)",
+        "Email or SMS app hook-up (e.g. Klaviyo / Mailchimp-ready)",
+        "Metafields for attributes & filtering (where needed)",
+        "Conversion tracking + Search Console",
+        "Three revision rounds",
+        "3 months Commerce Growth Care included",
+        "60-minute strategy + handover session",
+      ],
+      paymentTerms: "50% upfront · 25% at theme lock · 25% before launch",
+      cta: "Get in touch",
+    },
+    {
+      id: "shopify-scale",
+      name: "Scale",
+      price: 12499,
+      currency: "NZD",
+      tagline: "Complex catalog & ops — B2B-ready rules, channels, and stricter QA",
+      deliveryDays: "4–5 weeks",
+      pages: "Large catalog · multi-channel",
+      popular: false,
+      features: [
+        "IA & filtering tuned for larger inventories",
+        "B2B / wholesale pricing rules (within standard Shopify)",
+        "POS or multi-location basics aligned with online stock",
+        "Fulfilment or marketplace connectors (scoped in brief)",
+        "Performance pass on key templates (Core Web Vitals–aware)",
+        "Four revision rounds",
+        "3 months Commerce Scale Care included",
+        "Priority support window during build",
+      ],
+      paymentTerms: "40% to book · 30% at UAT · 30% before launch",
+      cta: "Get in touch",
+    },
+    {
+      id: "shopify-pro",
+      name: "Commerce Pro",
+      price: 16999,
+      currency: "NZD",
+      tagline: "Heavy customisation & integrations — scoped like a product, delivered with senior oversight",
+      deliveryDays: "5–6 weeks",
+      pages: "Integrations-first · custom scope",
+      popular: false,
+      features: [
+        "Advanced theme work & bespoke sections (per brief)",
+        "Deep integrations: subscriptions, ERP, or custom apps (scoped)",
+        "Checkout & app stack decisions documented for your team",
+        "CRO-oriented structure + measurement plan in build",
+        "Headless or checkout-edge work only if explicitly briefed",
+        "Three revision rounds + controlled change window",
+        "3 months Commerce Premium Care included",
+        "Out-of-scope work quoted separately — no surprises",
+      ],
+      paymentTerms: "Milestone schedule in proposal (typically 3–4 payments)",
+      cta: "Get in touch",
+    },
+  ],
+
   // ─── Platform Options ───────────────────────────────────────────────────────
   /** Webflow builds carry a platform hosting surcharge passed through at cost */
   platforms: {
@@ -244,6 +343,11 @@ export const siteConfig = {
         { name: "CMS", price: 29, currency: "USD", note: "Up to 150 pages + CMS, 2,000 items" },
         { name: "Business", price: 49, currency: "USD", note: "Up to 150 pages + CMS, 10,000 items" },
       ],
+    },
+    shopify: {
+      name: "Shopify",
+      hostingNote:
+        "Shopify bills your platform plan and transaction fees directly (pricing in USD on shopify.com/nz). Paid apps are extra and billed by each vendor — commerce care covers my time, not Shopify’s invoice.",
     },
   },
 
@@ -291,6 +395,50 @@ export const siteConfig = {
         "2 hours of work/month",
         "Monthly strategy call",
         "SEO reporting & recommendations",
+      ],
+    },
+  ],
+
+  /** Retainers for Shopify builds — higher than marketing-site care (ops + apps). */
+  ecommerceCarePlans: [
+    {
+      id: "commerce-light",
+      name: "Commerce Light",
+      price: 229,
+      currency: "NZD",
+      period: "month",
+      features: [
+        "Theme tweaks & troubleshooting",
+        "1 hour of catalogue / content work per month",
+        "App conflict checks (major updates)",
+        "Priority email support",
+      ],
+    },
+    {
+      id: "commerce-growth-care",
+      name: "Commerce Growth",
+      price: 329,
+      currency: "NZD",
+      period: "month",
+      popular: true,
+      features: [
+        "Everything in Commerce Light",
+        "2 hours of store work / month (products, promos, sections)",
+        "Quarterly health check (checkout, tracking, speed spot-check)",
+        "Seasonal merchandising recommendations (light)",
+      ],
+    },
+    {
+      id: "commerce-premium-care",
+      name: "Commerce Premium",
+      price: 479,
+      currency: "NZD",
+      period: "month",
+      features: [
+        "Everything in Commerce Growth",
+        "3 hours of work / month + escalation for urgent fixes",
+        "Monthly video or async strategy check-in",
+        "CRO & analytics review against your goals",
       ],
     },
   ],

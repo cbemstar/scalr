@@ -151,6 +151,8 @@ function InteractiveStarfield({
 }
 
 export type InteractivePricingPlan = {
+  /** Stable key when switching between price books */
+  id?: string
   name: string
   tagline: string
   buildPrice: number
@@ -167,6 +169,8 @@ export type InteractivePricingPlan = {
 
 export interface InteractivePricingProps {
   plans: InteractivePricingPlan[]
+  /** Marketing sites vs Shopify — adjusts labels (hosting vs commerce care). */
+  priceBook?: "marketing" | "commerce"
 }
 
 const nzd = new Intl.NumberFormat("en-NZ", {
@@ -191,18 +195,24 @@ function orderedUnionFeatures(plans: InteractivePricingPlan[]): string[] {
   return order
 }
 
-function PlanComparisonMobileCards({ plans }: { plans: InteractivePricingPlan[] }) {
+function PlanComparisonMobileCards({
+  plans,
+  monthlyRowLabel,
+}: {
+  plans: InteractivePricingPlan[]
+  monthlyRowLabel: string
+}) {
   const featureRows = useMemo(() => orderedUnionFeatures(plans), [plans])
 
   return (
     <div className="flex flex-col gap-4" role="list">
       <p className="sr-only">
-        Each plan is listed in its own card. Compare build price, hosting, and included items without
+        Each plan is listed in its own card. Compare build price, monthly care, and included items without
         horizontal scrolling.
       </p>
       {plans.map((plan) => (
         <div
-          key={plan.name}
+          key={plan.id ?? plan.name}
           role="listitem"
           className={cn(
             "rounded-xl border border-border/70 bg-background/90 p-4 shadow-sm",
@@ -223,7 +233,7 @@ function PlanComparisonMobileCards({ plans }: { plans: InteractivePricingPlan[] 
               <dd className="font-mono tabular-nums text-foreground">{nzd.format(plan.buildPrice)}</dd>
             </div>
             <div className="flex items-baseline justify-between gap-3 py-2.5">
-              <dt className="text-foreground">Hosting &amp; support / mo</dt>
+              <dt className="text-foreground">{monthlyRowLabel}</dt>
               <dd className="font-mono tabular-nums text-foreground">{nzd.format(plan.monthlyPrice)}</dd>
             </div>
             <div className="flex items-baseline justify-between gap-3 py-2.5">
@@ -268,7 +278,13 @@ function PlanComparisonMobileCards({ plans }: { plans: InteractivePricingPlan[] 
   )
 }
 
-function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
+function PlanComparisonTable({
+  plans,
+  monthlyRowLabel,
+}: {
+  plans: InteractivePricingPlan[]
+  monthlyRowLabel: string
+}) {
   const featureRows = useMemo(() => orderedUnionFeatures(plans), [plans])
 
   return (
@@ -285,7 +301,7 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
             </th>
             {plans.map((plan) => (
               <th
-                key={plan.name}
+                key={plan.id ?? plan.name}
                 scope="col"
                 className={cn(
                   "px-3 py-3 text-center font-heading font-semibold text-primary",
@@ -311,7 +327,7 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
               One-time build
             </th>
             {plans.map((plan) => (
-              <td key={plan.name} className="px-3 py-2.5 text-center font-mono tabular-nums text-foreground">
+              <td key={plan.id ?? plan.name} className="px-3 py-2.5 text-center font-mono tabular-nums text-foreground">
                 {nzd.format(plan.buildPrice)}
               </td>
             ))}
@@ -321,10 +337,10 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
               scope="row"
               className="sticky left-0 z-20 border-r border-border/60 bg-background/95 px-3 py-2.5 text-left font-medium text-foreground shadow-[4px_0_12px_-4px_rgba(0,0,0,0.08)] dark:shadow-[4px_0_12px_-4px_rgba(0,0,0,0.3)]"
             >
-              Hosting &amp; support / mo
+              {monthlyRowLabel}
             </th>
             {plans.map((plan) => (
-              <td key={plan.name} className="px-3 py-2.5 text-center font-mono tabular-nums text-foreground">
+              <td key={plan.id ?? plan.name} className="px-3 py-2.5 text-center font-mono tabular-nums text-foreground">
                 {nzd.format(plan.monthlyPrice)}
               </td>
             ))}
@@ -337,7 +353,7 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
               Scope
             </th>
             {plans.map((plan) => (
-              <td key={plan.name} className="px-3 py-2.5 text-center">
+              <td key={plan.id ?? plan.name} className="px-3 py-2.5 text-center">
                 {plan.pages}
               </td>
             ))}
@@ -350,7 +366,7 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
               Typical timeline
             </th>
             {plans.map((plan) => (
-              <td key={plan.name} className="px-3 py-2.5 text-center">
+              <td key={plan.id ?? plan.name} className="px-3 py-2.5 text-center">
                 {plan.deliveryDays}
               </td>
             ))}
@@ -363,7 +379,7 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
               Payment
             </th>
             {plans.map((plan) => (
-              <td key={plan.name} className="max-w-[12rem] px-3 py-2.5 text-center text-xs leading-snug">
+              <td key={plan.id ?? plan.name} className="max-w-[12rem] px-3 py-2.5 text-center text-xs leading-snug">
                 {plan.paymentTerms || "—"}
               </td>
             ))}
@@ -379,7 +395,7 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
               {plans.map((plan) => {
                 const included = plan.features.includes(feature)
                 return (
-                  <td key={plan.name} className="px-3 py-2 text-center">
+                  <td key={plan.id ?? plan.name} className="px-3 py-2 text-center">
                     {included ? (
                       <Check className="mx-auto size-4 text-primary" aria-label="Included" />
                     ) : (
@@ -398,7 +414,13 @@ function PlanComparisonTable({ plans }: { plans: InteractivePricingPlan[] }) {
   )
 }
 
-export function InteractivePricing({ plans }: InteractivePricingProps) {
+export function InteractivePricing({
+  plans,
+  priceBook = "marketing",
+}: InteractivePricingProps) {
+  const isCommerce = priceBook === "commerce"
+  const monthlyRowLabel = isCommerce ? "Commerce care / mo" : "Hosting & support / mo"
+
   const containerRef = useRef<HTMLDivElement>(null)
   const [mousePosition, setMousePosition] = useState<{
     x: number | null
@@ -420,7 +442,12 @@ export function InteractivePricing({ plans }: InteractivePricingProps) {
       <div className="relative z-10 px-4 md:px-6">
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 xl:items-stretch xl:gap-3">
           {plans.map((plan, index) => (
-            <PricingCard key={plan.name} plan={plan} index={index} />
+            <PricingCard
+              key={plan.id ?? plan.name}
+              plan={plan}
+              index={index}
+              priceBook={priceBook}
+            />
           ))}
         </div>
 
@@ -429,7 +456,9 @@ export function InteractivePricing({ plans }: InteractivePricingProps) {
           collapsible
           className="mt-8 rounded-2xl border border-border/70 bg-muted/15"
           onValueChange={(value) => {
-            if (value === "compare") posthog.capture("pricing_comparison_opened")
+            if (value === "compare") {
+              posthog.capture("pricing_comparison_opened", { price_book: priceBook })
+            }
           }}
         >
           <AccordionItem value="compare" className="border-0">
@@ -439,26 +468,33 @@ export function InteractivePricing({ plans }: InteractivePricingProps) {
             <AccordionContent className="px-4 pb-5 sm:px-5">
               <p className="mb-4 text-xs leading-relaxed text-muted-foreground sm:text-sm">
                 <span className="md:hidden">
-                  Each plan is expanded below — scroll to compare build price, hosting, and inclusions without
-                  sideways scrolling.
+                  Each plan is expanded below — scroll to compare build price, monthly care, and inclusions
+                  without sideways scrolling.
                 </span>
                 <span className="hidden md:inline">
-                  Side-by-side view of build price, hosting, scope, and every listed inclusion. Use it to see how
-                  packages differ before you reach out.
+                  Side-by-side view of build price, monthly care, scope, and every listed inclusion. Use it to
+                  see how packages differ before you reach out.
                 </span>
               </p>
               <div className="md:hidden">
-                <PlanComparisonMobileCards plans={plans} />
+                <PlanComparisonMobileCards plans={plans} monthlyRowLabel={monthlyRowLabel} />
               </div>
               <div className="hidden md:block">
-                <PlanComparisonTable plans={plans} />
+                <PlanComparisonTable plans={plans} monthlyRowLabel={monthlyRowLabel} />
               </div>
             </AccordionContent>
           </AccordionItem>
         </Accordion>
 
         <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">
-          All prices in NZD. Hosting is optional — cancel anytime.
+          {isCommerce ? (
+            <>
+              All prices in NZD. Commerce care is optional — cancel anytime. Your Shopify subscription,
+              transaction fees, and paid apps are paid directly to Shopify and app vendors.
+            </>
+          ) : (
+            <>All prices in NZD. Hosting is optional — cancel anytime.</>
+          )}
         </p>
       </div>
     </div>
@@ -491,7 +527,14 @@ function badgeForPlan(plan: InteractivePricingPlan) {
   return null
 }
 
-function PricingCardBody({ plan }: { plan: InteractivePricingPlan }) {
+function PricingCardBody({
+  plan,
+  priceBook,
+}: {
+  plan: InteractivePricingPlan
+  priceBook: "marketing" | "commerce"
+}) {
+  const isCommerce = priceBook === "commerce"
   return (
     <>
       <div className="flex min-h-[3rem] items-start justify-between gap-2">
@@ -534,7 +577,7 @@ function PricingCardBody({ plan }: { plan: InteractivePricingPlan }) {
 
       <div className="flex min-h-[4.25rem] flex-col justify-end gap-0.5 pt-1 pb-3 sm:min-h-[4.5rem]">
         <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-          Hosting & support
+          {isCommerce ? "Commerce care" : "Hosting & support"}
         </span>
         <div className="flex flex-wrap items-baseline gap-1">
           <span className="font-mono text-xl font-semibold tabular-nums text-foreground sm:text-2xl">
@@ -548,7 +591,9 @@ function PricingCardBody({ plan }: { plan: InteractivePricingPlan }) {
               }}
             />
           </span>
-          <span className="text-xs text-muted-foreground sm:text-sm">/mo · cancel anytime</span>
+          <span className="text-xs text-muted-foreground sm:text-sm">
+            {isCommerce ? "/mo · Shopify plan separate" : "/mo · cancel anytime"}
+          </span>
         </div>
       </div>
 
@@ -566,6 +611,7 @@ function PricingCardBody({ plan }: { plan: InteractivePricingPlan }) {
               posthog.capture("pricing_cta_clicked", {
                 plan_name: plan.name,
                 plan_price: plan.buildPrice,
+                price_book: priceBook,
               })
             }
           >
@@ -577,7 +623,15 @@ function PricingCardBody({ plan }: { plan: InteractivePricingPlan }) {
   )
 }
 
-function PricingCard({ plan, index }: { plan: InteractivePricingPlan; index: number }) {
+function PricingCard({
+  plan,
+  index,
+  priceBook,
+}: {
+  plan: InteractivePricingPlan
+  index: number
+  priceBook: "marketing" | "commerce"
+}) {
   const isXl = useMediaQuery("(min-width: 1280px)")
 
   const cardInner = (
@@ -589,7 +643,7 @@ function PricingCard({ plan, index }: { plan: InteractivePricingPlan; index: num
           : "border border-border bg-card shadow-md ring-1 ring-foreground/5"
       )}
     >
-      <PricingCardBody plan={plan} />
+      <PricingCardBody plan={plan} priceBook={priceBook} />
     </Card>
   )
 

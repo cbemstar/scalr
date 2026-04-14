@@ -1,12 +1,16 @@
 "use client"
 
 import Image from "next/image"
+import { useMemo, useState } from "react"
+import posthog from "posthog-js"
+
+import { FadeIn } from "@/components/common/fade-in"
 import { InteractivePricing } from "@/components/ui/pricing"
 import type { InteractivePricingPlan } from "@/components/ui/pricing"
-import { FadeIn } from "@/components/common/fade-in"
+import { Switch } from "@/components/ui/switch"
 import { siteConfig } from "@/config/site"
+import { cn } from "@/lib/utils"
 
-// Which hosting plan to suggest for each build package
 const HOSTING_PRICE: Record<string, number> = {
   landing: 99,
   starter: 99,
@@ -14,15 +18,23 @@ const HOSTING_PRICE: Record<string, number> = {
   premium: 349,
 }
 
-function toPlans(): InteractivePricingPlan[] {
+const ECOMMERCE_CARE_PRICE: Record<string, number> = {
+  "shopify-storefront": 249,
+  "shopify-growth": 349,
+  "shopify-scale": 449,
+  "shopify-pro": 549,
+}
+
+function toMarketingPlans(): InteractivePricingPlan[] {
   return siteConfig.packages.map((pkg) => ({
+    id: pkg.id,
     name: pkg.name,
     tagline: pkg.tagline,
     buildPrice: pkg.price,
     monthlyPrice: HOSTING_PRICE[pkg.id] ?? 99,
     pages: pkg.pages,
     deliveryDays: pkg.deliveryDays,
-    features: [...pkg.features], // show ALL features — transparency builds trust
+    features: [...pkg.features],
     paymentTerms: pkg.paymentTerms,
     cta: pkg.cta,
     href: "/#contact",
@@ -31,7 +43,36 @@ function toPlans(): InteractivePricingPlan[] {
   }))
 }
 
+function toCommercePlans(): InteractivePricingPlan[] {
+  return siteConfig.ecommercePackages.map((pkg) => ({
+    id: pkg.id,
+    name: pkg.name,
+    tagline: pkg.tagline,
+    buildPrice: pkg.price,
+    monthlyPrice: ECOMMERCE_CARE_PRICE[pkg.id] ?? 249,
+    pages: pkg.pages,
+    deliveryDays: pkg.deliveryDays,
+    features: [...pkg.features],
+    paymentTerms: pkg.paymentTerms,
+    cta: pkg.cta,
+    href: "/#contact",
+    isPopular: pkg.popular,
+    isSimplest: pkg.id === "shopify-storefront",
+  }))
+}
+
 export function PricingSection() {
+  const [commerceMode, setCommerceMode] = useState(false)
+
+  const plans = useMemo(
+    () => (commerceMode ? toCommercePlans() : toMarketingPlans()),
+    [commerceMode]
+  )
+
+  const carePlans = commerceMode ? siteConfig.ecommerceCarePlans : siteConfig.carePlans
+
+  const priceBook = commerceMode ? "commerce" : "marketing"
+
   return (
     <section id="pricing" className="lp-section bg-muted/25">
       <div className="lp-shell">
@@ -42,8 +83,18 @@ export function PricingSection() {
               Everything you see is everything you pay.
             </h2>
             <p className="lp-lead mt-4 max-w-xl text-pretty">
-              Every package shows the one-time build cost and the optional monthly
-              hosting fee side by side — no toggles, no surprises.
+              {commerceMode ? (
+                <>
+                  Shopify packages pair a one-time build with optional monthly commerce care — same
+                  transparency as our marketing-site pricing. Your Shopify subscription is separate.
+                </>
+              ) : (
+                <>
+                  Every package shows the one-time build cost and the optional monthly hosting fee
+                  side by side — use the toggle to compare ecommerce when you&apos;re ready to sell
+                  online.
+                </>
+              )}
             </p>
             <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
               <a
@@ -55,19 +106,82 @@ export function PricingSection() {
               >
                 {siteConfig.heroStat.linkLabel}
               </a>{" "}
-              reports that nearly half of NZ businesses don&apos;t have a website,
-              while most consumers still see a website as the main way to engage
-              with a business. Fixed scopes and prices are for owners who want to
-              close that gap without a quoting runaround.
+              reports that nearly half of NZ businesses don&apos;t have a website, while most
+              consumers still see a website as the main way to engage with a business. Fixed scopes
+              and prices are for owners who want to close that gap without a quoting runaround.
             </p>
           </div>
         </FadeIn>
 
-        <FadeIn delay={0.06}>
-          <InteractivePricing plans={toPlans()} />
+        <FadeIn delay={0.04}>
+          <div className="mt-8 flex flex-col items-center gap-2">
+            <p
+              id="pricing-mode-label"
+              className="text-center text-xs font-medium uppercase tracking-widest text-muted-foreground"
+            >
+              Show prices for
+            </p>
+            <div
+              className="flex w-full max-w-lg flex-wrap items-center justify-center gap-2 rounded-2xl border border-border/70 bg-muted/20 px-3 py-2.5 shadow-sm sm:gap-3 sm:px-4"
+              role="group"
+              aria-labelledby="pricing-mode-label"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setCommerceMode(false)
+                  posthog.capture("pricing_mode_changed", { mode: "marketing" })
+                }}
+                className={cn(
+                  "min-h-9 flex-1 rounded-lg px-3 py-2 text-center text-sm transition-colors sm:flex-none sm:px-4",
+                  !commerceMode
+                    ? "bg-background font-semibold text-foreground shadow-sm ring-1 ring-border/80"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Marketing sites
+              </button>
+              <Switch
+                id="pricing-mode"
+                checked={commerceMode}
+                onCheckedChange={(checked) => {
+                  setCommerceMode(checked)
+                  posthog.capture("pricing_mode_changed", {
+                    mode: checked ? "commerce" : "marketing",
+                  })
+                }}
+                className="shrink-0"
+                aria-label={
+                  commerceMode
+                    ? "Switch to marketing website pricing"
+                    : "Switch to Shopify ecommerce pricing"
+                }
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setCommerceMode(true)
+                  posthog.capture("pricing_mode_changed", { mode: "commerce" })
+                }}
+                className={cn(
+                  "min-h-9 flex-1 rounded-lg px-3 py-2 text-center text-sm transition-colors sm:flex-none sm:px-4",
+                  commerceMode
+                    ? "bg-background font-semibold text-foreground shadow-sm ring-1 ring-border/80"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Shopify ecommerce
+              </button>
+            </div>
+          </div>
         </FadeIn>
 
-        {/* What's NOT included — domain & hosting */}
+        <FadeIn delay={0.06}>
+          <div className="mt-6">
+            <InteractivePricing plans={plans} priceBook={priceBook} />
+          </div>
+        </FadeIn>
+
         <FadeIn delay={0.12}>
           <div className="mt-10 grid gap-5 md:grid-cols-2">
             <div className="rounded-xl border border-border/70 bg-background p-5">
@@ -81,16 +195,17 @@ export function PricingSection() {
 
             <div className="rounded-xl border border-border/70 bg-background p-5">
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Hosting (custom builds)
+                {commerceMode ? "Shopify platform" : "Hosting (custom builds)"}
               </p>
               <p className="mt-2 text-sm leading-relaxed text-foreground">
-                {siteConfig.platforms.default.hostingNote}
+                {commerceMode
+                  ? siteConfig.platforms.shopify.hostingNote
+                  : siteConfig.platforms.default.hostingNote}
               </p>
             </div>
           </div>
         </FadeIn>
 
-        {/* Webflow — separate callout so Webflow seekers spot it quickly */}
         <FadeIn delay={0.14}>
           <div
             id="pricing-webflow"
@@ -114,20 +229,17 @@ export function PricingSection() {
                   Prefer Webflow?
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-foreground">
-                  I also build on Webflow. Same build prices — hosting is paid
-                  directly to Webflow (
-                  {siteConfig.platforms.webflow.tiers.map(
-                    (t) => `${t.name} $${t.price} USD/mo`
-                  ).join(", ")}
-                  ). Mention it in your project brief and I&apos;ll walk you through the
-                  options.
+                  I also build on Webflow. Same build prices — hosting is paid directly to Webflow (
+                  {siteConfig.platforms.webflow.tiers.map((t) => `${t.name} $${t.price} USD/mo`).join(
+                    ", "
+                  )}
+                  ). Mention it in your project brief and I&apos;ll walk you through the options.
                 </p>
               </div>
             </div>
           </div>
         </FadeIn>
 
-        {/* Care plans summary */}
         <FadeIn delay={0.16}>
           <div className="mt-10 rounded-xl border border-border/70 bg-background p-6">
             <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
@@ -136,15 +248,27 @@ export function PricingSection() {
                   Ongoing support after launch
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                  Care plans bundle hosting, updates, and reporting into one monthly
-                  fee. No lock-in — cancel anytime.
+                  {commerceMode ? (
+                    <>
+                      Commerce care covers theme work, catalogue updates, and troubleshooting on your
+                      Shopify store. Platform fees stay with Shopify — this is my retainer only.
+                    </>
+                  ) : (
+                    <>
+                      Care plans bundle hosting, updates, and reporting into one monthly fee. No
+                      lock-in — cancel anytime.
+                    </>
+                  )}
                 </p>
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                {siteConfig.carePlans.map((plan) => (
+                {carePlans.map((plan) => (
                   <div
                     key={plan.id}
-                    className="rounded-lg border border-border/60 bg-muted/20 p-4"
+                    className={cn(
+                      "rounded-lg border border-border/60 bg-muted/20 p-4",
+                      "popular" in plan && plan.popular && "border-primary/30 ring-1 ring-primary/10"
+                    )}
                   >
                     <p className="text-sm font-semibold text-foreground">{plan.name}</p>
                     <p className="mt-1 font-mono text-lg font-bold tabular-nums text-foreground">
@@ -153,7 +277,9 @@ export function PricingSection() {
                     </p>
                     <ul className="mt-3 space-y-1.5 text-xs text-muted-foreground">
                       {plan.features.map((f) => (
-                        <li key={f} className="leading-snug">{f}</li>
+                        <li key={f} className="leading-snug">
+                          {f}
+                        </li>
                       ))}
                     </ul>
                   </div>
