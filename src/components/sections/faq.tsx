@@ -9,7 +9,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion"
-import { siteConfig } from "@/config/site"
+import { buildDeliveryTimelineFaqAnswer, siteConfig } from "@/config/site"
 
 const faqItems = [
   {
@@ -45,14 +45,15 @@ const faqItems = [
   {
     id: "6",
     question: "How long does it actually take?",
-    answer:
-      "Starter sites: 5–7 business days. Standard: 2–3 weeks. Premium: 3–4 weeks. The biggest variable is how quickly you provide feedback and content — the faster you respond, the faster we launch.",
+    get answer() {
+      return buildDeliveryTimelineFaqAnswer()
+    },
   },
   {
     id: "7",
     question: "Can I make changes to the site after launch?",
     answer:
-      "Yes. You get a training session showing you how to make basic content updates yourself. For anything beyond that — new pages, design changes, technical work — the care plans include a set amount of update time each month, or you can request ad-hoc support at $150/hour (1-hour minimum, billed in 30-minute increments).",
+      "Yes. Starter includes a short handover; Standard and Premium include a training session so you can make basic content updates yourself (CMS packages) or know how your site is structured. The Landing Page package is a single live page — say if you want a short paid walkthrough. For anything beyond day-to-day updates — new pages, design changes, technical work — care plans include a set amount of update time each month, or you can request ad-hoc support at $150/hour (1-hour minimum, billed in 30-minute increments).",
   },
   {
     id: "8",
@@ -106,7 +107,7 @@ export function FAQSection() {
         >
           {faqItems.map((item) => (
             <AccordionItem value={item.id} key={item.id} className="last:border-b">
-              <AccordionTrigger className="cursor-pointer overflow-hidden pl-4 text-left text-foreground/20 duration-200 hover:no-underline sm:pl-6 md:pl-14 data-[state=open]:text-primary [&>svg]:hidden">
+              <AccordionTrigger className="cursor-pointer overflow-hidden pl-4 text-left text-muted-foreground duration-200 hover:no-underline sm:pl-6 md:pl-14 data-[state=open]:text-primary [&>svg]:hidden">
                 <div className="flex flex-1 items-start gap-3 sm:gap-4">
                   <p className="text-xs">{item.id}</p>
                   <h3 className="relative text-left text-lg uppercase sm:text-xl md:text-2xl lg:text-3xl">

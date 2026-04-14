@@ -30,6 +30,12 @@ type PortfolioItem = {
   imageAlt: string
   imageWidth: number
   imageHeight: number
+  /**
+   * When the asset aspect ratio differs from how the card should present in the grid
+   * (e.g. portrait photo in a row of landscape previews), set width/height for this ratio.
+   */
+  displayAspectWidth?: number
+  displayAspectHeight?: number
 }
 
 const portfolioItems: PortfolioItem[] = [
@@ -84,6 +90,8 @@ const portfolioItems: PortfolioItem[] = [
     imageAlt: "Made of Gold jewellery — product photography from the live store",
     imageWidth: 1080,
     imageHeight: 1620,
+    displayAspectWidth: 1200,
+    displayAspectHeight: 630,
   },
   {
     id: "the-stash",
@@ -111,9 +119,14 @@ function PortfolioMedia({
   priority?: boolean
   className?: string
 }) {
+  const ratio =
+    item.displayAspectWidth != null && item.displayAspectHeight != null
+      ? item.displayAspectWidth / item.displayAspectHeight
+      : item.imageWidth / item.imageHeight
+
   return (
     <AspectRatio
-      ratio={item.imageWidth / item.imageHeight}
+      ratio={ratio}
       className={cn("overflow-hidden bg-muted", className)}
     >
       <Image

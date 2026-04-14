@@ -1,0 +1,7 @@
+Contact: mailto:karan@scalr.co.nz?subject=Security%20report
+Expires: 2027-04-13T12:00:00.000Z
+Preferred-Languages: en
+Canonical: https://scalr.nz/.well-known/security.txt
+
+We appreciate responsible disclosure. Please include steps to reproduce,
+affected URLs, and (if relevant) non-destructive proof of concept.

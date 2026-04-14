@@ -1,6 +1,8 @@
 import { FadeIn } from "@/components/common/fade-in"
 import { VercepProcessShowcase } from "@/components/sections/vercep-process-showcase"
+import { ClientJourneyTimeline } from "@/components/ui/client-journey-timeline"
 import type { VercepFeatureItem } from "@/components/ui/vercep-feature-1"
+import { siteConfig } from "@/config/site"
 
 const steps: VercepFeatureItem[] = [
   {
@@ -14,15 +16,13 @@ const steps: VercepFeatureItem[] = [
     step: "02",
     icon: "pencil",
     title: "We Build",
-    description:
-      "You get a mockup first. Once you're happy with the direction, we build the full site — delivered in 2–3 weeks.",
+    description: siteConfig.processSection.step02BuildDescription,
   },
   {
     step: "03",
     icon: "launch",
     title: "You Launch",
-    description:
-      "Training session included so you can make simple updates yourself. GA4, SEO, and conversion tracking already set up.",
+    description: siteConfig.processSection.step03LaunchDescription,
   },
 ]
 
@@ -56,10 +56,23 @@ export function HowItWorksSection() {
           />
         </FadeIn>
 
-        <FadeIn delay={0.1}>
-          <p className="mt-12 max-w-2xl text-base text-muted-foreground md:text-lg">
-            From first conversation to live website:{" "}
-            <span className="font-semibold text-foreground">2 weeks. Not months.</span>
+        <FadeIn delay={0.08}>
+          <ClientJourneyTimeline
+            className="mt-14"
+            kicker={siteConfig.processSection.clientOnboarding.kicker}
+            title={siteConfig.processSection.clientOnboarding.title}
+            lead={siteConfig.processSection.clientOnboarding.lead}
+            items={siteConfig.processSection.clientOnboarding.items}
+          />
+        </FadeIn>
+
+        <FadeIn delay={0.14}>
+          <p className="mt-10 max-w-2xl text-base text-muted-foreground md:text-lg">
+            {siteConfig.processSection.closingLineBeforeEmphasis}{" "}
+            <span className="font-semibold text-foreground">
+              {siteConfig.processSection.closingLineEmphasis}
+            </span>
+            {siteConfig.processSection.closingLineAfterEmphasis}
           </p>
         </FadeIn>
       </div>

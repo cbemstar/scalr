@@ -1,9 +1,11 @@
 "use client"
 
-import { useState, useCallback, useRef } from "react"
+import { useState, useCallback, useRef, useEffect } from "react"
+import Link from "next/link"
 import posthog from "posthog-js"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, ArrowRight, Check, Loader2, Phone } from "lucide-react"
+import { TurnstileField } from "@/components/common/turnstile-field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -96,6 +98,8 @@ const INITIAL_DATA: FormData = {
 
 const STEP_COUNT = 5
 
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""
+
 function StepIndicator({ current, total }: { current: number; total: number }) {
   return (
     <div className="flex items-center gap-2">
@@ -185,7 +189,14 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
   const [submitted, setSubmitted] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const formStartedRef = useRef(false)
+
+  useEffect(() => {
+    if (step !== STEP_COUNT - 1) {
+      setTurnstileToken(null)
+    }
+  }, [step])
 
   const update = useCallback(
     <K extends keyof FormData>(field: K, value: FormData[K]) => {
@@ -215,7 +226,11 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
       case 3:
         return !!data.timeline && !!data.currentSite
       case 4:
-        return !!data.name.trim() && !!data.email.trim()
+        return (
+          !!data.name.trim() &&
+          !!data.email.trim() &&
+          (!TURNSTILE_SITE_KEY || !!turnstileToken)
+        )
       default:
         return false
     }
@@ -255,7 +270,10 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
       const res = await fetch("/api/inquiry", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          ...data,
+          turnstileToken: turnstileToken ?? "",
+        }),
       })
       const payload = (await res.json()) as { error?: string }
       if (!res.ok) {
@@ -363,6 +381,8 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
               <StepContact
                 data={data}
                 onChange={update}
+                turnstileSiteKey={TURNSTILE_SITE_KEY}
+                onTurnstileToken={setTurnstileToken}
               />
             )}
           </motion.div>
@@ -655,9 +675,13 @@ function StepDiscovery({
 function StepContact({
   data,
   onChange,
+  turnstileSiteKey,
+  onTurnstileToken,
 }: {
   data: FormData
   onChange: <K extends keyof FormData>(field: K, value: FormData[K]) => void
+  turnstileSiteKey: string
+  onTurnstileToken: (token: string | null) => void
 }) {
   return (
     <div className="space-y-5">
@@ -719,6 +743,22 @@ function StepContact({
           onChange={(e) => onChange("message", e.target.value)}
         />
       </div>
+
+      {turnstileSiteKey ? (
+        <TurnstileField siteKey={turnstileSiteKey} onToken={onTurnstileToken} className="pt-2" />
+      ) : null}
+
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        By sending this brief, you agree to our{" "}
+        <Link href={siteConfig.legal.privacy} className="text-primary underline-offset-2 hover:underline">
+          Privacy Policy
+        </Link>{" "}
+        and{" "}
+        <Link href={siteConfig.legal.terms} className="text-primary underline-offset-2 hover:underline">
+          Terms
+        </Link>
+        . We only use your details to respond to this inquiry.
+      </p>
     </div>
   )
 }

@@ -159,7 +159,6 @@
   --shadow-lg: 0 10px 15px -3px oklch(0.55 0.016 165.6 / 0.1), 0 4px 6px -4px oklch(0.55 0.016 165.6 / 0.1);
   --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0.55 0.016 165.6 / 0.1);
   --shadow-2xl: 0 25px 50px -12px oklch(0.55 0.016 165.6 / 0.15);
-  --color-primary: #6366f1;
   --color-dark: #131313;
   --color-neutral-100: #f5f5f5;
   --color-neutral-200: #e5e5e5;
@@ -397,6 +396,35 @@
         transparent 1px
       );
     background-size: auto, 28px 28px;
+  }
+
+  /** Legal / policy pages — readable body without @tailwindcss/typography */
+  .legal-prose {
+    @apply text-base leading-relaxed text-muted-foreground;
+  }
+  .legal-prose h2 {
+    @apply mt-10 mb-3 font-heading text-xl font-semibold tracking-tight text-foreground first:mt-0;
+  }
+  .legal-prose h3 {
+    @apply mt-6 mb-2 font-heading text-lg font-semibold text-foreground;
+  }
+  .legal-prose p {
+    @apply mb-4;
+  }
+  .legal-prose ul {
+    @apply mb-4 list-disc space-y-2 pl-5;
+  }
+  .legal-prose ol {
+    @apply mb-4 list-decimal space-y-2 pl-5;
+  }
+  .legal-prose li {
+    @apply pl-1 marker:text-primary;
+  }
+  .legal-prose a {
+    @apply font-medium text-primary underline-offset-2 hover:underline;
+  }
+  .legal-prose strong {
+    @apply font-semibold text-foreground;
   }
 }
 

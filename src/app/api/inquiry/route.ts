@@ -4,6 +4,7 @@ import {
   createInquiryRecord,
   normalizeInquiryWebsiteUrl,
 } from "@/lib/airtable-inquiry"
+import { verifyTurnstileToken } from "@/lib/verify-turnstile"
 
 const inquirySchema = z.object({
   businessType: z.string().min(1).max(200),
@@ -18,7 +19,16 @@ const inquirySchema = z.object({
   email: z.string().trim().email().max(320),
   phone: z.string().max(80).optional().default(""),
   message: z.string().max(8000).optional().default(""),
+  turnstileToken: z.string().max(4000).optional().default(""),
 })
+
+function clientIpFromRequest(request: Request): string | undefined {
+  const cf = request.headers.get("cf-connecting-ip")?.trim()
+  if (cf) return cf
+  const xff = request.headers.get("x-forwarded-for")?.trim()
+  if (xff) return xff.split(",")[0]?.trim()
+  return undefined
+}
 
 export async function POST(request: Request) {
   let body: unknown
@@ -44,9 +54,29 @@ export async function POST(request: Request) {
     )
   }
 
+  const turnstileSecret = process.env.TURNSTILE_SECRET_KEY
+  if (turnstileSecret) {
+    const token = (parsed.data.turnstileToken ?? "").trim()
+    if (!token) {
+      return NextResponse.json(
+        { error: "Please complete the security check before submitting." },
+        { status: 400 }
+      )
+    }
+    const verified = await verifyTurnstileToken(token, clientIpFromRequest(request))
+    if (!verified) {
+      return NextResponse.json(
+        { error: "Security verification failed. Refresh the page and try again." },
+        { status: 403 }
+      )
+    }
+  }
+
   try {
+    const { turnstileToken, ...inquiryFields } = parsed.data
+    void turnstileToken
     const { id } = await createInquiryRecord({
-      ...parsed.data,
+      ...inquiryFields,
       websiteUrl: normalizedUrl ?? "",
     })
     return NextResponse.json({ ok: true, id })

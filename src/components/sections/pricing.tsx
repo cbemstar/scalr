@@ -25,7 +25,7 @@ function toPlans(): InteractivePricingPlan[] {
     features: [...pkg.features], // show ALL features — transparency builds trust
     paymentTerms: pkg.paymentTerms,
     cta: pkg.cta,
-    href: "#contact",
+    href: "/#contact",
     isPopular: pkg.popular,
     isSimplest: pkg.id === "landing",
   }))

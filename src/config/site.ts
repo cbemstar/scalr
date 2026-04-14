@@ -76,7 +76,8 @@ export const siteConfig = {
     lead:
       "New sites and redesigns for cafés, tradies, barbers, and local shops. Clear packages from $999 NZD.",
     /** One scannable trust line instead of chips — saves vertical space in the hero card */
-    trustLine: "From $999 NZD · typical delivery 1–2 weeks · goals before pixels",
+    trustLine:
+      "From $999 NZD · about 1–4 weeks by package (see Pricing) · goals before pixels",
     note: "Clear reply within 24 hours. No pressure.",
     /**
      * Verified 200 from images.unsplash.com. The first image is the settled hero
@@ -111,16 +112,16 @@ export const siteConfig = {
     ] as const,
     ctaPrimary: {
       label: "Compare plans",
-      href: "#pricing",
+      href: "/#pricing",
       magneticId: "hero-cta-pricing",
     },
     ctaSecondary: {
       label: "Get in touch",
-      href: "#contact",
+      href: "/#contact",
       magneticId: "hero-cta-contact",
     },
     utilityLinks: [
-      { label: "See Recent Work", href: "#portfolio" },
+      { label: "See Recent Work", href: "/#portfolio" },
       { label: "Email Us", href: "mailto:karan@scalr.co.nz" },
     ] as const,
   },
@@ -311,6 +312,46 @@ export const siteConfig = {
     },
   },
 
+  /**
+   * “How we work” section — keep in sync with `packages[].deliveryDays` and FAQ timing answers.
+   */
+  processSection: {
+    step02BuildDescription:
+      "You get a mockup first. Once you're happy with the direction, we build the full site. Timing matches your package — from about 1 week (Landing Page) to about 3–4 weeks (Premium). See Pricing for each plan.",
+    step03LaunchDescription:
+      "GA4, SEO, and conversion tracking are set up per your package. Starter and up include a handover or training session for content updates; the Landing Page is a single live page — say if you want a short paid walkthrough.",
+    closingLineBeforeEmphasis: "From first conversation to live:",
+    closingLineEmphasis: "weeks, not months",
+    closingLineAfterEmphasis:
+      " — exact timing depends on your package and how quickly you provide feedback and content.",
+    /**
+     * Public “client framework” — mirrors docs/client-onboarding without internal tier names.
+     */
+    clientOnboarding: {
+      kicker: "Client experience",
+      title: "Once you're on board",
+      lead: "Same promises as the pricing page: clear homework, a mockup before code, bundled revision rounds, and no surprise invoices. If several people need a say, we add milestones — not meetings for the sake of it.",
+      items: [
+        {
+          title: "Goals before pixels",
+          body: "We align on audience, offer, and the one action you want visitors to take — before design opens.",
+        },
+        {
+          title: "Clear homework",
+          body: "A simple brief for assets, copy direction, and domain access. Premium includes copy assistance.",
+        },
+        {
+          title: "Mockup, then build",
+          body: "Written approval on direction, then code. Out-of-scope work is quoted first ($150/hour as in the FAQ).",
+        },
+        {
+          title: "Launch & handover",
+          body: "Ownership transfers after final payment; handover or training on packages that include it.",
+        },
+      ],
+    },
+  },
+
   // ─── Social Links ─────────────────────────────────────────────────────────────
   social: {
     linkedin: "https://www.linkedin.com/in/cbemstar/",
@@ -318,15 +359,26 @@ export const siteConfig = {
     facebook: "https://facebook.com/yourpage",
   },
 
+  /** ISO date for legal documents (update when policies change) */
+  legalLastUpdated: "2026-04-13",
+
+  /** In-app routes — use leading `/` so section links work from any page */
+  legal: {
+    privacy: "/privacy",
+    terms: "/terms",
+    cookies: "/cookies",
+    security: "/security",
+  } as const,
+
   // ─── Navigation ──────────────────────────────────────────────────────────────
   nav: [
-    { label: "Work", href: "#portfolio" },
-    { label: "Services", href: "#services" },
-    { label: "How we work", href: "#how-we-work" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "About", href: "#about" },
-    { label: "FAQ", href: "#faq" },
-    { label: "Contact", href: "#contact" },
+    { label: "Work", href: "/#portfolio" },
+    { label: "Services", href: "/#services" },
+    { label: "How we work", href: "/#how-we-work" },
+    { label: "Pricing", href: "/#pricing" },
+    { label: "About", href: "/#about" },
+    { label: "FAQ", href: "/#faq" },
+    { label: "Contact", href: "/#contact" },
   ],
 
   // ─── Target niches (for niche-specific copy) ─────────────────────────────────
@@ -337,6 +389,14 @@ export const siteConfig = {
     "New local shops",
   ],
 } as const;
+
+/** FAQ and client comms — always derived from `siteConfig.packages` delivery fields. */
+export function buildDeliveryTimelineFaqAnswer(): string {
+  const byPackage = siteConfig.packages
+    .map((p) => `${p.name}: about ${p.deliveryDays}`)
+    .join(". ")
+  return `${byPackage}. The biggest variable is how quickly you provide feedback and content — the faster you respond, the faster we launch.`
+}
 
 export type Package = (typeof siteConfig.packages)[number];
 export type CarePlan = (typeof siteConfig.carePlans)[number];

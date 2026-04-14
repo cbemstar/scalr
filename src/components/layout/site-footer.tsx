@@ -16,13 +16,22 @@ const linkGroups = [
     links: siteConfig.nav.map((item) => ({ title: item.label, href: item.href })),
   },
   {
+    label: "Legal",
+    links: [
+      { title: "Privacy", href: siteConfig.legal.privacy },
+      { title: "Terms", href: siteConfig.legal.terms },
+      { title: "Cookies", href: siteConfig.legal.cookies },
+      { title: "Security", href: siteConfig.legal.security },
+    ],
+  },
+  {
     label: "Services",
     links: [
-      { title: "Landing Page — $999",  href: "#pricing" },
-      { title: "Starter — $1,499",     href: "#pricing" },
-      { title: "Standard — $2,500",    href: "#pricing" },
-      { title: "Premium — $4,500",     href: "#pricing" },
-      { title: "Care Plans",           href: "#pricing" },
+      { title: "Landing Page — $999", href: "/#pricing" },
+      { title: "Starter — $1,499", href: "/#pricing" },
+      { title: "Standard — $2,500", href: "/#pricing" },
+      { title: "Premium — $4,500", href: "/#pricing" },
+      { title: "Care Plans", href: "/#pricing" },
     ],
   },
   {
@@ -34,7 +43,7 @@ const linkGroups = [
         href: `tel:${siteConfig.contact.phone.replace(/\s/g, "")}`,
         icon: Phone,
       },
-      { title: siteConfig.contact.location, href: "#contact", icon: MapPin },
+      { title: siteConfig.contact.location, href: "/#contact", icon: MapPin },
     ],
   },
 ]
@@ -160,7 +169,7 @@ export function SiteFooter({ className }: { className?: string }) {
               </AnimatedContainer>
 
               {/* Link groups */}
-              <div className="grid w-full max-w-3xl grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:gap-10">
+              <div className="grid w-full max-w-4xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4 lg:gap-10">
                 {linkGroups.map((group, i) => (
                   <AnimatedContainer key={group.label} delay={0.1 + i * 0.08}>
                     <p className="lp-kicker mb-3">
@@ -176,6 +185,11 @@ export function SiteFooter({ className }: { className?: string }) {
                             posthog.capture("contact_phone_clicked", { source: "footer" })
                           } else if (group.label === "Services") {
                             posthog.capture("footer_service_link_clicked", { label: link.title })
+                          } else if (group.label === "Legal") {
+                            posthog.capture("footer_legal_link_clicked", {
+                              label: link.title,
+                              href: link.href,
+                            })
                           }
                         }
                         return (
