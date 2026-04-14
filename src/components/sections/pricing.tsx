@@ -1,14 +1,14 @@
 "use client"
 
 import Image from "next/image"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import posthog from "posthog-js"
 
 import { FadeIn } from "@/components/common/fade-in"
 import { InteractivePricing } from "@/components/ui/pricing"
 import type { InteractivePricingPlan } from "@/components/ui/pricing"
 import { Switch } from "@/components/ui/switch"
-import { siteConfig } from "@/config/site"
+import { pricingHash, siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 
 const HOSTING_PRICE: Record<string, number> = {
@@ -63,8 +63,39 @@ function toCommercePlans(): InteractivePricingPlan[] {
   }))
 }
 
+const CARE_HASH = pricingHash.care.replace("#", "")
+const COMMERCE_HASH = pricingHash.commerce.replace("#", "")
+
+function scrollPricingTarget(raw: string) {
+  const id = raw === CARE_HASH ? "pricing-care" : "pricing"
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
+}
+
 export function PricingSection() {
   const [commerceMode, setCommerceMode] = useState(false)
+
+  useEffect(() => {
+    let scrollTimer: ReturnType<typeof setTimeout> | undefined
+
+    function applyHash() {
+      const raw = window.location.hash.replace(/^#/, "")
+      if (!raw.startsWith("pricing")) return
+
+      setCommerceMode(raw === COMMERCE_HASH)
+
+      if (scrollTimer) clearTimeout(scrollTimer)
+      scrollTimer = setTimeout(() => {
+        scrollPricingTarget(raw)
+      }, 60)
+    }
+
+    applyHash()
+    window.addEventListener("hashchange", applyHash)
+    return () => {
+      window.removeEventListener("hashchange", applyHash)
+      if (scrollTimer) clearTimeout(scrollTimer)
+    }
+  }, [])
 
   const plans = useMemo(
     () => (commerceMode ? toCommercePlans() : toMarketingPlans()),
@@ -76,7 +107,7 @@ export function PricingSection() {
   const priceBook = commerceMode ? "commerce" : "marketing"
 
   return (
-    <section id="pricing" className="lp-section bg-muted/25">
+    <section id="pricing" className="scroll-mt-24 lp-section bg-muted/25">
       <div className="lp-shell">
         <FadeIn>
           <div className="lp-section-intro max-w-xl">
@@ -242,7 +273,10 @@ export function PricingSection() {
         </FadeIn>
 
         <FadeIn delay={0.16}>
-          <div className="mt-10 rounded-xl border border-border/70 bg-background p-6">
+          <div
+            id="pricing-care"
+            className="mt-10 scroll-mt-24 rounded-xl border border-border/70 bg-background p-6"
+          >
             <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
               <div className="max-w-md">
                 <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">

@@ -606,8 +606,25 @@ export function buildDeliveryTimelineFaqAnswer(): string {
 }
 
 /**
+ * URL hashes for the pricing section — read in `PricingSection` to set the
+ * Standard vs Ecommerce toggle and scroll target. Keep in sync with markup ids
+ * (`pricing`, `pricing-care`).
+ */
+export const pricingHash = {
+  /** Top of pricing; Standard Sites view */
+  compare: "#pricing",
+  /** Same section, Standard Sites (explicit) */
+  standard: "#pricing-standard",
+  /** Same section, Ecommerce / Shopify view */
+  commerce: "#pricing-commerce",
+  /** Care plans block; uses Standard-site care copy by default */
+  care: "#pricing-care",
+} as const
+
+/**
  * Footer “Pricing” links — derived from `packages` + `ecommercePackages` so titles
- * stay in sync with the pricing section.
+ * stay in sync with the pricing section. Each `href` uses a distinct hash so the
+ * pricing toggle matches the row you clicked.
  */
 export function getFooterPricingLinks(): { title: string; href: string }[] {
   const fmt = (n: number) =>
@@ -618,16 +635,16 @@ export function getFooterPricingLinks(): { title: string; href: string }[] {
     }).format(n)
 
   return [
-    { title: "Compare plans", href: "/#pricing" },
+    { title: "Compare plans", href: `/${pricingHash.compare}` },
     ...siteConfig.packages.map((p) => ({
       title: `Standard · ${p.name} · ${fmt(p.price)}`,
-      href: "/#pricing",
+      href: `/${pricingHash.standard}`,
     })),
     ...siteConfig.ecommercePackages.map((p) => ({
       title: `Shopify · ${p.name} · ${fmt(p.price)}`,
-      href: "/#pricing",
+      href: `/${pricingHash.commerce}`,
     })),
-    { title: "Care plans", href: "/#pricing" },
+    { title: "Care plans", href: `/${pricingHash.care}` },
   ]
 }
 
