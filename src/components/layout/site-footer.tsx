@@ -138,7 +138,7 @@ export function SiteFooter({ className }: { className?: string }) {
               <AnimatedContainer className="w-full max-w-sm shrink-0 space-y-3">
                 <Link
                   href="/"
-                  className="font-heading text-base font-semibold tracking-tight text-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary/30"
+                  className="font-logo text-base font-semibold tracking-tight text-foreground transition-colors hover:text-primary focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary/30"
                 >
                   {siteConfig.name}
                 </Link>

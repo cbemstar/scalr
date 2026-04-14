@@ -394,7 +394,7 @@ export function SterlingGateKineticNavigation({
                   aria-label="Home"
                   onClick={goToHero}
                 >
-                  <span className="nav-logo-shiny">{siteConfig.name}</span>
+                  <span className="nav-logo-shiny font-logo">{siteConfig.name}</span>
                 </Link>
 
                 <div className="nav-row__right">

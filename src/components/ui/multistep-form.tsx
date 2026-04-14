@@ -9,6 +9,14 @@ import { TurnstileField } from "@/components/common/turnstile-field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { siteConfig } from "@/config/site"
@@ -22,41 +30,52 @@ const BUSINESS_TYPES = [
   { value: "health-wellness", label: "Health & Wellness" },
   { value: "professional-services", label: "Professional Services" },
   { value: "other", label: "Something else" },
+  { value: "not-sure", label: "Not sure — help me decide" },
 ] as const
 
-const PACKAGE_OPTIONS = [
-  ...siteConfig.packages.map((pkg) => ({
-    value: `standard:${pkg.id}`,
-    label: `${pkg.name} (standard site)`,
-    price: `$${pkg.price.toLocaleString()} NZD`,
-    description: pkg.tagline,
-  })),
-  ...siteConfig.ecommercePackages.map((pkg) => ({
-    value: `shopify:${pkg.id}`,
-    label: `${pkg.name} (Shopify)`,
-    price: `$${pkg.price.toLocaleString()} NZD`,
-    description: pkg.tagline,
-  })),
-]
+type PackageOptionRow = {
+  value: string
+  label: string
+  price: string
+  description: string
+}
+
+const STANDARD_PACKAGE_OPTIONS: PackageOptionRow[] = siteConfig.packages.map((pkg) => ({
+  value: `standard:${pkg.id}`,
+  label: pkg.name,
+  price: `$${pkg.price.toLocaleString()} NZD`,
+  description: pkg.tagline,
+}))
+
+const ECOMMERCE_PACKAGE_OPTIONS: PackageOptionRow[] = siteConfig.ecommercePackages.map((pkg) => ({
+  value: `shopify:${pkg.id}`,
+  label: pkg.name,
+  price: `$${pkg.price.toLocaleString()} NZD`,
+  description: pkg.tagline,
+}))
+
+/** Stored in packageInterest when the lead wants a recommendation instead of picking a tier */
+const PACKAGE_INTEREST_UNSURE = "unsure"
 
 const PLATFORM_OPTIONS = [
   { value: "webflow", label: "Webflow" },
   { value: "wordpress", label: "WordPress" },
   { value: "shopify", label: "Shopify" },
   { value: "nextjs", label: "Custom build (Next.js)" },
-  { value: "unsure", label: "Not sure, need guidance" },
+  { value: "unsure", label: "I don't know — recommend for me" },
 ] as const
 
 const CONTENT_OPTIONS = [
   { value: "ready", label: "Yes, I can provide content and images" },
   { value: "partial", label: "Some content is ready, some needs work" },
   { value: "none", label: "No, I need full content support" },
+  { value: "not-sure", label: "Not sure yet — I'll need guidance" },
 ] as const
 
 const COPY_OPTIONS = [
   { value: "have-copy", label: "I already have website copy" },
   { value: "need-help", label: "I need copywriting support" },
-  { value: "unsure", label: "Not sure yet" },
+  { value: "unsure", label: "I don't know yet — advise me" },
 ] as const
 
 const TIMELINE_OPTIONS = [
@@ -64,6 +83,7 @@ const TIMELINE_OPTIONS = [
   { value: "2-weeks", label: "Within 2 weeks" },
   { value: "1-month", label: "Within a month" },
   { value: "flexible", label: "No rush — flexible" },
+  { value: "not-sure", label: "Not sure — advise me when we talk" },
 ] as const
 
 const CURRENT_SITE_OPTIONS = [
@@ -468,12 +488,16 @@ function StepBusinessType({
       </div>
       <div className="grid gap-2.5 sm:grid-cols-2">
         {BUSINESS_TYPES.map((opt) => (
-          <OptionCard
+          <div
             key={opt.value}
-            selected={value === opt.value}
-            onClick={() => onChange(opt.value)}
-            label={opt.label}
-          />
+            className={opt.value === "not-sure" ? "sm:col-span-2" : undefined}
+          >
+            <OptionCard
+              selected={value === opt.value}
+              onClick={() => onChange(opt.value)}
+              label={opt.label}
+            />
+          </div>
         ))}
       </div>
     </div>
@@ -487,31 +511,154 @@ function StepPackage({
   value: string
   onChange: (v: string) => void
 }) {
+  const [buildType, setBuildType] = useState<"standard" | "ecommerce">(() =>
+    value.startsWith("shopify:") ? "ecommerce" : "standard"
+  )
+
+  useEffect(() => {
+    if (!value) return
+    if (value.startsWith("shopify:")) setBuildType("ecommerce")
+    else if (value.startsWith("standard:")) setBuildType("standard")
+  }, [value])
+
+  const activeOptions =
+    buildType === "standard" ? STANDARD_PACKAGE_OPTIONS : ECOMMERCE_PACKAGE_OPTIONS
+  const selected = activeOptions.find((o) => o.value === value)
+  const selectValue =
+    value && activeOptions.some((o) => o.value === value) ? value : undefined
+
+  const setCommerceMode = (nextCommerce: boolean) => {
+    const nextType = nextCommerce ? "ecommerce" : "standard"
+    if (nextType === buildType) return
+    setBuildType(nextType)
+    onChange("")
+  }
+
+  const showPlanPicker = value !== PACKAGE_INTEREST_UNSURE
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-5">
       <div>
         <h3 className="font-heading text-xl font-semibold tracking-tight">
           Which package interests you?
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Pick the closest fit — we can always adjust when we talk.
+          Totally fine if you&apos;re not sure yet — pick what fits, or say so below.
         </p>
       </div>
-      <div className="grid gap-2.5">
-        {PACKAGE_OPTIONS.map((opt) => (
-          <OptionCard
-            key={opt.value}
-            selected={value === opt.value}
-            onClick={() => onChange(opt.value)}
-            label={opt.label}
-            sublabel={opt.price}
-          >
-            <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-              {opt.description}
+
+      <OptionCard
+        selected={value === PACKAGE_INTEREST_UNSURE}
+        onClick={() => onChange(PACKAGE_INTEREST_UNSURE)}
+        label="Not sure yet — recommend a package for me"
+      >
+        <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
+          We&apos;ll nail down standard vs ecommerce and the right tier when we talk.
+        </p>
+      </OptionCard>
+
+      {showPlanPicker ? (
+        <>
+          <p className="text-center text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Or pick a direction
+          </p>
+
+          <div className="flex flex-col gap-2">
+            <p
+              id="inquiry-package-mode-label"
+              className="text-xs font-medium uppercase tracking-widest text-muted-foreground"
+            >
+              What are you building?
             </p>
-          </OptionCard>
-        ))}
-      </div>
+            <div
+              className="flex w-full flex-wrap items-center gap-2 rounded-2xl border border-border/70 bg-muted/20 px-3 py-2.5 shadow-sm sm:gap-3 sm:px-4"
+              role="group"
+              aria-labelledby="inquiry-package-mode-label"
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  if (buildType === "standard") return
+                  setCommerceMode(false)
+                  posthog.capture("inquiry_package_mode_changed", { mode: "standard_sites" })
+                }}
+                className={cn(
+                  "min-h-9 flex-1 rounded-lg px-3 py-2 text-center text-sm transition-colors sm:flex-none sm:px-4",
+                  buildType === "standard"
+                    ? "bg-background font-semibold text-foreground shadow-sm ring-1 ring-border/80"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Standard Sites
+              </button>
+              <Switch
+                checked={buildType === "ecommerce"}
+                onCheckedChange={(checked) => {
+                  if (checked === (buildType === "ecommerce")) return
+                  setCommerceMode(checked)
+                  posthog.capture("inquiry_package_mode_changed", {
+                    mode: checked ? "ecommerce" : "standard_sites",
+                  })
+                }}
+                className="shrink-0"
+                aria-label={
+                  buildType === "ecommerce"
+                    ? "Switch to Standard Sites packages"
+                    : "Switch to Ecommerce packages"
+                }
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (buildType === "ecommerce") return
+                  setCommerceMode(true)
+                  posthog.capture("inquiry_package_mode_changed", { mode: "ecommerce" })
+                }}
+                className={cn(
+                  "min-h-9 flex-1 rounded-lg px-3 py-2 text-center text-sm transition-colors sm:flex-none sm:px-4",
+                  buildType === "ecommerce"
+                    ? "bg-background font-semibold text-foreground shadow-sm ring-1 ring-border/80"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                Ecommerce
+              </button>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="inquiry-package-plan">Plan</Label>
+            <Select value={selectValue} onValueChange={onChange}>
+              <SelectTrigger id="inquiry-package-plan" className="h-11 w-full">
+                <SelectValue placeholder="Choose a plan…" />
+              </SelectTrigger>
+              <SelectContent
+                position="popper"
+                className="max-w-[min(100vw-2rem,var(--radix-select-trigger-width))]"
+              >
+                {activeOptions.map((opt) => (
+                  <SelectItem key={opt.value} value={opt.value}>
+                    {`${opt.label} — ${opt.price}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selected ? (
+              <p className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-sm leading-relaxed text-muted-foreground">
+                {selected.description}
+              </p>
+            ) : null}
+          </div>
+        </>
+      ) : (
+        <button
+          type="button"
+          onClick={() => onChange("")}
+          className="w-full rounded-xl border border-dashed border-border/80 bg-muted/10 px-4 py-3 text-center text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:bg-primary/[0.03] hover:text-foreground"
+        >
+          Prefer to browse plans yourself? Show standard & ecommerce options
+        </button>
+      )}
     </div>
   )
 }
@@ -540,7 +687,8 @@ function StepProjectDetails({
           A bit about your project
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          No wrong answers — this helps me plan ahead.
+          No wrong answers — this helps me plan ahead. If dates aren&apos;t firm, the timeline
+          section has a not-sure option.
         </p>
       </div>
 
@@ -550,12 +698,16 @@ function StepProjectDetails({
         </p>
         <div className="grid gap-2 sm:grid-cols-2">
           {TIMELINE_OPTIONS.map((opt) => (
-            <OptionCard
+            <div
               key={opt.value}
-              selected={timeline === opt.value}
-              onClick={() => onTimeline(opt.value)}
-              label={opt.label}
-            />
+              className={opt.value === "not-sure" ? "sm:col-span-2" : undefined}
+            >
+              <OptionCard
+                selected={timeline === opt.value}
+                onClick={() => onTimeline(opt.value)}
+                label={opt.label}
+              />
+            </div>
           ))}
         </div>
       </div>
@@ -625,7 +777,8 @@ function StepDiscovery({
           Platform & content readiness
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          A quick filter so I can scope delivery and support correctly.
+          A quick filter so I can scope delivery and support correctly. Don&apos;t guess — each
+          section includes a not-sure or recommend-for-me option.
         </p>
       </div>
 

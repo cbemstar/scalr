@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
+import localFont from "next/font/local";
 import { Geist, Geist_Mono, Open_Sans } from "next/font/google";
 import { PostHogEnsure } from "@/components/providers/posthog-ensure";
 import { LenisProvider } from "@/components/providers/lenis-provider";
@@ -26,6 +27,12 @@ const openSans = Open_Sans({
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
+  display: "swap",
+});
+
+const scalrLogo = localFont({
+  src: "./fonts/scalr.woff2",
+  variable: "--font-logo",
   display: "swap",
 });
 
@@ -71,7 +78,8 @@ export default async function RootLayout({
         "h-full antialiased font-sans",
         geistSans.variable,
         openSans.variable,
-        geistMono.variable
+        geistMono.variable,
+        scalrLogo.variable
       )}
       suppressHydrationWarning
     >

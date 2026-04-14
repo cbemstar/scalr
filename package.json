@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "airtable:pipeline": "node scripts/configure-inquiry-status-pipeline.mjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.3.0",

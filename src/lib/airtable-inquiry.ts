@@ -1,13 +1,45 @@
 /**
  * Server-only: creates rows in Airtable via the REST API (not MCP — MCP is for AI tools in the IDE).
  *
- * In Airtable, create a table named `Inquiries` (or set AIRTABLE_TABLE_NAME) with these fields:
- * Recommended field types (matches “Inquiries” table): Name (primary text), Email, Phone (phone),
- * Business type … Current site (single line text), Website URL (url), Message (long text).
+ * ## Airtable table schema (`Inquiries` or `AIRTABLE_TABLE_NAME`)
+ *
+ * Create these columns (exact names — see `AIRTABLE_INQUIRY_FIELD_NAMES`):
+ *
+ * | Field name            | Type            | Notes |
+ * |-----------------------|-----------------|-------|
+ * | Name                  | Single line text| Primary field |
+ * | Email                 | Email           | |
+ * | Phone                 | Phone           | Optional; omit column if you never collect phone |
+ * | Business type         | Single line text| **Not** Single select — form adds new choices over time (e.g. “Not sure”). API stores **human-readable** labels via `inquiry-field-labels.ts`. |
+ * | Package interest      | Single line text| Same — values include `Standard site · …`, `Shopify · …`, or “Not sure yet — recommend…”. |
+ * | Platform preference   | Single line text| |
+ * | Content readiness     | Single line text| |
+ * | Copywriting support   | Single line text| |
+ * | Timeline              | Single line text| |
+ * | Current site          | Single line text| |
+ * | Website URL           | URL             | Optional |
+ * | Message               | Long text       | Optional |
+ * | Status                | Single select   | CRM pipeline (Kanban). New rows default to **New enquiry** — configure options with `scripts/configure-inquiry-status-pipeline.mjs` (requires PAT with `schema.bases:write`). |
+ *
+ * If any choice column was **Single select**, new form options (e.g. `not-sure`) would be **rejected**
+ * by Airtable until you add each option. Using **Single line text** avoids that.
  *
  * PAT needs scopes: data.records:write, schema.bases:read (and data.records:read if you read via API).
  * Base must be selected for this integration in Airtable → Integrations.
  */
+
+import {
+  labelBusinessType,
+  labelContentReadiness,
+  labelCopywritingSupport,
+  labelCurrentSite,
+  labelPackageInterest,
+  labelPlatformPreference,
+  labelTimeline,
+} from "@/lib/inquiry-field-labels"
+
+/** Must match the first option in `scripts/configure-inquiry-status-pipeline.mjs` */
+export const INQUIRY_PIPELINE_DEFAULT_STATUS = "New enquiry" as const
 
 export const AIRTABLE_INQUIRY_FIELD_NAMES = {
   businessType: "Business type",
@@ -22,6 +54,7 @@ export const AIRTABLE_INQUIRY_FIELD_NAMES = {
   email: "Email",
   phone: "Phone",
   message: "Message",
+  status: "Status",
 } as const
 
 export type InquiryFormPayload = {
@@ -55,15 +88,16 @@ export function normalizeInquiryWebsiteUrl(raw: string): string | null {
 function mapToAirtableFields(data: InquiryFormPayload): Record<string, string> {
   const f = AIRTABLE_INQUIRY_FIELD_NAMES
   const fields: Record<string, string> = {
-    [f.businessType]: data.businessType,
-    [f.packageInterest]: data.packageInterest,
-    [f.platformPreference]: data.platformPreference,
-    [f.contentReadiness]: data.contentReadiness,
-    [f.copywritingSupport]: data.copywritingSupport,
-    [f.timeline]: data.timeline,
-    [f.currentSite]: data.currentSite,
+    [f.businessType]: labelBusinessType(data.businessType),
+    [f.packageInterest]: labelPackageInterest(data.packageInterest),
+    [f.platformPreference]: labelPlatformPreference(data.platformPreference),
+    [f.contentReadiness]: labelContentReadiness(data.contentReadiness),
+    [f.copywritingSupport]: labelCopywritingSupport(data.copywritingSupport),
+    [f.timeline]: labelTimeline(data.timeline),
+    [f.currentSite]: labelCurrentSite(data.currentSite),
     [f.name]: data.name.trim(),
     [f.email]: data.email.trim(),
+    [f.status]: INQUIRY_PIPELINE_DEFAULT_STATUS,
   }
   const url = data.websiteUrl.trim()
   if (url) fields[f.websiteUrl] = url

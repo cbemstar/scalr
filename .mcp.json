@@ -6,6 +6,9 @@
         "shadcn@latest",
         "mcp"
       ]
+    },
+    "keywords-everywhere": {
+      "url": "https://mcp.techmavie.digital/keywords-everywhere/mcp"
     }
   }
 }
