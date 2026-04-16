@@ -4,6 +4,7 @@ import type { LogoGridItem } from "@/components/ui/logo-cloud-2"
 /**
  * Full-colour brand SVGs (local files under /public/logos/platforms/color).
  * Webflow, JS, WordPress, Shopify from SVGL; React from Wikimedia; Next.js from Simple Icons (monochrome mark).
+ * Mailchimp: official PNG from https://mailchimp.com/about/brand-assets/ (light-background lockup; do not alter per brand guidelines).
  * Additional marks from Simple Icons where available; Finsweet as local wordmark SVG.
  */
 export const PLATFORM_LOGOS: LogoGridItem[] = [
@@ -16,7 +17,7 @@ export const PLATFORM_LOGOS: LogoGridItem[] = [
   { src: "/logos/platforms/color/squarespace.svg", alt: "Squarespace" },
   { src: "/logos/platforms/color/wix.svg", alt: "Wix" },
   { src: "/logos/platforms/color/hubspot.svg", alt: "HubSpot" },
-  { src: "/logos/platforms/color/mailchimp.svg", alt: "Mailchimp" },
+  { src: "/logos/platforms/color/mailchimp.png", alt: "Mailchimp" },
   { src: "/logos/platforms/color/loops.svg", alt: "Loops" },
   { src: "/logos/platforms/color/vercel.svg", alt: "Vercel" },
   { src: "/logos/platforms/color/finsweet.svg", alt: "Finsweet" },

@@ -15,6 +15,16 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "scalr.co.nz" }],
+        destination: "https://www.scalr.co.nz/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       {

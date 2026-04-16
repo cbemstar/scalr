@@ -13,7 +13,7 @@ import { cn } from "@/lib/utils"
 const extraPhrases = [
   "GA4 & conversion tracking",
   "2-week delivery",
-  "Christchurch-based",
+  "Nationwide NZ",
   "Transparent pricing",
   "SEO-ready structure",
   "Mobile-first builds",

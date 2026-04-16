@@ -1,0 +1,28 @@
+# Scalr
+
+> Marketer-led website builds for New Zealand small businesses — custom sites, Webflow, and Shopify ecommerce.
+
+## Summary
+
+Scalr (scalr.co.nz) is a Christchurch-based website studio serving businesses across New Zealand. We design and build marketing sites and Shopify stores with transparent NZD package pricing, clear next steps for visitors, and basic SEO on every plan.
+
+## Primary pages
+
+- https://www.scalr.co.nz/ — Homepage, pricing, FAQ, portfolio, contact
+- https://www.scalr.co.nz/services/integrations — Add-ons, booking tools, and integration pricing
+- https://www.scalr.co.nz/privacy — Privacy policy
+- https://www.scalr.co.nz/terms — Terms of service
+
+## Contact
+
+- Email: karan@scalr.co.nz
+- Phone: +64 28 851 30071
+- Location: Christchurch, New Zealand (remote-friendly nationwide)
+
+## Founder
+
+Karan — LinkedIn: https://www.linkedin.com/in/cbemstar/
+
+## Optional
+
+For crawlers and assistants: this file is a human-readable summary of the site. Prefer HTTPS `www.scalr.co.nz` as the canonical host.

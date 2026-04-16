@@ -345,16 +345,17 @@
   grid-template-rows: auto;
   justify-items: center;
   width: 100%;
-  min-height: 1.12em;
+  /* Single-line phrases only — row height matches one line so inactive lines don’t leave a tall slot */
+  min-height: 1.08em;
   padding-bottom: 0.08em;
   overflow: hidden;
 }
 
 @media (min-width: 768px) {
   .crisp-header__h1-rotate {
-    min-height: 1.14em;
-    padding-bottom: 0.18em;
-    padding-top: 0.04em;
+    min-height: 1.1em;
+    padding-bottom: 0.12em;
+    padding-top: 0.02em;
   }
 }
 
@@ -364,13 +365,14 @@
   position: relative;
   width: max-content;
   max-width: 100%;
-  font-size: clamp(1.85rem, 4.2vw + 0.75rem, 3.15rem);
+  /* Slightly tighter than the prefix so long lines stay one row on narrow viewports */
+  font-size: clamp(1.45rem, 3.6vw + 0.65rem, 3.15rem);
   font-weight: 600;
   line-height: 1.08;
   letter-spacing: -0.045em;
   color: var(--crisp-fg);
-  text-wrap: balance;
   text-align: center;
+  white-space: nowrap;
 }
 
 .crisp-header__lead {
@@ -388,11 +390,35 @@
 .crisp-header__trust {
   margin: 0;
   margin-top: -0.25rem;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
   text-align: center;
   font-size: 0.8125rem;
-  line-height: 1.5;
+  line-height: 1.45;
   letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
+  color: var(--crisp-trust);
+}
+
+.crisp-header__trust-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+  text-align: left;
+}
+
+.crisp-header__trust-check {
+  flex-shrink: 0;
+  width: 0.875rem;
+  height: 0.875rem;
+  opacity: 0.9;
   color: var(--crisp-trust);
 }
 

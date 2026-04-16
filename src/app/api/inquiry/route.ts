@@ -4,11 +4,16 @@ import {
   createInquiryRecord,
   normalizeInquiryWebsiteUrl,
 } from "@/lib/airtable-inquiry"
+import { siteConfig } from "@/config/site"
 import { verifyTurnstileToken } from "@/lib/verify-turnstile"
 
 const inquirySchema = z.object({
+  projectIntent: z.enum(["new-site", "integrations-only"]),
   businessType: z.string().min(1).max(200),
   packageInterest: z.string().min(1).max(200),
+  integrationSprintId: z.string().max(100).optional().default(""),
+  selectedIntegrationModules: z.array(z.string().max(80)).max(24).optional().default([]),
+  toolsNotes: z.string().max(2000).optional().default(""),
   platformPreference: z.string().min(1).max(200),
   contentReadiness: z.string().min(1).max(200),
   copywritingSupport: z.string().min(1).max(200),
@@ -21,6 +26,47 @@ const inquirySchema = z.object({
   message: z.string().max(8000).optional().default(""),
   turnstileToken: z.string().max(4000).optional().default(""),
 })
+
+function formatModuleLabels(ids: string[]): string {
+  return ids
+    .map((id) => {
+      const m = siteConfig.integrationModules.find((x) => x.id === id)
+      return m?.label ?? id
+    })
+    .join("; ")
+}
+
+function appendIntegrationNotesToMessage(
+  baseMessage: string,
+  data: z.infer<typeof inquirySchema>
+): string {
+  const lines: string[] = []
+  if (data.projectIntent === "integrations-only") {
+    lines.push("Project path: Integration / standalone work (not assuming a full new site).")
+    if (data.integrationSprintId) {
+      const sprint = siteConfig.standaloneSprints.find((s) => s.id === data.integrationSprintId)
+      lines.push(`Sprint interest: ${sprint ? sprint.name : data.integrationSprintId}`)
+    } else {
+      lines.push("Sprint interest: Not sure yet — recommend a sprint when we talk.")
+    }
+  }
+  if (data.selectedIntegrationModules.length > 0) {
+    const labelList = formatModuleLabels(data.selectedIntegrationModules)
+    lines.push(
+      data.projectIntent === "integrations-only"
+        ? `Add-on interests: ${labelList}`
+        : `Interested add-ons (with site build): ${labelList}`
+    )
+  }
+  const tools = data.toolsNotes.trim()
+  if (tools) {
+    lines.push(`Tools / stack notes: ${tools}`)
+  }
+  if (lines.length === 0) return baseMessage.trim()
+  const appendix = `\n\n---\n${lines.join("\n")}`
+  const trimmed = baseMessage.trim()
+  return trimmed ? `${trimmed}${appendix}` : appendix.trim()
+}
 
 function clientIpFromRequest(request: Request): string | undefined {
   const cf = request.headers.get("cf-connecting-ip")?.trim()
@@ -73,10 +119,23 @@ export async function POST(request: Request) {
   }
 
   try {
-    const { turnstileToken, ...inquiryFields } = parsed.data
+    const {
+      turnstileToken,
+      projectIntent,
+      integrationSprintId,
+      selectedIntegrationModules,
+      toolsNotes,
+      ...inquiryFields
+    } = parsed.data
     void turnstileToken
+    void projectIntent
+    void integrationSprintId
+    void selectedIntegrationModules
+    void toolsNotes
+    const messageWithNotes = appendIntegrationNotesToMessage(inquiryFields.message, parsed.data)
     const { id } = await createInquiryRecord({
       ...inquiryFields,
+      message: messageWithNotes,
       websiteUrl: normalizedUrl ?? "",
     })
     return NextResponse.json({ ok: true, id })

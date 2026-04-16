@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useTheme } from "@wrksz/themes/client"
-import { ArrowRight } from "@phosphor-icons/react"
+import { ArrowRight, Check } from "@phosphor-icons/react"
 import gsap from "gsap"
 import { CustomEase } from "gsap/CustomEase"
 import { motion, useReducedMotion } from "framer-motion"
@@ -49,11 +49,8 @@ const LOADER_GLSL_PROPS = {
 
 const INTRO_STAGGER_SELECTOR = ".crisp-header__intro-stagger"
 
-/** Rotating line completes the headline (first item matches full headline read in static form). */
-const HERO_ROTATING_PHRASES = [
-  "bring in customers.",
-  ...siteConfig.heroRotatingPhrases,
-] as const
+/** Rotating line completes “Websites that …” — keep distinct from the static headline to avoid repeating the tagline on every cycle. */
+const HERO_ROTATING_PHRASES = [...siteConfig.heroRotatingPhrases] as const
 
 const rotateSpring = { type: "spring" as const, stiffness: 58, damping: 22, mass: 0.85 }
 
@@ -466,9 +463,21 @@ export function HeroSection() {
               {heroCrisp.lead}
             </p>
 
-            <p className="crisp-header__trust crisp-header__intro-stagger">
-              {heroCrisp.trustLine}
-            </p>
+            <ul
+              className="crisp-header__trust crisp-header__intro-stagger"
+              aria-label="At a glance"
+            >
+              {heroCrisp.trustLineItems.map((item) => (
+                <li key={item} className="crisp-header__trust-item">
+                  <Check
+                    className="crisp-header__trust-check"
+                    weight="bold"
+                    aria-hidden
+                  />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
 
             <div className="crisp-header__actions crisp-header__intro-stagger">
               <Button

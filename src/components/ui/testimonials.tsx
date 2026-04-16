@@ -26,6 +26,8 @@ export type TestimonialsProps = {
   supporting: readonly TestimonialSupporting[]
   attributionName: string
   attributionDetail: string
+  /** Optional machine-readable publication period for research citations */
+  attributionDate?: { label: string; dateTime: string }
 }
 
 /**
@@ -41,6 +43,7 @@ export function Testimonials({
   supporting,
   attributionName,
   attributionDetail,
+  attributionDate,
 }: TestimonialsProps) {
   return (
     <div
@@ -79,7 +82,15 @@ export function Testimonials({
           </Avatar>
           <div className="min-w-0 flex-1">
             <p className="font-heading text-sm font-semibold text-foreground">{attributionName}</p>
-            <p className="text-xs text-muted-foreground">{attributionDetail}</p>
+            <p className="text-xs text-muted-foreground">
+              {attributionDetail}
+              {attributionDate ? (
+                <>
+                  {" · "}
+                  <time dateTime={attributionDate.dateTime}>{attributionDate.label}</time>
+                </>
+              ) : null}
+            </p>
           </div>
         </CardFooter>
       </Card>

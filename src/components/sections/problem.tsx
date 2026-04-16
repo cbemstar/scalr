@@ -1,13 +1,13 @@
 "use client"
 
 import {
-  AlertCircle,
-  Clock,
-  Frown,
-  PhoneMissed,
-  RefreshCw,
-  TrendingDown,
-} from "lucide-react"
+  AnalyticsDownIcon,
+  ChartDecreaseIcon,
+  GlobeXIcon,
+  HourglassIcon,
+  Layers01Icon,
+  PhoneOff01Icon,
+} from "@hugeicons/core-free-icons"
 import {
   SoundFamiliarShowcase,
   type SoundFamiliarItem,
@@ -15,7 +15,7 @@ import {
 
 const painPoints: SoundFamiliarItem[] = [
   {
-    icon: AlertCircle,
+    icon: GlobeXIcon,
     tag: "Trust",
     headline: "You apologise for the URL",
     description:
@@ -23,7 +23,7 @@ const painPoints: SoundFamiliarItem[] = [
     gradient: "from-amber-500/12 via-amber-500/5 to-transparent",
   },
   {
-    icon: TrendingDown,
+    icon: ChartDecreaseIcon,
     tag: "Conversion",
     headline: "Traffic that doesn’t convert",
     description:
@@ -31,7 +31,7 @@ const painPoints: SoundFamiliarItem[] = [
     gradient: "from-rose-500/12 via-rose-500/5 to-transparent",
   },
   {
-    icon: Clock,
+    icon: AnalyticsDownIcon,
     tag: "Leads",
     headline: "Flying blind",
     description:
@@ -39,7 +39,7 @@ const painPoints: SoundFamiliarItem[] = [
     gradient: "from-primary/15 via-primary/5 to-transparent",
   },
   {
-    icon: PhoneMissed,
+    icon: PhoneOff01Icon,
     tag: "Friction",
     headline: "Contact details buried",
     description:
@@ -47,7 +47,7 @@ const painPoints: SoundFamiliarItem[] = [
     gradient: "from-sky-500/12 via-sky-500/5 to-transparent",
   },
   {
-    icon: Frown,
+    icon: Layers01Icon,
     tag: "Credibility",
     headline: "Template or DIY fatigue",
     description:
@@ -55,7 +55,7 @@ const painPoints: SoundFamiliarItem[] = [
     gradient: "from-orange-500/12 via-orange-500/5 to-transparent",
   },
   {
-    icon: RefreshCw,
+    icon: HourglassIcon,
     tag: "Momentum",
     headline: "Stuck on the backlog",
     description:

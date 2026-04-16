@@ -7,9 +7,9 @@
 export const siteConfig = {
   // ─── Business Identity ───────────────────────────────────────────────────────
   name: "Scalr",
-  tagline: "Websites That Bring In Customers",
+  tagline: "Websites that bring in customers",
   description:
-    "Affordable standard sites and Shopify ecommerce for cafés, tradies, barbers, and local shops in Christchurch. Standard sites from $999 NZD; Shopify builds from $6,499 NZD. Built by a marketer, not a big agency.",
+    "New Zealand web design for cafés, tradies, barbers, and local shops across NZ: sites structured for trust and clear next steps, plus Shopify ecommerce nationwide. Transparent package pricing, basic SEO on every plan, deeper setup where the tier allows — marketer-led builds, not a bundled marketing retainer.",
 
   /** Hero kicker (single line) */
   heroKicker: "Redesigns & new builds",
@@ -32,7 +32,7 @@ export const siteConfig = {
    */
   trustSection: {
     kicker: "NZ reality check",
-    title: "Customers decide on trust first",
+    title: "Your customers decide on trust first",
     lead: "National research — not a sales pitch.",
     primaryBeforeLink:
       "Most people still use a website to decide if you're trustworthy — yet nearly half of NZ businesses don't have one, according to ",
@@ -51,16 +51,18 @@ export const siteConfig = {
       },
     ],
     attributionName: "InternetNZ · Yabble",
-    attributionDetail: "750 NZ businesses · Aug 2025",
+    /** Shown before the machine-readable date in the trust strip */
+    attributionDetail: "750 NZ businesses",
+    attributionDate: { label: "Aug 2025", dateTime: "2025-08" },
   },
 
-  /** Hero H1 — lines after “Websites that …” (rotate; keep sentence case) */
+  /** Hero H1 — lines after “Websites that …” (rotate; keep sentence case; keep each phrase short enough to stay one line) */
   heroRotatingPhrases: [
-    "book more jobs.",
-    "fill your chairs.",
-    "look legit online.",
-    "get found locally.",
-    "fit a tight budget.",
+    "make the next step obvious.",
+    "earn trust faster.",
+    "look sharp on mobile.",
+    "built to be found.",
+    "on time and on budget.",
   ],
 
   /**
@@ -69,16 +71,20 @@ export const siteConfig = {
    * Replace `slideshow[].src` with `/images/your-file.webp` when you add brand photography to `public/`.
    */
   heroCrisp: {
-    /** Short line — differentiation (conversion-minded, not “agency”) */
-    kicker: "Marketer-led builds",
-    /** Aligns with site tagline; answers “what do I get?” for local SMB search intent */
-    headline: "Websites that bring in customers",
+    /** Short line — approach (structured offers, not a full marketing fee) */
+    kicker: "Marketer-led website builds",
+    /** Full H1 for reduced motion; animated headline uses “Websites that” + rotating phrases */
+    headline: "Websites that make the next step obvious",
     lead:
-      "New sites and redesigns for cafés, tradies, barbers, and local shops. Standard packages from $999 NZD; Shopify ecommerce from $6,499 NZD — everything is on the Pricing section.",
-    /** One scannable trust line instead of chips — saves vertical space in the hero card */
-    trustLine:
-      "From $999 NZD (standard sites) · Shopify from $6,499 NZD · about 1–6 weeks by package · goals before pixels",
-    note: "Clear reply within 24 hours. No pressure.",
+      "New sites and redesigns for cafés, tradies, barbers, and local shops — structured so visitors know what to do next, with copy and layout aligned to how you take bookings, calls, and enquiries.",
+    /** Scannable trust row — pricing + timeline (hero renders with checkmarks) */
+    trustLineItems: [
+      "Standard websites from $999 NZD",
+      "Shopify stores from $6,499 NZD",
+      "Typical delivery about 1–6 weeks by package",
+      "Clear goals before we design",
+    ],
+    note: "I'll respond within one New Zealand business day.",
     /**
      * Verified 200 from images.unsplash.com. The first image is the settled hero
      * background after the intro animation completes.
@@ -86,7 +92,7 @@ export const siteConfig = {
     slideshow: [
       {
         src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1920&q=80",
-        alt: "Laptop on a desk with analytics and charts — website performance and business growth.",
+        alt: "Laptop on a desk with analytics and charts.",
         scene: "Your project",
       },
       {
@@ -126,7 +132,7 @@ export const siteConfig = {
     ] as const,
   },
 
-  url: "https://scalr.nz", // update once domain is live
+  url: "https://www.scalr.co.nz",
   locale: "en-NZ",
 
   // ─── Contact ─────────────────────────────────────────────────────────────────
@@ -143,7 +149,7 @@ export const siteConfig = {
       name: "Landing Page",
       price: 999,
       currency: "NZD",
-      tagline: "Your first step online — a single conversion-focused page",
+      tagline: "Your first step online — one page with a clear action",
       deliveryDays: "1 week",
       pages: "1 page",
       popular: false,
@@ -151,11 +157,11 @@ export const siteConfig = {
         pickIf:
           "You only need one strong page right now — like a digital poster with a clear way to get in touch.",
         youGet:
-          "One live page that works on phones, with a contact form and the basics so people can find you on Google.",
+          "One live page that works on phones, with a contact form and basic SEO so you have a sensible baseline in search.",
         afterLaunch: "One round of tweaks after you see it online, plus help connecting your domain name.",
       },
       features: [
-        "Single-page design built to convert",
+        "Single-page layout built around one clear action",
         "Mobile-responsive layout",
         "Contact form with email notifications",
         "Basic SEO setup (meta titles, descriptions)",
@@ -200,15 +206,15 @@ export const siteConfig = {
       name: "Standard",
       price: 2500,
       currency: "NZD",
-      tagline: "The complete marketing asset — CMS, SEO, and conversion tracking included",
+      tagline: "The fuller site — CMS, deeper SEO setup, and measurement where it matters",
       deliveryDays: "2–3 weeks",
       pages: "5–7 pages",
       popular: true,
       comparison: {
         pickIf:
-          "You want to change words yourself, show up better in local Google results, and see which enquiries come from the site.",
+          "You want to change words yourself, stronger on-site SEO foundations than smaller tiers, and visibility into which enquiries come from the site.",
         youGet:
-          "Roughly five to seven pages, a simple area you can edit yourself (like blog or portfolio posts), and tracking for forms and calls.",
+          "Roughly five to seven pages, a simple area you can edit yourself (like blog or portfolio posts), and tracking for forms and calls (where we wire it in scope).",
         afterLaunch: "A training session plus three months of Growth Care rolled in so you are not on your own.",
       },
       features: [
@@ -229,7 +235,7 @@ export const siteConfig = {
       name: "Premium",
       price: 4500,
       currency: "NZD",
-      tagline: "Full-service for ambitious businesses — copywriting, animations, strategy",
+      tagline: "Full-service builds — copy help, motion, and a tighter marketing alignment pass",
       deliveryDays: "3–4 weeks",
       pages: "8–12 pages",
       popular: false,
@@ -237,7 +243,7 @@ export const siteConfig = {
         pickIf:
           "You want help with the words, a more polished feel, and a sharper look at how the site fits your marketing.",
         youGet:
-          "More pages, help drafting copy, subtle motion where it helps, and a light marketing once-over — not just a skin on a template.",
+          "More pages, help drafting copy, subtle motion where it helps, and a light alignment pass on how the site supports your offers — not ongoing marketing management.",
         afterLaunch: "Longer training, three months of Growth Care, and space for extra revision during the build.",
       },
       features: [
@@ -249,7 +255,7 @@ export const siteConfig = {
         "Three revision rounds",
         "60-minute training session",
         "3 months Growth Care included",
-        "Mini marketing audit",
+        "Mini alignment review (site vs. offers — not a full marketing plan)",
       ],
       paymentTerms: "50% to book · 25% at design approval · 25% before launch",
       cta: "Get in touch",
@@ -410,6 +416,167 @@ export const siteConfig = {
     },
   },
 
+  /**
+   * Ad-hoc billing — hourly is the contract rate for scope creep; half-day/day blocks
+   * are what we lead with on the site so budgets feel concrete.
+   */
+  billingRates: {
+    currency: "NZD" as const,
+    /** Contract rate — quoted first for out-of-scope / change-order work */
+    hourly: 150,
+    /** ~4 hours — typical integration or discovery block */
+    halfDayFrom: 600,
+    /** ~8 hours — larger integration or multi-tool setup */
+    dayFrom: 1100,
+  },
+
+  /**
+   * One-time integration & ops add-ons (often bundled with a site build; also available standalone).
+   * `typicalForBusinessTypes` uses the same values as the inquiry form (`cafe-bakery`, etc.).
+   */
+  integrationModules: [
+    {
+      id: "local-presence",
+      label: "Local search & Google setup",
+      outcome:
+        "Google Business Profile, Search Console, and GA4 — so locals find you and you can see what's working. Covers any NZ service area or storefront.",
+      fromPrice: 450,
+      typicalForBusinessTypes: [
+        "cafe-bakery",
+        "barber-salon",
+        "tradie-contractor",
+        "retail-shop",
+        "restaurant-bar",
+        "health-wellness",
+        "professional-services",
+      ],
+    },
+    {
+      id: "booking-scheduling",
+      label: "Booking & scheduling",
+      outcome:
+        "We recommend and set up the right tool for your business — Fresha or Timely for salons and barbers, ResyOS or ResDiary for restaurants, Cliniko for allied health, Calendly or Cal.com for professional services, Jobber or ServiceM8 for tradies. Embedded and tested on mobile.",
+      fromPrice: 350,
+      typicalForBusinessTypes: [
+        "barber-salon",
+        "health-wellness",
+        "professional-services",
+        "tradie-contractor",
+        "restaurant-bar",
+      ],
+    },
+    {
+      id: "forms-email",
+      label: "Forms, email & CRM",
+      outcome:
+        "Lead and contact forms wired to the right place — Mailchimp or Loops for newsletters, Klaviyo for ecommerce email/SMS, HubSpot or Zoho CRM for sales pipelines. You keep the account; we handle setup and testing.",
+      fromPrice: 550,
+      typicalForBusinessTypes: [
+        "retail-shop",
+        "professional-services",
+        "health-wellness",
+        "cafe-bakery",
+        "restaurant-bar",
+      ],
+    },
+    {
+      id: "reviews-trust",
+      label: "Reviews & trust signals",
+      outcome:
+        "Google Reviews link, widget (e.g. Elfsight, EmbedSocial), or platform-specific setup (e.g. Yelp badge for hospitality, HealthEngine for clinics). Includes LocalBusiness structured data so star ratings can show in search.",
+      fromPrice: 400,
+      typicalForBusinessTypes: [
+        "tradie-contractor",
+        "barber-salon",
+        "restaurant-bar",
+        "retail-shop",
+        "health-wellness",
+      ],
+    },
+    {
+      id: "ordering-delivery",
+      label: "Online ordering & menus",
+      outcome:
+        "For cafés and restaurants — digital menus, QR ordering (e.g. Mr Yum, me&u), or delivery platform links (UberEats, DoorDash). Set up, styled to match your site, and tested end-to-end.",
+      fromPrice: 500,
+      typicalForBusinessTypes: ["cafe-bakery", "restaurant-bar"],
+    },
+    {
+      id: "shopify-connectors",
+      label: "Shopify app & checkout setup",
+      outcome:
+        "We shortlist the right apps for your store — loyalty (Smile.io), reviews (Judge.me), shipping (Starshipit), accounting (Xero sync), subscriptions (Recharge) — then install, configure, and test checkout end to end.",
+      fromPrice: 800,
+      typicalForBusinessTypes: ["retail-shop", "cafe-bakery", "other", "not-sure"],
+    },
+  ],
+
+  /**
+   * Standalone productized work when someone doesn’t need a full new site.
+   */
+  standaloneSprints: [
+    {
+      id: "integration-sprint",
+      name: "Integration sprint",
+      tagline: "Wire your tools without a new site",
+      outcome:
+        "Already have a site? We connect booking, email, forms, or analytics to your existing pages — agreed checklist, fixed price.",
+      fromPrice: 1499,
+      deliveryHint: "Typically 3–10 business days after access and assets land",
+    },
+    {
+      id: "analytics-tracking",
+      name: "Analytics & tracking cleanup",
+      tagline: "See what's actually working",
+      outcome:
+        "GA4 + Search Console audit, key event setup (calls, form fills, purchases), and a short handover so you can read your own data.",
+      fromPrice: 999,
+      deliveryHint: "Often 1–2 weeks depending on site complexity",
+    },
+    {
+      id: "shopify-ops",
+      name: "Shopify ops session",
+      tagline: "Fix your store without rebuilding it",
+      outcome:
+        "Products, collections, shipping/tax rules, app stack tidy-up, or checkout fixes — scoped in writing before we start.",
+      fromPrice: 1299,
+      deliveryHint: "Usually 1–2 weeks scoped in writing",
+    },
+  ],
+
+  /**
+   * Short pitch copy: package vs add-on vs standalone; SaaS ownership; when hourly applies.
+   * Used on /services/integrations and referenced from Pricing.
+   */
+  integrationsPitch: {
+    kicker: "How this fits together",
+    title: "Website build vs add-ons vs standalone work",
+    lead:
+      "Your website package covers design and build. Connecting the tools your business actually runs on — booking, email, ordering, reviews — is scoped as a fixed add-on so you know the price before work starts.",
+    bullets: [
+      {
+        title: "We recommend the right tools",
+        body: "A salon needs Fresha or Timely, not generic Calendly. A restaurant needs ResDiary and QR ordering, not a contact form. We match the tool to your industry, set it up, and test it on your site.",
+      },
+      {
+        title: "Add-ons with a new build",
+        body: "Pick your package, then tell us what tools you use (or want to use). We quote each integration as a fixed line item — no open-ended hourly.",
+      },
+      {
+        title: "Standalone (no new site)",
+        body: "Already have a site? Integration sprints wire booking, analytics, or email to your existing pages. Shopify ops sessions fix store configuration without a rebuild — deliverables are agreed up front.",
+      },
+      {
+        title: "Who pays software bills",
+        body: "You keep subscriptions in your name (Fresha, Mailchimp, Shopify, Xero — whatever you use). You pay those vendors directly; our fee covers setup, configuration, and testing — not their monthly invoices.",
+      },
+      {
+        title: "When hourly or blocks apply",
+        body: "Fixed scopes use package or add-on pricing. Half-day and day blocks cover discovery or multi-tool days. The hourly rate in the FAQ applies to agreed change orders and ad-hoc support — always agreed before the clock runs.",
+      },
+    ],
+  },
+
   // ─── Domain Info ─────────────────────────────────────────────────────────────
   domain: {
     note: "Domain registration is separate — typically $25–50 NZD/year for .co.nz or .nz. I'll help you set it up.",
@@ -507,16 +674,26 @@ export const siteConfig = {
     /** What we optimise for — pairs with the About section story */
     principles: {
       dos: [
-        "Goals, analytics, and conversion paths before the first pixel",
+        "Goals and clear next steps before the first pixel",
         "Transparent pricing and scoped packages — no surprise invoices",
-        "GA4, tracking, and reporting set up so you can see what works",
+        "Basic SEO on every plan; measurement and deeper setup where your tier includes them",
       ],
       donts: [
         "Generic template sites that look like every other AI landing page",
-        "Agency-style retainers and jargon when you need a clear build",
+        "Bundled ‘marketing department’ expectations inside a website build fee",
         "Launch-and-disappear — your site should keep improving after go-live",
       ],
     },
+  },
+
+  /**
+   * Pricing section — what a build fee is (and isn’t). Keeps offers realistic and margins defensible.
+   */
+  pricingFraming: {
+    integrationsNote:
+      "Third-party tools (booking, email, reviews, POS, Shopify apps) are usually scoped as add-ons with from-prices or a written quote — so you’re not paying open-ended time for a checklist item. Software subscriptions stay in your name and are paid to each vendor.",
+    timingNote:
+      "Delivery ranges are typical. Timelines stretch when content, approvals, or logins run late — fixed scope is what keeps pricing fair on both sides.",
   },
 
   /**
@@ -526,11 +703,11 @@ export const siteConfig = {
     step02BuildDescription:
       "You get a mockup first. Once you're happy with the direction, we build the full site. Timing matches your package — from about 1 week (Landing Page) to about 3–4 weeks (Premium). See Pricing for each plan.",
     step03LaunchDescription:
-      "GA4, SEO, and conversion tracking are set up per your package. Starter and up include a handover or training session for content updates; the Landing Page is a single live page — say if you want a short paid walkthrough.",
+      "Basic SEO and analytics are set up per your package — see Pricing for what scales on each tier (for example Search Console and conversion tracking on Standard and Premium). Starter and up include a handover or training session where listed; the Landing Page is a single live page — say if you want a short paid walkthrough.",
     closingLineBeforeEmphasis: "From first conversation to live:",
     closingLineEmphasis: "weeks, not months",
     closingLineAfterEmphasis:
-      " — exact timing depends on your package and how quickly you provide feedback and content.",
+      " — exact timing depends on your package, feedback speed, and how quickly assets and access arrive. Ranges are guides, not guarantees.",
     /**
      * Public “client framework” — mirrors docs/client-onboarding without internal tier names.
      */
@@ -549,7 +726,7 @@ export const siteConfig = {
         },
         {
           title: "Mockup, then build",
-          body: "Written approval on direction, then code. Out-of-scope work is quoted first ($150/hour as in the FAQ).",
+          body: "Written approval on direction, then code. Out-of-scope work is quoted first — half-day or day blocks for fuzzy work, or the hourly rate in the FAQ for agreed change orders.",
         },
         {
           title: "Launch & handover",
@@ -562,8 +739,13 @@ export const siteConfig = {
   // ─── Social Links ─────────────────────────────────────────────────────────────
   social: {
     linkedin: "https://www.linkedin.com/in/cbemstar/",
-    instagram: "https://instagram.com/yourhandle",
-    facebook: "https://facebook.com/yourpage",
+  },
+
+  /** Surfaced in About copy and Person JSON-LD */
+  founder: {
+    name: "Karan",
+    jobTitle: "Founder",
+    sameAs: ["https://www.linkedin.com/in/cbemstar/"],
   },
 
   /** ISO date for legal documents (update when policies change) */
@@ -583,6 +765,7 @@ export const siteConfig = {
     { label: "Services", href: "/#services" },
     { label: "How we work", href: "/#how-we-work" },
     { label: "Pricing", href: "/#pricing" },
+    { label: "Integrations", href: "/services/integrations" },
     { label: "About", href: "/#about" },
     { label: "FAQ", href: "/#faq" },
     { label: "Contact", href: "/#contact" },
@@ -619,6 +802,8 @@ export const pricingHash = {
   commerce: "#pricing-commerce",
   /** Care plans block; uses Standard-site care copy by default */
   care: "#pricing-care",
+  /** Add-ons, integrations & standalone sprints */
+  integrations: "#pricing-integrations",
 } as const
 
 /**
@@ -636,6 +821,7 @@ export function getFooterPricingLinks(): { title: string; href: string }[] {
 
   return [
     { title: "Compare plans", href: `/${pricingHash.compare}` },
+    { title: "Add-ons & integrations", href: `/${pricingHash.integrations}` },
     ...siteConfig.packages.map((p) => ({
       title: `Standard · ${p.name} · ${fmt(p.price)}`,
       href: `/${pricingHash.standard}`,

@@ -9,7 +9,7 @@ const phrases = [
   { main: siteConfig.name, sub: null },
   { main: "Sites from $999 · Shopify from $6,499", sub: "full pricing on the page · no guessing" },
   { main: "Live in 1–2 weeks", sub: "typical timeline for most packages" },
-  { main: "Built to convert", sub: "conversion-focused design" },
+  { main: "Built for clarity", sub: "structure that supports action" },
   { main: "Not just look good", sub: "performance + aesthetics" },
   { main: "SEO foundations", sub: "meta, structure, and analytics from launch" },
   { main: "Clear scope", sub: "you know what you're getting upfront" },
@@ -100,7 +100,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
           transition={{ duration: 0.6, delay: 0.5 }}
           className="font-mono text-[11px] tracking-[0.18em] text-background/40 uppercase"
         >
-          Christchurch, NZ
+          New Zealand
         </motion.span>
       </div>
 
@@ -177,7 +177,7 @@ export default function Preloader({ onComplete }: PreloaderProps) {
         className="absolute right-0 bottom-0 left-0 flex items-center justify-center px-6 py-6"
       >
         <p className="font-mono text-[11px] tracking-[0.2em] text-background/30 uppercase">
-          christchurch small business websites
+          new zealand small business websites
         </p>
       </motion.div>
 

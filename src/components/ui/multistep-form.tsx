@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Checkbox } from "@/components/ui/checkbox"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
@@ -57,6 +58,22 @@ const ECOMMERCE_PACKAGE_OPTIONS: PackageOptionRow[] = siteConfig.ecommercePackag
 /** Stored in packageInterest when the lead wants a recommendation instead of picking a tier */
 const PACKAGE_INTEREST_UNSURE = "unsure"
 
+/** Sentinel for platform/content/copy when the lead chose integration-only path */
+const NA_INTEGRATIONS = "n/a-integrations"
+
+const PROJECT_INTENT_OPTIONS = [
+  {
+    value: "new-site",
+    label: "New website or redesign",
+    hint: "Standard or Shopify packages — full build scope.",
+  },
+  {
+    value: "integrations-only",
+    label: "Integration or standalone work",
+    hint: "Tools, tracking, booking, or Shopify ops — no full new site assumed.",
+  },
+] as const
+
 const PLATFORM_OPTIONS = [
   { value: "webflow", label: "Webflow" },
   { value: "wordpress", label: "WordPress" },
@@ -95,8 +112,13 @@ const CURRENT_SITE_OPTIONS = [
 ] as const
 
 type FormData = {
+  projectIntent: "" | "new-site" | "integrations-only"
   businessType: string
   packageInterest: string
+  /** Standalone sprint id when `projectIntent === "integrations-only"` */
+  integrationSprintId: string
+  selectedIntegrationModules: string[]
+  toolsNotes: string
   platformPreference: string
   contentReadiness: string
   copywritingSupport: string
@@ -110,8 +132,12 @@ type FormData = {
 }
 
 const INITIAL_DATA: FormData = {
+  projectIntent: "",
   businessType: "",
   packageInterest: "",
+  integrationSprintId: "",
+  selectedIntegrationModules: [],
+  toolsNotes: "",
   platformPreference: "",
   contentReadiness: "",
   copywritingSupport: "",
@@ -124,7 +150,46 @@ const INITIAL_DATA: FormData = {
   message: "",
 }
 
-const STEP_COUNT = 5
+type ProjectIntent = FormData["projectIntent"]
+
+function totalStepsForIntent(intent: ProjectIntent): number {
+  if (!intent) return 1
+  return intent === "integrations-only" ? 5 : 6
+}
+
+function stepKind(intent: ProjectIntent, step: number): string {
+  if (!intent) return "project_intent"
+  if (intent === "integrations-only") {
+    const names = ["project_intent", "business_type", "integrations", "project_details", "contact"]
+    return names[step] ?? "project_intent"
+  }
+  const names = [
+    "project_intent",
+    "business_type",
+    "package",
+    "discovery",
+    "project_details",
+    "contact",
+  ]
+  return names[step] ?? "project_intent"
+}
+
+function moduleMatchesBusiness(
+  typical: readonly string[],
+  businessType: string
+): boolean {
+  return (typical as readonly string[]).includes(businessType)
+}
+
+function sortModulesForBusiness(businessType: string) {
+  const modules = [...siteConfig.integrationModules]
+  if (!businessType) return modules
+  return modules.sort((a, b) => {
+    const aHit = moduleMatchesBusiness(a.typicalForBusinessTypes, businessType) ? 1 : 0
+    const bHit = moduleMatchesBusiness(b.typicalForBusinessTypes, businessType) ? 1 : 0
+    return bHit - aHit
+  })
+}
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""
 
@@ -202,14 +267,6 @@ const slideVariants = {
   exit: (dir: number) => ({ x: dir > 0 ? -60 : 60, opacity: 0 }),
 }
 
-const STEP_NAMES = [
-  "business_type",
-  "package",
-  "discovery",
-  "project_details",
-  "contact",
-] as const
-
 export function MultistepInquiryForm({ className }: { className?: string }) {
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState(1)
@@ -220,11 +277,14 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const formStartedRef = useRef(false)
 
+  const totalSteps = totalStepsForIntent(data.projectIntent)
+  const lastStepIndex = totalSteps - 1
+
   useEffect(() => {
-    if (step !== STEP_COUNT - 1) {
+    if (step !== lastStepIndex) {
       setTurnstileToken(null)
     }
-  }, [step])
+  }, [step, lastStepIndex])
 
   const update = useCallback(
     <K extends keyof FormData>(field: K, value: FormData[K]) => {
@@ -239,37 +299,51 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
     []
   )
 
+  const kind = stepKind(data.projectIntent, step)
+
   const canAdvance = (() => {
-    switch (step) {
-      case 0:
-        return !!data.businessType
-      case 1:
-        return !!data.packageInterest
-      case 2:
-        return (
-          !!data.platformPreference &&
-          !!data.contentReadiness &&
-          !!data.copywritingSupport
-        )
-      case 3:
-        return !!data.timeline && !!data.currentSite
-      case 4:
-        return (
-          !!data.name.trim() &&
-          !!data.email.trim() &&
-          (!TURNSTILE_SITE_KEY || !!turnstileToken)
-        )
-      default:
-        return false
+    if (!data.projectIntent) {
+      return false
     }
+    if (kind === "project_intent") {
+      return !!data.projectIntent
+    }
+    if (kind === "business_type") {
+      return !!data.businessType
+    }
+    if (kind === "package") {
+      return !!data.packageInterest
+    }
+    if (kind === "integrations") {
+      return !!data.integrationSprintId
+    }
+    if (kind === "discovery") {
+      return (
+        !!data.platformPreference &&
+        !!data.contentReadiness &&
+        !!data.copywritingSupport
+      )
+    }
+    if (kind === "project_details") {
+      return !!data.timeline && !!data.currentSite
+    }
+    if (kind === "contact") {
+      return (
+        !!data.name.trim() &&
+        !!data.email.trim() &&
+        (!TURNSTILE_SITE_KEY || !!turnstileToken)
+      )
+    }
+    return false
   })()
 
   const goNext = () => {
     if (!canAdvance) return
-    if (step < STEP_COUNT - 1) {
+    if (step < lastStepIndex) {
       posthog.capture("inquiry_form_step_completed", {
         step_number: step,
-        step_name: STEP_NAMES[step],
+        step_name: kind,
+        project_intent: data.projectIntent,
       })
       setDirection(1)
       setStep((s) => s + 1)
@@ -283,14 +357,44 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
     }
   }
 
+  const buildSubmitPayload = () => {
+    const isIntegration = data.projectIntent === "integrations-only"
+    const integrationSprintApi =
+      data.integrationSprintId === "unsure" ? "" : data.integrationSprintId
+    const packageInterest = isIntegration
+      ? `integration:${data.integrationSprintId || "unsure"}`
+      : data.packageInterest
+    return {
+      projectIntent: data.projectIntent,
+      businessType: data.businessType,
+      packageInterest,
+      integrationSprintId: integrationSprintApi,
+      selectedIntegrationModules: data.selectedIntegrationModules,
+      toolsNotes: data.toolsNotes,
+      platformPreference: isIntegration ? NA_INTEGRATIONS : data.platformPreference,
+      contentReadiness: isIntegration ? NA_INTEGRATIONS : data.contentReadiness,
+      copywritingSupport: isIntegration ? NA_INTEGRATIONS : data.copywritingSupport,
+      timeline: data.timeline,
+      currentSite: data.currentSite,
+      websiteUrl: data.websiteUrl,
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      message: data.message,
+    }
+  }
+
   const handleSubmit = async () => {
     if (!canAdvance) return
     setSubmitting(true)
     setSubmitError(null)
+    const payload = buildSubmitPayload()
     posthog.capture("inquiry_form_submitted", {
+      project_intent: data.projectIntent,
       business_type: data.businessType,
-      package_interest: data.packageInterest,
-      platform_preference: data.platformPreference,
+      package_interest: payload.packageInterest,
+      integration_modules: data.selectedIntegrationModules,
+      platform_preference: payload.platformPreference,
       timeline: data.timeline,
       current_site: data.currentSite,
     })
@@ -299,14 +403,14 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ...data,
+          ...payload,
           turnstileToken: turnstileToken ?? "",
         }),
       })
-      const payload = (await res.json()) as { error?: string }
+      const resPayload = (await res.json()) as { error?: string }
       if (!res.ok) {
         setSubmitError(
-          payload.error ??
+          resPayload.error ??
             "Something went wrong sending your details. Please try again."
         )
         return
@@ -342,7 +446,7 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
             Thanks, {data.name.split(" ")[0]}!
           </h3>
           <p className="max-w-md text-base leading-relaxed text-muted-foreground">
-            I&apos;ll review your project details and get back to you within 24 hours.
+            I&apos;ll review your project details and get back to you within one business day.
             If it&apos;s urgent, feel free to call me directly.
           </p>
         </motion.div>
@@ -356,16 +460,21 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
     )
   }
 
+  const atFinalStep = Boolean(data.projectIntent) && step === lastStepIndex
+
   return (
     <div className={cn("w-full", className)}>
       <div className="mb-6">
-        <StepIndicator current={step} total={STEP_COUNT} />
+        <StepIndicator
+          current={step}
+          total={data.projectIntent ? totalSteps : 1}
+        />
       </div>
 
       <div className="relative min-h-[320px] overflow-hidden">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
-            key={step}
+            key={`${step}-${kind}`}
             custom={direction}
             variants={slideVariants}
             initial="enter"
@@ -373,19 +482,55 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
             exit="exit"
             transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
           >
-            {step === 0 && (
+            {kind === "project_intent" && (
+              <StepProjectIntent
+                value={data.projectIntent}
+                onChange={(v) => update("projectIntent", v)}
+              />
+            )}
+            {kind === "business_type" && (
               <StepBusinessType
                 value={data.businessType}
                 onChange={(v) => update("businessType", v)}
               />
             )}
-            {step === 1 && (
+            {kind === "package" && (
               <StepPackage
                 value={data.packageInterest}
                 onChange={(v) => update("packageInterest", v)}
+                businessType={data.businessType}
+                selectedIntegrationModules={data.selectedIntegrationModules}
+                onToggleIntegrationModule={(id) => {
+                  setData((prev) => {
+                    const has = prev.selectedIntegrationModules.includes(id)
+                    const selectedIntegrationModules = has
+                      ? prev.selectedIntegrationModules.filter((x) => x !== id)
+                      : [...prev.selectedIntegrationModules, id]
+                    return { ...prev, selectedIntegrationModules }
+                  })
+                }}
               />
             )}
-            {step === 2 && (
+            {kind === "integrations" && (
+              <StepIntegration
+                businessType={data.businessType}
+                integrationSprintId={data.integrationSprintId}
+                selectedIntegrationModules={data.selectedIntegrationModules}
+                toolsNotes={data.toolsNotes}
+                onSprint={(v) => update("integrationSprintId", v)}
+                onToggleModule={(id) => {
+                  setData((prev) => {
+                    const has = prev.selectedIntegrationModules.includes(id)
+                    const selectedIntegrationModules = has
+                      ? prev.selectedIntegrationModules.filter((x) => x !== id)
+                      : [...prev.selectedIntegrationModules, id]
+                    return { ...prev, selectedIntegrationModules }
+                  })
+                }}
+                onToolsNotes={(v) => update("toolsNotes", v)}
+              />
+            )}
+            {kind === "discovery" && (
               <StepDiscovery
                 platformPreference={data.platformPreference}
                 contentReadiness={data.contentReadiness}
@@ -395,7 +540,7 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
                 onCopy={(v) => update("copywritingSupport", v)}
               />
             )}
-            {step === 3 && (
+            {kind === "project_details" && (
               <StepProjectDetails
                 timeline={data.timeline}
                 currentSite={data.currentSite}
@@ -405,7 +550,7 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
                 onWebsiteUrl={(v) => update("websiteUrl", v)}
               />
             )}
-            {step === 4 && (
+            {kind === "contact" && (
               <StepContact
                 data={data}
                 onChange={update}
@@ -417,7 +562,7 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
         </AnimatePresence>
       </div>
 
-      {submitError && step === STEP_COUNT - 1 && (
+      {submitError && atFinalStep && (
         <p role="alert" className="mt-6 text-sm text-destructive">
           {submitError}
         </p>
@@ -435,7 +580,7 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
           Back
         </Button>
 
-        {step < STEP_COUNT - 1 ? (
+        {!atFinalStep ? (
           <Button
             variant="default"
             size="cta"
@@ -469,6 +614,48 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
   )
 }
 
+function StepProjectIntent({
+  value,
+  onChange,
+}: {
+  value: ProjectIntent
+  onChange: (v: "new-site" | "integrations-only") => void
+}) {
+  return (
+    <div className="space-y-4">
+      <div>
+        <h3 className="font-heading text-xl font-semibold tracking-tight">
+          What are you looking for?
+        </h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Full website projects and integration-only work use the same brief — pick what fits.
+        </p>
+      </div>
+      <div className="grid gap-2.5">
+        {PROJECT_INTENT_OPTIONS.map((opt) => (
+          <OptionCard
+            key={opt.value}
+            selected={value === opt.value}
+            onClick={() => onChange(opt.value)}
+            label={opt.label}
+          >
+            <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{opt.hint}</p>
+          </OptionCard>
+        ))}
+      </div>
+      <p className="text-xs leading-relaxed text-muted-foreground">
+        <Link
+          href="/services/integrations"
+          className="font-medium text-primary underline-offset-4 hover:underline"
+        >
+          How add-ons and standalone sprints are priced
+        </Link>{" "}
+        — optional modules are listed on Pricing too.
+      </p>
+    </div>
+  )
+}
+
 function StepBusinessType({
   value,
   onChange,
@@ -483,7 +670,7 @@ function StepBusinessType({
           What kind of business do you run?
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          This helps me understand your industry so I can tailor the site.
+          This helps me understand your industry — and surface relevant integration add-ons.
         </p>
       </div>
       <div className="grid gap-2.5 sm:grid-cols-2">
@@ -504,12 +691,128 @@ function StepBusinessType({
   )
 }
 
+function StepIntegration({
+  businessType,
+  integrationSprintId,
+  selectedIntegrationModules,
+  toolsNotes,
+  onSprint,
+  onToggleModule,
+  onToolsNotes,
+}: {
+  businessType: string
+  integrationSprintId: string
+  selectedIntegrationModules: string[]
+  toolsNotes: string
+  onSprint: (v: string) => void
+  onToggleModule: (id: string) => void
+  onToolsNotes: (v: string) => void
+}) {
+  const modules = sortModulesForBusiness(businessType)
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="font-heading text-xl font-semibold tracking-tight">
+          Sprint &amp; add-ons
+        </h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Pick the closest standalone sprint. Optional add-ons help me quote — we confirm scope before
+          work starts.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium text-foreground">Standalone sprint</p>
+        <div className="grid gap-2.5">
+          {siteConfig.standaloneSprints.map((s) => (
+            <OptionCard
+              key={s.id}
+              selected={integrationSprintId === s.id}
+              onClick={() => onSprint(s.id)}
+              label={`${s.name} — from $${s.fromPrice.toLocaleString()} NZD`}
+            >
+              <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{s.outcome}</p>
+              <p className="mt-1 text-[11px] text-muted-foreground/90">{s.deliveryHint}</p>
+            </OptionCard>
+          ))}
+          <OptionCard
+            selected={integrationSprintId === "unsure"}
+            onClick={() => onSprint("unsure")}
+            label="Not sure yet — recommend a sprint for me"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium text-foreground">
+          Interested add-ons <span className="font-normal text-muted-foreground">(optional)</span>
+        </p>
+        <div className="grid gap-2">
+          {modules.map((m) => {
+            const suggested =
+              businessType && moduleMatchesBusiness(m.typicalForBusinessTypes, businessType)
+            return (
+              <label
+                key={m.id}
+                className={cn(
+                  "flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
+                  selectedIntegrationModules.includes(m.id)
+                    ? "border-primary bg-primary/[0.06] ring-1 ring-primary/30"
+                    : "border-border/70 bg-background hover:border-primary/30"
+                )}
+              >
+                <Checkbox
+                  className="mt-0.5"
+                  checked={selectedIntegrationModules.includes(m.id)}
+                  onCheckedChange={() => onToggleModule(m.id)}
+                />
+                <span className="flex-1">
+                  <span className="text-sm font-medium text-foreground">{m.label}</span>
+                  {suggested ? (
+                    <span className="ml-2 text-[10px] font-medium uppercase tracking-wide text-primary">
+                      Often paired
+                    </span>
+                  ) : null}
+                  <span className="mt-0.5 block text-xs text-muted-foreground">{m.outcome}</span>
+                  <span className="mt-1 block font-mono text-[11px] text-muted-foreground">
+                    from ${m.fromPrice.toLocaleString()} NZD
+                  </span>
+                </span>
+              </label>
+            )
+          })}
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label htmlFor="inquiry-tools-notes">
+          Tools you use <span className="font-normal text-muted-foreground">(optional)</span>
+        </Label>
+        <Textarea
+          id="inquiry-tools-notes"
+          placeholder="e.g. Xero, Calendly, Lightspeed, Mailchimp, existing Shopify theme…"
+          rows={3}
+          value={toolsNotes}
+          onChange={(e) => onToolsNotes(e.target.value)}
+        />
+      </div>
+    </div>
+  )
+}
+
 function StepPackage({
   value,
   onChange,
+  businessType,
+  selectedIntegrationModules,
+  onToggleIntegrationModule,
 }: {
   value: string
   onChange: (v: string) => void
+  businessType: string
+  selectedIntegrationModules: string[]
+  onToggleIntegrationModule: (id: string) => void
 }) {
   const [buildType, setBuildType] = useState<"standard" | "ecommerce">(() =>
     value.startsWith("shopify:") ? "ecommerce" : "standard"
@@ -659,6 +962,52 @@ function StepPackage({
           Prefer to browse plans yourself? Show standard & ecommerce options
         </button>
       )}
+
+      <div className="border-t border-border/60 pt-6">
+        <p className="text-sm font-medium text-foreground">
+          Interested integration add-ons{" "}
+          <span className="font-normal text-muted-foreground">(optional)</span>
+        </p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          From-prices on Pricing — typical for your industry are highlighted. We confirm scope before
+          work starts.
+        </p>
+        <div className="mt-3 grid gap-2">
+          {sortModulesForBusiness(businessType).map((m) => {
+            const suggested =
+              businessType && moduleMatchesBusiness(m.typicalForBusinessTypes, businessType)
+            return (
+              <label
+                key={m.id}
+                className={cn(
+                  "flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
+                  selectedIntegrationModules.includes(m.id)
+                    ? "border-primary bg-primary/[0.06] ring-1 ring-primary/30"
+                    : "border-border/70 bg-background hover:border-primary/30"
+                )}
+              >
+                <Checkbox
+                  className="mt-0.5"
+                  checked={selectedIntegrationModules.includes(m.id)}
+                  onCheckedChange={() => onToggleIntegrationModule(m.id)}
+                />
+                <span className="flex-1">
+                  <span className="text-sm font-medium text-foreground">{m.label}</span>
+                  {suggested ? (
+                    <span className="ml-2 text-[10px] font-medium uppercase tracking-wide text-primary">
+                      Often paired
+                    </span>
+                  ) : null}
+                  <span className="mt-0.5 block text-xs text-muted-foreground">{m.outcome}</span>
+                  <span className="mt-1 block font-mono text-[11px] text-muted-foreground">
+                    from ${m.fromPrice.toLocaleString()} NZD
+                  </span>
+                </span>
+              </label>
+            )
+          })}
+        </div>
+      </div>
     </div>
   )
 }
@@ -851,7 +1200,7 @@ function StepContact({
           How can I reach you?
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          I&apos;ll reply within 24 hours — usually much sooner.
+          I&apos;ll reply within one business day — usually much sooner.
         </p>
       </div>
 

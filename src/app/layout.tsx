@@ -8,7 +8,9 @@ import { LiquidGlassRegistryProvider } from "@/components/providers/liquid-glass
 import { StringTuneProvider } from "@/components/providers/string-tune-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@wrksz/themes/next";
+import { JsonLd } from "@/components/seo/json-ld";
 import { siteConfig } from "@/config/site";
+import { buildSiteJsonLdGraph } from "@/lib/structured-data";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 
@@ -40,25 +42,37 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+const defaultTitle = `${siteConfig.name} — ${siteConfig.tagline}`;
+
 export const metadata: Metadata = {
   title: {
-    default: `${siteConfig.name} — ${siteConfig.tagline}`,
+    default: defaultTitle,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
   metadataBase: new URL(siteConfig.url),
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: siteConfig.locale,
     url: siteConfig.url,
-    title: siteConfig.name,
+    title: defaultTitle,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: [
+      {
+        url: "/social/scalr-facebook-cover.png",
+        alt: defaultTitle,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.name,
+    title: defaultTitle,
     description: siteConfig.description,
+    images: ["/social/scalr-facebook-cover.png"],
   },
   robots: {
     index: true,
@@ -90,6 +104,7 @@ export default async function RootLayout({
 `}</Script>
       </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
+        <JsonLd data={buildSiteJsonLdGraph(siteConfig)} />
         <PostHogEnsure />
         <ThemeProvider
           attribute="class"

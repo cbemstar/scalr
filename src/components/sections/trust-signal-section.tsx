@@ -16,18 +16,18 @@ export function TrustSignalSection() {
       aria-labelledby="trust-signal-heading"
     >
       <div className="lp-shell">
-        <FadeIn>
-          <div className="mx-auto max-w-6xl">
-            <p className="lp-kicker mb-3">{t.kicker}</p>
-            <h2 id="trust-signal-heading" className="lp-title max-w-2xl text-balance">
-              {t.title}
-            </h2>
-            <p className="mt-2 max-w-lg text-sm text-muted-foreground">{t.lead}</p>
-          </div>
-        </FadeIn>
+        <div className="mx-auto max-w-6xl">
+          <FadeIn>
+            <div className="lp-section-intro mb-8">
+              <p className="lp-kicker mb-3">{t.kicker}</p>
+              <h2 id="trust-signal-heading" className="lp-title max-w-2xl text-balance">
+                {t.title}
+              </h2>
+              <p className="mt-2 max-w-lg text-sm text-muted-foreground">{t.lead}</p>
+            </div>
+          </FadeIn>
 
-        <FadeIn delay={0.06}>
-          <div className="mt-8">
+          <FadeIn delay={0.06}>
             <Testimonials
               sourceUrl={h.url}
               sourceLabel={h.linkLabel}
@@ -37,9 +37,10 @@ export function TrustSignalSection() {
               supporting={t.supporting}
               attributionName={t.attributionName}
               attributionDetail={t.attributionDetail}
+              attributionDate={t.attributionDate}
             />
-          </div>
-        </FadeIn>
+          </FadeIn>
+        </div>
       </div>
     </section>
   )

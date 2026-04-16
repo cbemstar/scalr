@@ -212,7 +212,7 @@ export function SiteFooter({ className }: { className?: string }) {
           <div className="lp-shell">
             <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-1 text-xs text-muted-foreground sm:flex-row sm:items-center">
               <p>© {new Date().getFullYear()} {siteConfig.name}. All prices in NZD.</p>
-              <p className="opacity-60">Built in Christchurch · For New Zealand businesses</p>
+              <p className="opacity-60">Serving businesses across New Zealand</p>
             </div>
           </div>
         </div>

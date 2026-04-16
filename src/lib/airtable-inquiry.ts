@@ -18,7 +18,7 @@
  * | Timeline              | Single line text| |
  * | Current site          | Single line text| |
  * | Website URL           | URL             | Optional |
- * | Message               | Long text       | Optional |
+ * | Message               | Long text       | Optional; may include an auto-appended block for integration path, add-ons, and tools notes (see `appendIntegrationNotesToMessage` in `api/inquiry/route.ts`). |
  * | Status                | Single select   | CRM pipeline (Kanban). New rows default to **New enquiry** — configure options with `scripts/configure-inquiry-status-pipeline.mjs` (requires PAT with `schema.bases:write`). |
  *
  * If any choice column was **Single select**, new form options (e.g. `not-sure`) would be **rejected**

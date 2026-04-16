@@ -7,10 +7,10 @@ export function HowStudioWorksSection() {
       <div className="lp-shell">
         <FadeIn>
           <div className="lp-section-intro max-w-2xl">
-            <p className="lp-kicker mb-3">How we work</p>
-            <h2 className="lp-title text-balance">How Scalr works</h2>
+            <p className="lp-kicker mb-3">At a glance</p>
+            <h2 className="lp-title text-balance">What you get with Scalr</h2>
             <p className="lp-lead mt-4 text-pretty">
-              Clear expectations — what we optimise for, and what we don&apos;t offer.
+              Clear expectations: what we optimise for, and what we don&apos;t take on.
             </p>
           </div>
         </FadeIn>

@@ -43,14 +43,14 @@ export function FinalCTASection() {
             <div className="max-w-lg space-y-6 lg:sticky lg:top-28">
               <p className="lp-kicker mb-4">Ready to start?</p>
               <h2 className="lp-title-display">
-                Stop losing customers to a website that doesn&apos;t do its job.
+                Give your next customer a clear reason to take the next step.
               </h2>
               <p className="text-lg leading-relaxed text-muted-foreground text-pretty md:text-xl">
-                Fill out the quick brief below and I&apos;ll get back to you within 24 hours
-                with a clear plan — no pressure, no pitch.
+                Send a short brief below and I&apos;ll reply within one business day with a
+                clear next step — no hard sell.
               </p>
               <p className="text-sm leading-relaxed text-muted-foreground/90">
-                Based in Christchurch. Canterbury and New Zealand-wide. All prices in NZD.
+                Serving businesses across New Zealand. All prices in NZD — based in Christchurch.
               </p>
 
               <div className="flex items-center gap-3 rounded-xl border border-border/60 bg-muted/20 px-4 py-3">

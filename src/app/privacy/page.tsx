@@ -26,8 +26,9 @@ export default function PrivacyPage() {
 
       <h2>Who we are</h2>
       <p>
-        <strong>{siteConfig.name}</strong> is a Christchurch-based website studio. For privacy
-        matters, contact <strong>{siteConfig.contact.email}</strong>.
+        <strong>{siteConfig.name}</strong> is a New Zealand website studio (based in{" "}
+        {siteConfig.contact.location.split(",")[0]}). For privacy matters, contact{" "}
+        <strong>{siteConfig.contact.email}</strong>.
       </p>
 
       <h2>What we collect</h2>

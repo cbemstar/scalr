@@ -39,7 +39,7 @@ const processMarqueeItems = [
   "Do you set up analytics and contact forms?",
   "Is there ongoing support after launch?",
   "Which package is right for a tradie or café?",
-  "How do I know the site will convert visitors?",
+  "How do I know visitors will know what to do next?",
 ]
 
 export function HowItWorksSection() {
@@ -50,7 +50,7 @@ export function HowItWorksSection() {
           <VercepProcessShowcase
             eyebrow="The process"
             title="Three steps. No tech overwhelm."
-            description="No chasing you for content for months on end. We filter out the noise, focus on what matters for Christchurch small businesses, and get you live without the usual agency runaround."
+            description="No chasing you for content for months on end. We filter out the noise, focus on what matters for New Zealand small businesses, and get you live without the usual agency runaround."
             marqueeItems={processMarqueeItems}
             steps={steps}
           />

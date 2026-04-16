@@ -5,9 +5,16 @@ import { useEffect, useMemo, useState } from "react"
 import posthog from "posthog-js"
 
 import { FadeIn } from "@/components/common/fade-in"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { InteractivePricing } from "@/components/ui/pricing"
 import type { InteractivePricingPlan } from "@/components/ui/pricing"
 import { Switch } from "@/components/ui/switch"
+import Link from "next/link"
 import { pricingHash, siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 
@@ -110,37 +117,28 @@ export function PricingSection() {
     <section id="pricing" className="scroll-mt-24 lp-section bg-muted/25">
       <div className="lp-shell">
         <FadeIn>
-          <div className="lp-section-intro max-w-xl">
+          <div className="lp-section-intro max-w-2xl">
             <p className="lp-kicker mb-3">Pricing</p>
-            <h2 className="lp-title text-balance">
-              Everything you see is everything you pay.
-            </h2>
+            <h2 className="lp-title text-balance">Build fee + optional monthly care. No surprises.</h2>
             <p className="lp-lead mt-4 max-w-xl text-pretty">
               {commerceMode ? (
                 <>
-                  Shopify packages pair a one-time build with optional monthly commerce care — same
-                  transparency as standard sites. Your Shopify subscription is separate.
+                  One-time Shopify build, optional commerce care. Your Shopify plan and apps stay on
+                  your bill with Shopify — we only price the work we do.
                 </>
               ) : (
                 <>
-                  Every package shows the one-time build cost and the optional monthly hosting fee
-                  side by side — flip to ecommerce when you&apos;re ready to sell products online.
+                  Each card shows build cost and optional hosting side by side. Switch to Ecommerce
+                  when you need a store, not a brochure site.
                 </>
               )}
             </p>
-            <p className="mt-3 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
-              <a
-                href={siteConfig.heroStat.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="font-medium text-foreground underline decoration-border underline-offset-4 hover:decoration-primary"
-                title={siteConfig.heroStat.titleAttr}
-              >
-                {siteConfig.heroStat.linkLabel}
-              </a>{" "}
-              reports that nearly half of NZ businesses don&apos;t have a website, while most
-              consumers still see a website as the main way to engage with a business. Fixed scopes
-              and prices are for owners who want to close that gap without a quoting runaround.
+            <p className="mt-4 max-w-xl text-pretty text-sm leading-relaxed text-muted-foreground">
+              {siteConfig.pricingFraming.timingNote}{" "}
+              <Link href="/#faq" className="font-medium text-foreground underline-offset-4 hover:underline">
+                FAQ
+              </Link>{" "}
+              has scope, SEO depth, and change-order detail if you need it.
             </p>
           </div>
         </FadeIn>
@@ -215,7 +213,7 @@ export function PricingSection() {
         </FadeIn>
 
         <FadeIn delay={0.12}>
-          <div className="mt-10 grid gap-5 md:grid-cols-2">
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
             <div className="rounded-xl border border-border/70 bg-background p-5">
               <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Domain name
@@ -235,40 +233,109 @@ export function PricingSection() {
                   : siteConfig.platforms.default.hostingNote}
               </p>
             </div>
-          </div>
-        </FadeIn>
 
-        <FadeIn delay={0.14}>
-          <div
-            id="pricing-webflow"
-            className="mt-5 rounded-2xl border-2 border-primary/25 bg-primary/[0.04] p-5 shadow-sm ring-1 ring-primary/10 md:p-6"
-          >
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
-              <div className="flex shrink-0 items-center gap-3">
+            <div
+              id="pricing-webflow"
+              className="flex flex-col gap-3 rounded-xl border-2 border-primary/25 bg-primary/[0.04] p-5 ring-1 ring-primary/10"
+            >
+              <div className="flex items-center gap-3">
                 <Image
                   src="/logos/platforms/color/webflow.svg"
                   alt=""
-                  width={100}
-                  height={28}
-                  className="h-7 w-auto opacity-90 dark:brightness-0 dark:invert"
+                  width={88}
+                  height={24}
+                  className="h-5 w-auto opacity-90 dark:brightness-0 dark:invert"
                 />
-                <span className="hidden rounded-full border border-primary/25 bg-background/80 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-primary sm:inline">
-                  Webflow
-                </span>
-              </div>
-              <div className="min-w-0 flex-1">
                 <p className="text-xs font-semibold uppercase tracking-widest text-primary">
-                  Prefer Webflow?
-                </p>
-                <p className="mt-2 text-sm leading-relaxed text-foreground">
-                  I also build on Webflow. Same build prices — hosting is paid directly to Webflow (
-                  {siteConfig.platforms.webflow.tiers.map((t) => `${t.name} $${t.price} USD/mo`).join(
-                    ", "
-                  )}
-                  ). Mention it in your project brief and I&apos;ll walk you through the options.
+                  Also available on Webflow
                 </p>
               </div>
+              <p className="text-sm leading-relaxed text-foreground">
+                Same build prices — you pay Webflow hosting directly (
+                {siteConfig.platforms.webflow.tiers.map((t) => `${t.name} $${t.price} USD/mo`).join(
+                  ", "
+                )}
+                ). Mention it in your project brief.
+              </p>
             </div>
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={0.13}>
+          <div id="pricing-integrations" className="mt-10 scroll-mt-24">
+            <Accordion type="single" collapsible className="rounded-2xl border border-border/70 bg-background">
+              <AccordionItem value="addons" className="border-0 px-1">
+                <AccordionTrigger className="px-4 py-4 text-left text-sm font-semibold hover:no-underline sm:px-5 sm:text-base">
+                  <span className="pr-2">
+                    Add-ons, integrations &amp; standalone work{" "}
+                    <span className="block text-xs font-normal text-muted-foreground sm:inline sm:pl-1">
+                      (optional — open if you need from-prices)
+                    </span>
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="px-4 pb-5 sm:px-5">
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    We recommend the right tool for your industry and set it up as a fixed-price add-on —
+                    no open-ended hourly.{" "}
+                    <Link
+                      href="/services/integrations"
+                      className="font-medium text-primary underline-offset-4 hover:underline"
+                    >
+                      How we package integrations
+                    </Link>
+                  </p>
+                  <p className="mt-3 text-sm text-muted-foreground">
+                    <span className="font-medium text-foreground">Time blocks:</span> half-day from $
+                    {siteConfig.billingRates.halfDayFrom.toLocaleString()} NZD · full day from $
+                    {siteConfig.billingRates.dayFrom.toLocaleString()} NZD. Ad-hoc $
+                    {siteConfig.billingRates.hourly}/hr — see FAQ.
+                  </p>
+
+                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                    {siteConfig.integrationModules.map((m) => (
+                      <div
+                        key={m.id}
+                        className="rounded-xl border border-border/60 bg-muted/10 p-3 sm:p-4"
+                      >
+                        <div className="flex flex-wrap items-baseline justify-between gap-2">
+                          <p className="text-sm font-semibold text-foreground">{m.label}</p>
+                          <p className="font-mono text-sm font-semibold tabular-nums text-primary">
+                            from ${m.fromPrice.toLocaleString()}
+                          </p>
+                        </div>
+                        <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">{m.outcome}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="mt-6 border-t border-border/60 pt-6">
+                    <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                      Standalone (no new site)
+                    </p>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      Wiring tools only — fixed deliverables, not a full site build.
+                    </p>
+                    <ul className="mt-3 space-y-2">
+                      {siteConfig.standaloneSprints.map((s) => (
+                        <li
+                          key={s.id}
+                          className="flex flex-col gap-0.5 rounded-lg border border-border/50 bg-muted/10 px-3 py-2.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-3"
+                        >
+                          <div>
+                            <span className="font-medium text-foreground">{s.name}</span>
+                            <span className="text-muted-foreground"> — {s.tagline}</span>
+                          </div>
+                          <p className="shrink-0 font-mono text-sm font-semibold tabular-nums text-primary">
+                            from ${s.fromPrice.toLocaleString()}
+                          </p>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </div>
         </FadeIn>
 

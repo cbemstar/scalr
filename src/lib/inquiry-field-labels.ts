@@ -17,12 +17,16 @@ const BUSINESS_TYPE_LABELS: Record<string, string> = {
   "not-sure": "Not sure — help me decide",
 }
 
+const NOT_APPLICABLE_INTEGRATION =
+  "Not applicable (integration / standalone project)"
+
 const PLATFORM_LABELS: Record<string, string> = {
   webflow: "Webflow",
   wordpress: "WordPress",
   shopify: "Shopify",
   nextjs: "Custom build (Next.js)",
   unsure: "I don't know — recommend for me",
+  "n/a-integrations": NOT_APPLICABLE_INTEGRATION,
 }
 
 const CONTENT_LABELS: Record<string, string> = {
@@ -30,12 +34,14 @@ const CONTENT_LABELS: Record<string, string> = {
   partial: "Some content is ready, some needs work",
   none: "No, I need full content support",
   "not-sure": "Not sure yet — I'll need guidance",
+  "n/a-integrations": NOT_APPLICABLE_INTEGRATION,
 }
 
 const COPY_LABELS: Record<string, string> = {
   "have-copy": "I already have website copy",
   "need-help": "I need copywriting support",
   unsure: "I don't know yet — advise me",
+  "n/a-integrations": NOT_APPLICABLE_INTEGRATION,
 }
 
 const TIMELINE_LABELS: Record<string, string> = {
@@ -64,6 +70,14 @@ export function labelBusinessType(value: string): string {
 
 export function labelPackageInterest(value: string): string {
   if (value === "unsure") return PACKAGE_INTEREST_UNSURE_LABEL
+  if (value.startsWith("integration:")) {
+    const rest = value.slice("integration:".length)
+    if (rest === "unsure") return "Standalone / integration work — recommend a sprint for me"
+    const sprint = siteConfig.standaloneSprints.find((s) => s.id === rest)
+    return sprint
+      ? `Standalone sprint · ${sprint.name}`
+      : `Standalone / integration · ${rest}`
+  }
   if (value.startsWith("standard:")) {
     const id = value.slice("standard:".length)
     const pkg = siteConfig.packages.find((p) => p.id === id)

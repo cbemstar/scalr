@@ -1,10 +1,8 @@
 "use client"
 
-import { motion, useSpring } from "framer-motion"
-import React, { useEffect, useMemo, useRef, useState } from "react"
+import React, { useMemo } from "react"
 import Link from "next/link"
 import { Check, Flame, Sparkles } from "lucide-react"
-import NumberFlow from "@number-flow/react"
 import posthog from "posthog-js"
 
 import {
@@ -15,140 +13,8 @@ import {
 } from "@/components/ui/accordion"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-import { Separator } from "@/components/ui/separator"
-import { ShineBorder } from "@/components/ui/shine-border"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
-
-function useMediaQuery(query: string) {
-  const [value, setValue] = useState(false)
-
-  useEffect(() => {
-    function onChange(event: MediaQueryListEvent) {
-      setValue(event.matches)
-    }
-    const result = matchMedia(query)
-    result.addEventListener("change", onChange)
-    setValue(result.matches)
-    return () => result.removeEventListener("change", onChange)
-  }, [query])
-
-  return value
-}
-
-type StarData = {
-  top: number
-  left: number
-  width: number
-  height: number
-  duration: number
-  delay: number
-}
-
-function Star({
-  data,
-  mousePosition,
-  containerRef,
-}: {
-  data: StarData
-  mousePosition: { x: number | null; y: number | null }
-  containerRef: React.RefObject<HTMLDivElement | null>
-}) {
-  const initialPos = { top: `${data.top}%`, left: `${data.left}%` }
-
-  const springConfig = { stiffness: 100, damping: 15, mass: 0.1 }
-  const springX = useSpring(0, springConfig)
-  const springY = useSpring(0, springConfig)
-
-  useEffect(() => {
-    if (
-      !containerRef.current ||
-      mousePosition.x === null ||
-      mousePosition.y === null
-    ) {
-      springX.set(0)
-      springY.set(0)
-      return
-    }
-
-    const containerRect = containerRef.current.getBoundingClientRect()
-    const starX = containerRect.left + (data.left / 100) * containerRect.width
-    const starY = containerRect.top + (data.top / 100) * containerRect.height
-
-    const deltaX = mousePosition.x - starX
-    const deltaY = mousePosition.y - starY
-    const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY)
-    const radius = 600
-
-    if (distance < radius) {
-      const force = 1 - distance / radius
-      springX.set(deltaX * force * 0.5)
-      springY.set(deltaY * force * 0.5)
-    } else {
-      springX.set(0)
-      springY.set(0)
-    }
-  }, [mousePosition, data, containerRef, springX, springY])
-
-  return (
-    <motion.div
-      className="absolute rounded-full bg-foreground"
-      style={{
-        top: initialPos.top,
-        left: initialPos.left,
-        width: `${data.width}px`,
-        height: `${data.height}px`,
-        x: springX,
-        y: springY,
-      }}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: [0, 1, 0] }}
-      transition={{ duration: data.duration, repeat: Infinity, delay: data.delay }}
-    />
-  )
-}
-
-function InteractiveStarfield({
-  mousePosition,
-  containerRef,
-}: {
-  mousePosition: { x: number | null; y: number | null }
-  containerRef: React.RefObject<HTMLDivElement | null>
-}) {
-  const [stars, setStars] = useState<StarData[]>([])
-
-  useEffect(() => {
-    setStars(
-      Array.from({ length: 56 }, () => ({
-        top: Math.random() * 100,
-        left: Math.random() * 100,
-        width: 1 + Math.random() * 2,
-        height: 1 + Math.random() * 2,
-        duration: 2 + Math.random() * 3,
-        delay: Math.random() * 5,
-      }))
-    )
-  }, [])
-
-  return (
-    <div className="pointer-events-none absolute inset-0 h-full w-full overflow-hidden">
-      {stars.map((star, i) => (
-        <Star
-          key={`star-${i}`}
-          data={star}
-          mousePosition={mousePosition}
-          containerRef={containerRef}
-        />
-      ))}
-    </div>
-  )
-}
 
 export type PlanComparisonCopy = {
   /** Plain-English — who this package is for */
@@ -517,113 +383,6 @@ function PlanComparisonFeatureMatrix({ plans }: { plans: InteractivePricingPlan[
   )
 }
 
-export function InteractivePricing({
-  plans,
-  priceBook = "marketing",
-}: InteractivePricingProps) {
-  const isCommerce = priceBook === "commerce"
-  const monthlyRowLabel = isCommerce ? "Commerce care / mo" : "Hosting & support / mo"
-  const comparisonLabels = useMemo(() => comparisonRowTitles(priceBook), [priceBook])
-
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [mousePosition, setMousePosition] = useState<{
-    x: number | null
-    y: number | null
-  }>({ x: null, y: null })
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    setMousePosition({ x: event.clientX, y: event.clientY })
-  }
-
-  return (
-    <div
-      ref={containerRef}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={() => setMousePosition({ x: null, y: null })}
-      className="relative w-full overflow-hidden rounded-[1.25rem] border border-border/80 bg-background py-8 sm:py-10"
-    >
-      <InteractiveStarfield mousePosition={mousePosition} containerRef={containerRef} />
-      <div className="relative z-10 px-4 md:px-6">
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4 xl:items-stretch xl:gap-x-3 xl:gap-y-6">
-          {plans.map((plan, index) => (
-            <PricingCard
-              key={plan.id ?? plan.name}
-              plan={plan}
-              index={index}
-              priceBook={priceBook}
-            />
-          ))}
-        </div>
-
-        <Accordion
-          type="single"
-          collapsible
-          className="mt-8 rounded-2xl border border-border/70 bg-muted/15"
-          onValueChange={(value) => {
-            if (value === "compare") {
-              posthog.capture("pricing_comparison_opened", { price_book: priceBook })
-            }
-          }}
-        >
-          <AccordionItem value="compare" className="border-0">
-            <AccordionTrigger className="px-4 py-4 text-sm font-semibold hover:no-underline sm:px-5 sm:text-base">
-              How to pick a plan — simple comparison
-            </AccordionTrigger>
-            <AccordionContent className="px-4 pb-5 sm:px-5">
-              <p className="mb-4 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                Start with the three plain-English rows (who it fits, what you get, what happens after launch).
-                Open the technical checklist only if you want every line item spelled out — most people do not
-                need it to choose.
-              </p>
-              <div className="md:hidden">
-                <PlanComparisonMobileCards
-                  plans={plans}
-                  monthlyRowLabel={monthlyRowLabel}
-                  rowTitles={comparisonLabels}
-                />
-              </div>
-              <div className="hidden md:block">
-                <PlanComparisonSimpleTable
-                  plans={plans}
-                  monthlyRowLabel={monthlyRowLabel}
-                  rowTitles={comparisonLabels}
-                />
-              </div>
-
-              <details className="group mt-6 rounded-xl border border-border/60 bg-muted/10">
-                <summary className="cursor-pointer list-none px-4 py-3 text-sm font-medium text-foreground [&::-webkit-details-marker]:hidden">
-                  <span className="flex items-center justify-between gap-2">
-                    Full technical checklist (line by line)
-                    <span className="text-xs font-normal text-muted-foreground group-open:hidden">Show</span>
-                    <span className="hidden text-xs font-normal text-muted-foreground group-open:inline">Hide</span>
-                  </span>
-                </summary>
-                <div className="border-t border-border/60 px-3 pb-4 pt-3 sm:px-4">
-                  <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
-                    Same information as in a proposal — useful if you are comparing nitty-gritty inclusions.
-                  </p>
-                  <PlanComparisonFeatureMatrix plans={plans} />
-                </div>
-              </details>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-
-        <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">
-          {isCommerce ? (
-            <>
-              All prices in NZD. Commerce care is optional — cancel anytime. Your Shopify subscription,
-              transaction fees, and paid apps are paid directly to Shopify and app vendors.
-            </>
-          ) : (
-            <>All prices in NZD. Hosting is optional — cancel anytime.</>
-          )}
-        </p>
-      </div>
-    </div>
-  )
-}
-
 function badgeForPlan(plan: InteractivePricingPlan) {
   if (plan.isPopular) {
     return (
@@ -650,165 +409,143 @@ function badgeForPlan(plan: InteractivePricingPlan) {
   return null
 }
 
-function PricingCardBody({
-  plan,
-  priceBook,
-}: {
-  plan: InteractivePricingPlan
-  priceBook: "marketing" | "commerce"
-}) {
+export function InteractivePricing({ plans, priceBook = "marketing" }: InteractivePricingProps) {
   const isCommerce = priceBook === "commerce"
+  const monthlyRowLabel = isCommerce ? "Commerce care / mo" : "Hosting & support / mo"
+  const comparisonLabels = useMemo(() => comparisonRowTitles(priceBook), [priceBook])
+
   return (
-    <>
-      {/*
-        Row-aligned layout: fixed min-heights + line-clamp so all four columns share the same
-        horizontal “lanes” at xl; bottom block uses mt-auto so CTAs line up when cards stretch.
-      */}
-      <div className="flex min-h-0 flex-1 flex-col gap-5">
-        {/* Row 1: plan name + badge slot */}
-        <div className="flex min-h-[3.25rem] shrink-0 items-start justify-between gap-2">
-          <CardTitle className="font-heading text-lg font-semibold tracking-tight text-primary sm:text-xl">
-            {plan.name}
-          </CardTitle>
-          {badgeForPlan(plan) ?? (
-            <span className="invisible h-6 w-[5.5rem] shrink-0" aria-hidden />
-          )}
+    <div className="w-full rounded-[1.25rem] border border-border/80 bg-background py-8 sm:py-10">
+      <div className="px-4 md:px-6">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-4">
+          {plans.map((plan) => (
+            <Card
+              key={plan.id ?? plan.name}
+              className={cn(
+                "flex h-full flex-col rounded-2xl border p-5 shadow-sm sm:p-6",
+                plan.isPopular
+                  ? "border-primary/40 ring-1 ring-primary/20"
+                  : "border-border/80 bg-card ring-1 ring-foreground/5"
+              )}
+            >
+              <CardContent className="flex flex-1 flex-col gap-4 p-0">
+                <div className="flex items-start justify-between gap-2">
+                  <CardTitle className="font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+                    {plan.name}
+                  </CardTitle>
+                  {badgeForPlan(plan)}
+                </div>
+                <p className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                  {plan.pages} · {plan.deliveryDays}
+                </p>
+                <p className="text-sm leading-snug text-muted-foreground">{plan.tagline}</p>
+                <div className="space-y-1 border-t border-border/60 pt-4">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    Build
+                  </p>
+                  <p className="font-mono text-2xl font-semibold tabular-nums text-foreground sm:text-3xl">
+                    {nzd.format(plan.buildPrice)}
+                    <span className="ml-1 text-xs font-normal text-muted-foreground sm:text-sm">one-time</span>
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    {isCommerce ? "Commerce care" : "Hosting & support"}
+                  </p>
+                  <p className="font-mono text-xl font-semibold tabular-nums text-foreground sm:text-2xl">
+                    {nzd.format(plan.monthlyPrice)}
+                    <span className="ml-1 text-xs font-normal text-muted-foreground sm:text-sm">
+                      {isCommerce ? "/mo · Shopify billed separately" : "/mo · cancel anytime"}
+                    </span>
+                  </p>
+                </div>
+                <Button
+                  asChild
+                  variant={plan.isPopular ? "default" : "secondary"}
+                  className="mt-auto h-10 w-full text-sm"
+                >
+                  <Link
+                    href={plan.href}
+                    onClick={() =>
+                      posthog.capture("pricing_cta_clicked", {
+                        plan_name: plan.name,
+                        plan_price: plan.buildPrice,
+                        price_book: priceBook,
+                      })
+                    }
+                  >
+                    {plan.cta}
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
-        {/* Row 2: scope · timeline + tagline (clamped so row height matches across cards) */}
-        <div className="flex min-h-[7.5rem] shrink-0 flex-col justify-start gap-1.5 sm:min-h-[7.75rem]">
-          <span className="shrink-0 text-[11px] font-medium uppercase tracking-wider text-muted-foreground/90">
-            {plan.pages} · {plan.deliveryDays}
-          </span>
-          <CardDescription
-            title={plan.tagline}
-            className="line-clamp-4 text-pretty text-xs leading-snug text-muted-foreground sm:text-sm"
-          >
-            {plan.tagline}
-          </CardDescription>
-        </div>
-
-        {/* Row 3: build */}
-        <div className="flex min-h-[5.25rem] shrink-0 flex-col justify-end gap-0.5 border-b border-border/50 pb-3">
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            Build cost
-          </span>
-          <div className="flex flex-wrap items-baseline gap-1">
-            <span className="font-mono text-2xl font-semibold tabular-nums text-foreground sm:text-3xl">
-              <NumberFlow
-                value={plan.buildPrice}
-                format={{
-                  style: "currency",
-                  currency: "NZD",
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                }}
-              />
-            </span>
-            <span className="text-xs font-normal text-muted-foreground sm:text-sm">one-time</span>
-          </div>
-        </div>
-
-        {/* Row 4: monthly care / hosting */}
-        <div className="flex min-h-[5rem] shrink-0 flex-col justify-end gap-0.5 pb-1">
-          <span className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
-            {isCommerce ? "Commerce care" : "Hosting & support"}
-          </span>
-          <div className="flex flex-wrap items-baseline gap-1">
-            <span className="font-mono text-xl font-semibold tabular-nums text-foreground sm:text-2xl">
-              <NumberFlow
-                value={plan.monthlyPrice}
-                format={{
-                  style: "currency",
-                  currency: "NZD",
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 0,
-                }}
-              />
-            </span>
-            <span className="text-xs text-muted-foreground sm:text-sm">
-              {isCommerce ? "/mo · Shopify plan separate" : "/mo · cancel anytime"}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-auto flex w-full min-w-0 shrink-0 flex-col gap-3 pt-1">
-        <Separator className="shrink-0" />
-        <Button
-          asChild
-          variant={plan.isPopular ? "default" : "secondary"}
-          className="h-10 w-full shrink-0 text-sm"
-        >
-          <Link
-            href={plan.href}
-            onClick={() =>
-              posthog.capture("pricing_cta_clicked", {
-                plan_name: plan.name,
-                plan_price: plan.buildPrice,
-                price_book: priceBook,
-              })
+        <Accordion
+          type="single"
+          collapsible
+          className="mt-8 rounded-2xl border border-border/70 bg-muted/15"
+          onValueChange={(value) => {
+            if (value === "compare") {
+              posthog.capture("pricing_comparison_opened", { price_book: priceBook })
             }
-          >
-            {plan.cta}
-          </Link>
-        </Button>
+          }}
+        >
+          <AccordionItem value="compare" className="border-0">
+            <AccordionTrigger className="px-4 py-4 text-sm font-semibold hover:no-underline sm:px-5 sm:text-base">
+              Compare plans (optional)
+            </AccordionTrigger>
+            <AccordionContent className="px-4 pb-5 sm:px-5">
+              <p className="mb-4 text-xs leading-relaxed text-muted-foreground sm:text-sm">
+                Three rows cover who each plan fits and what happens after launch. Open the checklist only if you
+                need every line item.
+              </p>
+              <div className="md:hidden">
+                <PlanComparisonMobileCards
+                  plans={plans}
+                  monthlyRowLabel={monthlyRowLabel}
+                  rowTitles={comparisonLabels}
+                />
+              </div>
+              <div className="hidden md:block">
+                <PlanComparisonSimpleTable
+                  plans={plans}
+                  monthlyRowLabel={monthlyRowLabel}
+                  rowTitles={comparisonLabels}
+                />
+              </div>
+
+              <details className="group mt-6 rounded-xl border border-border/60 bg-muted/10">
+                <summary className="cursor-pointer list-none px-4 py-3 text-sm font-medium text-foreground [&::-webkit-details-marker]:hidden">
+                  <span className="flex items-center justify-between gap-2">
+                    Full technical checklist
+                    <span className="text-xs font-normal text-muted-foreground group-open:hidden">Show</span>
+                    <span className="hidden text-xs font-normal text-muted-foreground group-open:inline">Hide</span>
+                  </span>
+                </summary>
+                <div className="border-t border-border/60 px-3 pb-4 pt-3 sm:px-4">
+                  <p className="mb-3 text-xs leading-relaxed text-muted-foreground">
+                    Same detail as a proposal — useful when comparing inclusions line by line.
+                  </p>
+                  <PlanComparisonFeatureMatrix plans={plans} />
+                </div>
+              </details>
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
+
+        <p className="mt-5 text-center text-xs leading-relaxed text-muted-foreground">
+          {isCommerce ? (
+            <>
+              All prices in NZD. Commerce care is optional — cancel anytime. Your Shopify subscription, transaction
+              fees, and paid apps are paid directly to Shopify and app vendors.
+            </>
+          ) : (
+            <>All prices in NZD. Hosting is optional — cancel anytime.</>
+          )}
+        </p>
       </div>
-    </>
-  )
-}
-
-function PricingCard({
-  plan,
-  index,
-  priceBook,
-}: {
-  plan: InteractivePricingPlan
-  index: number
-  priceBook: "marketing" | "commerce"
-}) {
-  const isXl = useMediaQuery("(min-width: 1280px)")
-
-  const cardInner = (
-    <Card
-      className={cn(
-        "relative flex h-full min-h-0 flex-col rounded-2xl p-5 shadow-none ring-0 sm:p-6",
-        plan.isPopular
-          ? "border-0 bg-transparent"
-          : "border border-border bg-card shadow-md ring-1 ring-foreground/5"
-      )}
-    >
-      <PricingCardBody plan={plan} priceBook={priceBook} />
-    </Card>
-  )
-
-  const wrapped =
-    plan.isPopular ? (
-      <ShineBorder borderWidth={2} duration={5} className="flex h-full min-h-0 w-full min-w-0 flex-1 flex-col">
-        {cardInner}
-      </ShineBorder>
-    ) : (
-      cardInner
-    )
-
-  return (
-    <motion.div
-      initial={{ y: 24, opacity: 0 }}
-      whileInView={{
-        y: plan.isPopular && isXl ? -8 : 0,
-        opacity: 1,
-      }}
-      viewport={{ once: true }}
-      transition={{
-        duration: 0.5,
-        type: "spring",
-        stiffness: 100,
-        damping: 22,
-        delay: index * 0.08,
-      }}
-      className="flex h-full min-h-0 flex-col"
-    >
-      {wrapped}
-    </motion.div>
+    </div>
   )
 }

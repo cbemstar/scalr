@@ -175,11 +175,12 @@ export function DreamStateTabs({
                 Imagine this instead
               </p>
               <h2 className="mt-4 max-w-[12ch] font-heading text-3xl font-semibold leading-[1.02] tracking-[-0.05em] text-balance text-[color:var(--dream-text)] sm:text-5xl lg:text-[4.25rem]">
-                Imagine a website that works while you sleep.
+                Imagine a site that works with you—not instead of you.
               </h2>
               <p className="mt-5 max-w-[34ch] text-base leading-relaxed text-[color:var(--dream-body)] sm:text-lg">
-                When your website is built around generating leads instead of just filling
-                space, each scroll step becomes a different version of what better looks like.
+                When layout, copy, and next steps line up with how people decide, you improve the
+                chances they’ll enquire — without pretending a build fee replaces marketing,
+                ads, or sales follow-through.
               </p>
             </div>
 

@@ -8,6 +8,8 @@ export type LogoGridItem = {
   alt: string
   width?: number
   height?: number
+  /** Merged onto `<img>` — e.g. optical scale for padded PNG lockups vs tight SVGs */
+  imgClassName?: string
 }
 
 export type LogoCloudGridProps = ComponentProps<"div"> & {
@@ -93,7 +95,10 @@ function LogoCell({ logo, className, ...props }: LogoCellProps) {
     >
       <img
         alt={logo.alt}
-        className="pointer-events-none h-8 w-auto max-w-[min(100%,10rem)] select-none object-contain object-center md:h-10 dark:opacity-95"
+        className={cn(
+          "pointer-events-none h-8 w-auto max-w-[min(100%,10rem)] select-none object-contain object-center md:h-10 dark:opacity-95",
+          logo.imgClassName
+        )}
         decoding="async"
         height={logo.height}
         loading="lazy"

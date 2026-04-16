@@ -7,37 +7,37 @@ const outcomes = [
   {
     headline: "Enquiries while you sleep",
     description:
-      "No chasing, no guessing. Your website captures leads 24/7 — bookings and contact forms working while you focus on the job.",
+      "When forms and booking paths work, you’re not the bottleneck for the first step — visitors can reach you on their timeline, not only yours.",
     takeaway:
-      "Forms and booking flows do the follow-up so you are not the bottleneck.",
+      "The site handles the first touch; you still own the conversation and the close.",
   },
   {
     headline: "A site you're proud to share",
     description:
-      "Send every potential customer there without hesitation. First impressions that build trust instantly.",
+      "Send people somewhere that reflects how you actually work — first impressions that support trust, not undermine it.",
     takeaway:
-      "You stop apologising for the URL — the site becomes part of how you sell.",
+      "The link becomes part of your pitch — not a disclaimer you rush past.",
   },
   {
-    headline: "More credibility than your competitor",
+    headline: "Credibility that keeps you in the running",
     description:
-      "Stop losing jobs to less-experienced businesses who just happen to look more professional online.",
+      "People compare you online before they compare quotes — looking established helps you stay in the conversation.",
     takeaway:
-      "Prospects compare you online before they compare your quote — looking established wins the first cut.",
+      "A clear, credible site improves your odds; it doesn’t replace proof, pricing, or how you deliver.",
   },
   {
-    headline: "Ads that finally convert",
+    headline: "Landing pages that match the click",
     description:
-      "Traffic from Google and social media lands on a page built to convert. Your ad spend stops going to waste.",
+      "When traffic from ads or search hits a page aligned with what they expected, you waste less attention — whether or not you’re running campaigns yourself.",
     takeaway:
-      "The landing message matches the ad, so clicks turn into enquiries instead of bounces.",
+      "Message-match helps; volume and cost still sit with your traffic sources and budget.",
   },
   {
-    headline: "Customers who arrive pre-sold",
+    headline: "Fewer repetitive questions",
     description:
-      "Your site answers every question and removes every objection. They call or book already confident in you.",
+      "When the basics are answered clearly, calls and bookings can start warmer — with less time spent on the same explanations.",
     takeaway:
-      "Calls and bookings start with intent — less explaining basics, more closing the right work.",
+      "Good structure supports better conversations; it doesn’t guarantee a full pipeline on its own.",
   },
 ] satisfies DreamOutcome[]
 

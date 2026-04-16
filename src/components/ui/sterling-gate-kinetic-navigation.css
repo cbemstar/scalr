@@ -150,7 +150,7 @@
 .sterling-kinetic-nav .nav-logo-row {
   font-family: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.02em;
   color: var(--foreground);
   text-decoration: none;
@@ -161,6 +161,7 @@
 /* React Bits–style shiny text: sweeping highlight (see reactbits.dev/text-animations/shiny-text) */
 .sterling-kinetic-nav .nav-logo-shiny {
   display: inline-block;
+  font-weight: 800;
   background-image: linear-gradient(
     120deg,
     var(--foreground) 0%,
@@ -353,6 +354,8 @@
   cursor: pointer;
   background: color-mix(in oklch, var(--foreground) 30%, transparent);
   backdrop-filter: blur(2px);
+  overscroll-behavior: none;
+  touch-action: none;
 }
 
 .sterling-kinetic-nav .menu-content {
@@ -361,11 +364,16 @@
   right: 0;
   width: min(100%, 520px);
   height: 100%;
+  max-height: 100%;
   z-index: 1;
   display: flex;
   flex-direction: column;
+  min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
   will-change: transform;
 }
 
@@ -425,7 +433,8 @@
 .sterling-kinetic-nav .menu-content-wrapper {
   position: relative;
   z-index: 5;
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -436,6 +445,14 @@
    */
   background: var(--popover);
   color: var(--popover-foreground);
+}
+
+/* Short viewports (e.g. browser zoom) — avoid vertical centering eating space; keep full list scrollable */
+@media (max-height: 40rem) {
+  .sterling-kinetic-nav .menu-content-wrapper {
+    justify-content: flex-start;
+    padding-top: max(4.5rem, calc(3.5rem + env(safe-area-inset-top)));
+  }
 }
 
 .sterling-kinetic-nav .menu-list {
@@ -528,6 +545,7 @@
 .sterling-kinetic-nav .menu-footer {
   position: relative;
   z-index: 5;
+  flex-shrink: 0;
   padding: 0 min(var(--container-padding, 2em), 1.5rem) clamp(1.5rem, 4vh, 2.5rem);
   display: flex;
   flex-direction: column;

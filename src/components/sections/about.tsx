@@ -104,7 +104,7 @@ export function AboutSection() {
               customVariants={textVariants}
               className={highlightClass("border-foreground/25 bg-muted/50 text-foreground")}
             >
-              conversion-first
+              clarity-first
             </TimelineContent>{" "}
             builds, honest pricing, and{" "}
             <TimelineContent
@@ -121,10 +121,11 @@ export function AboutSection() {
 
           <FadeIn delay={0.04}>
             <p className="lp-lead mt-4 max-w-2xl text-pretty">
-              I&apos;ve spent 6+ years in digital marketing — campaigns, funnels, and why people
-              click. Small businesses with great offers were losing to competitors with better
-              sites. So I build pages with a goal on every screen, analytics from day one, and
-              copy that sounds like you — based in {siteConfig.contact.location.split(",")[0]}.
+              I&apos;m {siteConfig.founder.name} — I&apos;ve spent 6+ years in digital marketing —
+              campaigns, funnels, and why people click. Small businesses with great offers were
+              losing to competitors with better sites. So I build pages with a goal on every screen,
+              analytics from day one, and copy that sounds like you. I work with businesses across
+              New Zealand — based in {siteConfig.contact.location.split(",")[0]}.
             </p>
           </FadeIn>
 

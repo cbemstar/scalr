@@ -1,13 +1,15 @@
-import { Pencil, Phone, Rocket, type LucideIcon } from "lucide-react"
+import { Call02Icon, PencilEdit01Icon, Rocket01Icon } from "@hugeicons/core-free-icons"
+import type { IconSvgElement } from "@hugeicons/react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { cn } from "@/lib/utils"
 
-/** `launch` maps to Lucide `Rocket` (key avoids bundler confusion with the `Rocket` identifier). */
+/** Step keys — mapped to Hugeicons (same visual language as Problem / Solution). */
 export type VercepFeatureIconKey = "phone" | "pencil" | "launch"
 
-const ICON_MAP: Record<VercepFeatureIconKey, LucideIcon> = {
-  phone: Phone,
-  pencil: Pencil,
-  launch: Rocket,
+const ICON_MAP: Record<VercepFeatureIconKey, IconSvgElement> = {
+  phone: Call02Icon,
+  pencil: PencilEdit01Icon,
+  launch: Rocket01Icon,
 }
 
 export type VercepFeatureItem = {
@@ -45,7 +47,6 @@ export function VercepFeature1({ items, className }: VercepFeature1Props) {
       />
       <div className="relative grid grid-cols-1 divide-y divide-border/70 md:grid-cols-3 md:divide-x md:divide-y-0">
         {items.map((item) => {
-          const Icon = ICON_MAP[item.icon]
           return (
             <article
               key={item.step}
@@ -56,7 +57,13 @@ export function VercepFeature1({ items, className }: VercepFeature1Props) {
                   {item.step}
                 </span>
                 <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border/80 bg-muted/50 text-muted-foreground transition-colors group-hover:border-primary/25 group-hover:bg-primary/10 group-hover:text-primary">
-                  <Icon className="size-[18px]" strokeWidth={1.75} aria-hidden />
+                  <HugeiconsIcon
+                    icon={ICON_MAP[item.icon]}
+                    size={18}
+                    strokeWidth={1.5}
+                    className="shrink-0"
+                    aria-hidden
+                  />
                 </div>
               </div>
               <div className="flex flex-col gap-2">

@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation"
 import { LinkedinLogoIcon, Phone } from "@phosphor-icons/react"
 import gsap from "gsap"
 import { CustomEase } from "gsap/CustomEase"
+import { useLenis } from "lenis/react"
 import { LiquidGlass } from "@mael-667/liquid-glass-react"
 import { useTheme } from "@wrksz/themes/client"
 import posthog from "posthog-js"
@@ -76,11 +77,28 @@ export function SterlingGateKineticNavigation({
   /** Skip running the “close” timeline on the first paint (avoids GSAP inline styles on links before any open). */
   const skipInitialCloseTimeline = useRef(true)
   const { resolvedTheme } = useTheme()
+  const lenis = useLenis()
 
+  /** Lenis captures wheel/touch on the root — stop it while the drawer is open so the page does not move behind the menu. */
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : ""
+    if (!lenis || !isMenuOpen) return
+    lenis.stop()
     return () => {
-      document.body.style.overflow = ""
+      lenis.start()
+    }
+  }, [isMenuOpen, lenis])
+
+  /** Lock document scroll (Lenis + native) while the overlay is open. */
+  useEffect(() => {
+    if (!isMenuOpen) return
+    const html = document.documentElement
+    const prevHtml = html.style.overflow
+    const prevBody = document.body.style.overflow
+    html.style.overflow = "hidden"
+    document.body.style.overflow = "hidden"
+    return () => {
+      html.style.overflow = prevHtml
+      document.body.style.overflow = prevBody
     }
   }, [isMenuOpen])
 
@@ -488,7 +506,11 @@ export function SterlingGateKineticNavigation({
             onClick={closeMenu}
             aria-hidden
           />
-          <nav className="menu-content" aria-label="Page sections">
+          <nav
+            className="menu-content"
+            aria-label="Page sections"
+            data-lenis-prevent
+          >
             <div className="menu-bg">
               <div className="backdrop-layer first" />
               <div className="backdrop-layer second" />

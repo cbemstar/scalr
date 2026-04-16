@@ -5,16 +5,17 @@
  * Reworked for the “Sound familiar?” problem section: icon cards, theme tokens, scroll reveals.
  */
 
+import type { IconSvgElement } from "@hugeicons/react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { motion, useReducedMotion, type Variants } from "framer-motion"
-import { Sparkles, type LucideIcon } from "lucide-react"
 import Link from "next/link"
 
 export type SoundFamiliarItem = {
-  icon: LucideIcon
+  icon: IconSvgElement
   headline: string
   description: string
   /** Short label for the badge (e.g. Trust, Leads). */
@@ -47,15 +48,19 @@ const itemVariants: Variants = {
 }
 
 function PainPointCard({ item }: { item: SoundFamiliarItem }) {
-  const Icon = item.icon
-
   return (
     <motion.div variants={itemVariants} className="h-full min-h-0">
       <Card className="flex h-full flex-col overflow-hidden rounded-3xl border border-border/60 bg-card/90 shadow-sm backdrop-blur-xl">
         <div className="flex h-full flex-col p-6 md:p-7">
           <div className="mb-5 flex shrink-0 justify-center">
             <div className="flex size-[5.25rem] items-center justify-center rounded-2xl border border-border/60 bg-muted/40 text-primary shadow-inner">
-              <Icon className="size-9" strokeWidth={1.6} aria-hidden />
+              <HugeiconsIcon
+                icon={item.icon}
+                size={36}
+                strokeWidth={1.5}
+                className="shrink-0 text-primary"
+                aria-hidden
+              />
             </div>
           </div>
 
@@ -141,15 +146,7 @@ export function SoundFamiliarShowcase({ items, className }: SoundFamiliarShowcas
           transition={{ duration: 0.65, ease: [0.6, 0.05, 0.01, 0.9] }}
           className="lp-section-intro mx-auto max-w-3xl text-center"
         >
-          <motion.div className="mb-5 inline-block">
-            <Badge
-              variant="secondary"
-              className="gap-2 border border-border/60 bg-background/80 px-3 py-1 text-muted-foreground shadow-sm backdrop-blur"
-            >
-              <Sparkles className="size-3 text-primary" aria-hidden />
-              Sound familiar?
-            </Badge>
-          </motion.div>
+          <p className="lp-kicker mb-3">Sound familiar?</p>
 
           <h2 id="problem-section-heading" className="lp-title">
             Your site should sell — not{" "}
@@ -161,8 +158,8 @@ export function SoundFamiliarShowcase({ items, className }: SoundFamiliarShowcas
           <p className="lp-lead mx-auto mt-5 max-w-2xl text-pretty text-center">
             Whether you&apos;re on a DIY template, a five-year-old redesign, or no site
             at all, the pattern is the same: trust leaks before you get a chance to
-            pitch. If any of this hits home, you&apos;re who Scalr is for — new
-            builds and full redesigns — standard sites from $999 NZD, Shopify ecommerce from $6,499 NZD (see Pricing).
+            pitch. If any of this hits home, you&apos;re who Scalr is for — new builds,
+            redesigns, and ecommerce when you&apos;re ready. See Pricing for packages.
           </p>
         </motion.div>
 
@@ -198,7 +195,7 @@ export function SoundFamiliarShowcase({ items, className }: SoundFamiliarShowcas
               </h3>
               <p className="text-sm leading-relaxed text-muted-foreground">
                 Pick a package that fits, or get in touch and I&apos;ll tell you straight
-                what to fix first. Canterbury and NZ-wide.
+                what to fix first. Across New Zealand.
               </p>
             </div>
             <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto sm:flex-row">

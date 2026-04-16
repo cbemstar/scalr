@@ -1,19 +1,29 @@
-import { BarChart2, Eye, TrendingUp } from "lucide-react"
+import {
+  ChartBarStackedIcon,
+  FlowIcon,
+  Invoice01Icon,
+} from "@hugeicons/core-free-icons"
+import type { IconSvgElement } from "@hugeicons/react"
+import { HugeiconsIcon } from "@hugeicons/react"
 import { FadeIn } from "@/components/common/fade-in"
 
-const pillars = [
+const pillars: {
+  icon: IconSvgElement
+  title: string
+  copy: string
+}[] = [
   {
-    icon: TrendingUp,
-    title: "Conversion-focused design",
-    copy: "Every page is built around one goal: turning visitors into enquiries, bookings, or calls. Not just something that looks nice.",
+    icon: FlowIcon,
+    title: "Structure that supports the next step",
+    copy: "Pages are organised so visitors understand who you are, why you matter, and what to do next — that’s what improves the odds of a booking or enquiry. Results still depend on your offer, traffic, and follow-up.",
   },
   {
-    icon: BarChart2,
-    title: "Marketing included as standard",
-    copy: "GA4, Google Search Console, conversion tracking, and basic SEO architecture come standard. Your site is a revenue tool, not a digital brochure.",
+    icon: ChartBarStackedIcon,
+    title: "Foundations that scale by tier",
+    copy: "Basic SEO is part of every plan. Deeper SEO architecture, Search Console, and conversion tracking come in on higher tiers where there’s room in scope — check Pricing for the exact split. I’m not bundling a full marketing retainer into the build fee.",
   },
   {
-    icon: Eye,
+    icon: Invoice01Icon,
     title: "Transparent pricing",
     copy: "No quoting games. No surprise invoices. Standard-site packages and Shopify ecommerce tiers — everything we include is published on this page with a simple comparison.",
   },
@@ -30,20 +40,27 @@ export function SolutionSection() {
               Not a web designer who knows some marketing.
             </h2>
             <p className="lp-lead text-pretty">
-              A marketer who builds websites designed to generate leads and revenue. There&apos;s a
-              meaningful difference — and you&apos;ll feel it in your enquiry rate.
+              A marketer who builds websites — so structure, messaging, and measurement (where your
+              tier includes them) point in the same direction as your business. The build sets you up
+              to earn attention and a clearer next step; it doesn’t replace campaigns, ads, or
+              day-to-day sales follow-through.
             </p>
           </div>
         </FadeIn>
 
         <div className="grid gap-5 md:grid-cols-3">
           {pillars.map((pillar, i) => {
-            const Icon = pillar.icon
             return (
               <FadeIn key={pillar.title} delay={i * 0.05}>
                 <article className="h-full rounded-2xl border border-border/80 bg-background p-6 shadow-sm">
                   <div className="mb-4 flex size-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary">
-                    <Icon className="size-[18px]" strokeWidth={1.75} />
+                    <HugeiconsIcon
+                      icon={pillar.icon}
+                      size={18}
+                      strokeWidth={1.5}
+                      className="shrink-0 text-primary"
+                      aria-hidden
+                    />
                   </div>
                   <h3 className="font-heading text-lg font-semibold tracking-tight">{pillar.title}</h3>
                   <p className="mt-2 text-base leading-relaxed text-muted-foreground md:text-lg">

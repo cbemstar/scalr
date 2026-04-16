@@ -2,6 +2,7 @@
 // Each section is a separate component in src/components/sections/
 // Import and wire up sections here as they're built out
 
+import { JsonLd } from "@/components/seo/json-ld";
 import { SiteHeader } from "@/components/layout/site-header";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { HeroSection } from "@/components/sections/hero";
@@ -17,6 +18,8 @@ import { AboutSection } from "@/components/sections/about";
 import { PricingSection } from "@/components/sections/pricing";
 import { FAQSection } from "@/components/sections/faq";
 import { FinalCTASection } from "@/components/sections/final-cta";
+import { buildHomeExtraJsonLdGraph } from "@/lib/structured-data";
+import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 export default function Home() {
@@ -27,6 +30,7 @@ export default function Home() {
         "pb-[max(1rem,env(safe-area-inset-bottom,0px))]"
       )}
     >
+      <JsonLd data={buildHomeExtraJsonLdGraph(siteConfig)} />
       <SiteHeader />
       <main className="flex-1">
         {/* Section 1: Hero — stop the scroll, drive one action */}
@@ -48,7 +52,7 @@ export default function Home() {
         {/* Section 5: How It Works — 3 steps, remove complexity */}
         <HowItWorksSection />
 
-        {/* Section 5b: How Scalr works (features grid) */}
+        {/* Section 5b: What you get — principles & features grid */}
         <HowStudioWorksSection />
 
         {/* Section 6: Portfolio / Social Proof */}
