@@ -22,6 +22,7 @@ const linkGroups = [
       { title: "Terms", href: siteConfig.legal.terms },
       { title: "Cookies", href: siteConfig.legal.cookies },
       { title: "Security", href: siteConfig.legal.security },
+      { title: "Business info", href: siteConfig.legal.business },
     ],
   },
   {
@@ -210,9 +211,31 @@ export function SiteFooter({ className }: { className?: string }) {
         {/* ── Bottom bar — always pinned, never hidden ── */}
         <div className="shrink-0 border-t border-border/60 bg-background px-5 py-4 md:px-8">
           <div className="lp-shell">
-            <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-1 text-xs text-muted-foreground sm:flex-row sm:items-center">
+            <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center">
               <p>© {new Date().getFullYear()} {siteConfig.name}. All prices in NZD.</p>
-              <p className="opacity-60">Serving businesses across New Zealand</p>
+              <div className="flex flex-col gap-1 sm:items-end">
+                <p className="opacity-60">Serving businesses across New Zealand</p>
+                <p className="opacity-80">
+                  <span className="mr-1.5">NZBN</span>
+                  <a
+                    href={siteConfig.business.nzbnPublicUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-mono text-[0.95em] underline-offset-2 transition-colors hover:text-foreground hover:underline"
+                  >
+                    {siteConfig.business.nzbn}
+                  </a>
+                  <span className="mx-1.5 opacity-50" aria-hidden>
+                    ·
+                  </span>
+                  <Link
+                    href={siteConfig.legal.business}
+                    className="underline-offset-2 transition-colors hover:text-foreground hover:underline"
+                  >
+                    Business details
+                  </Link>
+                </p>
+              </div>
             </div>
           </div>
         </div>

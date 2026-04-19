@@ -751,12 +751,33 @@ export const siteConfig = {
   /** ISO date for legal documents (update when policies change) */
   legalLastUpdated: "2026-04-13",
 
+  /**
+   * Public NZBN register facts (no residential address on-site — see NZBN for full record).
+   * @see https://www.nzbn.govt.nz/
+   */
+  business: {
+    /** New Zealand Business Number — verifiable on the NZBN register */
+    nzbn: "9429051448363",
+    nzbnPublicUrl:
+      "https://www.nzbn.govt.nz/mynzbn/nzbndetails/9429051448363",
+    entityStatus: "Registered" as const,
+    structure: "Sole trader" as const,
+    /** First year on the NZBN register */
+    registeredYear: 2023,
+    /** As listed on NZBN (Scalr is the public-facing brand) */
+    tradingNames: ["Scalr", "Logicstar"] as const,
+    /** NZBN industry classification (summary) */
+    industry: "Internet website design service",
+    tradingArea: "New Zealand",
+  },
+
   /** In-app routes — use leading `/` so section links work from any page */
   legal: {
     privacy: "/privacy",
     terms: "/terms",
     cookies: "/cookies",
     security: "/security",
+    business: "/legal/business",
   } as const,
 
   // ─── Navigation ──────────────────────────────────────────────────────────────

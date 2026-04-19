@@ -5,6 +5,7 @@ type SiteConfig = typeof siteConfig
 
 export function buildOrganizationJsonLd(config: SiteConfig) {
   const url = config.url
+  const { business } = config
   return {
     "@context": "https://schema.org",
     "@type": ["Organization", "LocalBusiness"],
@@ -16,6 +17,12 @@ export function buildOrganizationJsonLd(config: SiteConfig) {
     description: config.description,
     email: config.contact.email,
     telephone: config.contact.phone,
+    identifier: {
+      "@type": "PropertyValue",
+      name: "NZBN",
+      value: business.nzbn,
+      description: "New Zealand Business Number (public register)",
+    },
     address: {
       "@type": "PostalAddress",
       addressLocality: "Christchurch",
