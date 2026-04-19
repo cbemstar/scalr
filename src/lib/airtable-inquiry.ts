@@ -128,6 +128,8 @@ export async function createInquiryRecord(data: InquiryFormPayload): Promise<{ i
     },
     body: JSON.stringify({
       records: [{ fields }],
+      // Lets Airtable match or add single-select values (e.g. Status) after pipeline/schema changes.
+      typecast: true,
     }),
   })
 
