@@ -4,7 +4,7 @@ import type { LogoGridItem } from "@/components/ui/logo-cloud-2"
 /**
  * Full-colour brand SVGs (local files under /public/logos/platforms/color).
  * Webflow, JS, WordPress, Shopify from SVGL; React from Wikimedia; Next.js from Simple Icons (monochrome mark).
- * Mailchimp: official PNG from https://mailchimp.com/about/brand-assets/ (light-background lockup; do not alter per brand guidelines).
+ * Mailchimp: official stacked lockup PNG (Freddie + wordmark; light background; per Mailchimp brand assets — do not alter).
  * Additional marks from Simple Icons where available; Finsweet as local wordmark SVG.
  */
 export const PLATFORM_LOGOS: LogoGridItem[] = [
