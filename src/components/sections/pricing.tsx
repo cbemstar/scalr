@@ -241,7 +241,7 @@ export function PricingSection() {
               <div className="flex items-center gap-3">
                 <Image
                   src="/logos/platforms/color/webflow.svg"
-                  alt=""
+                  alt="Webflow"
                   width={88}
                   height={24}
                   className="h-5 w-auto opacity-90 dark:brightness-0 dark:invert"

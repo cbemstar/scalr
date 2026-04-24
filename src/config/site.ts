@@ -8,7 +8,11 @@ export const siteConfig = {
   // ─── Business Identity ───────────────────────────────────────────────────────
   name: "Scalr",
   tagline: "Websites that bring in customers",
+  /** ~155 chars — meta, Open Graph, Twitter, JSON-LD (avoid Google truncation) */
   description:
+    "Marketer-led web design for NZ small businesses. Custom sites, Webflow & Shopify builds with transparent pricing and SEO included. Based in Christchurch.",
+  /** Longer positioning copy for on-page brand column (e.g. footer) */
+  companyBlurb:
     "New Zealand web design for cafés, tradies, barbers, and local shops across NZ: sites structured for trust and clear next steps, plus Shopify ecommerce nationwide. Transparent package pricing, basic SEO on every plan, deeper setup where the tier allows — marketer-led builds, not a bundled marketing retainer.",
 
   /** Hero kicker (single line) */
@@ -86,33 +90,33 @@ export const siteConfig = {
     ],
     note: "I'll respond within one New Zealand business day.",
     /**
-     * Verified 200 from images.unsplash.com. The first image is the settled hero
-     * background after the intro animation completes.
+     * Loader strip — editorial stock with consistent crop + warm/neutral mood (not mixed neon).
+     * Swap `src` to `/images/...` when you have brand photography in `public/`.
      */
     slideshow: [
       {
-        src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1920&q=80",
-        alt: "Laptop on a desk with analytics and charts.",
+        src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1920&h=1280&q=80",
+        alt: "Desk with laptop and planning — clear goals before design, New Zealand web design projects",
         scene: "Your project",
       },
       {
-        src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1920&q=80",
-        alt: "Busy restaurant interior with warm lighting — hospitality and cafes.",
+        src: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1920&h=1280&q=80",
+        alt: "Restaurant interior with warm light — hospitality website design for NZ cafés and venues",
         scene: "Cafes & bakeries",
       },
       {
-        src: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1920&q=80",
-        alt: "Construction worker in high-vis and hard hat on a building site.",
+        src: "https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&w=1920&h=1280&q=80",
+        alt: "Tradie in high-vis on a job site — mobile-friendly websites for New Zealand contractors",
         scene: "Tradies & contractors",
       },
       {
-        src: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1920&q=80",
-        alt: "Barber chairs and mirrors in a clean barbershop.",
+        src: "https://images.unsplash.com/photo-1585747860715-2ba37e788b70?auto=format&fit=crop&w=1920&h=1280&q=80",
+        alt: "Barbershop interior with chairs and mirrors — local service business web design NZ",
         scene: "Barbers & salons",
       },
       {
-        src: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1920&q=80",
-        alt: "Clothing retail shelves — local shops and e-commerce.",
+        src: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1920&h=1280&q=80",
+        alt: "Retail store interior with clothing displays — Shopify and brochure sites for NZ shops",
         scene: "Shops & startups",
       },
     ] as const,
@@ -671,6 +675,28 @@ export const siteConfig = {
 
   // ─── About (principles — do / don’t) ─────────────────────────────────────────
   about: {
+    /**
+     * At-a-glance credentials (About section). Keeps trust on-page without a photoshoot.
+     */
+    credentials: [
+      {
+        eyebrow: "Experience",
+        title: "6+ years",
+        body: "Digital marketing, campaigns, and website delivery — not just templates.",
+      },
+      {
+        eyebrow: "Where I work",
+        title: "New Zealand–wide",
+        body: "Based in Christchurch — projects and calls across the country.",
+      },
+      {
+        eyebrow: "Verified business",
+        title: "NZBN registered",
+        body: "Sole trader on the public NZ register — same details we share for invoices.",
+        href: "https://www.nzbn.govt.nz/mynzbn/nzbndetails/9429051448363",
+        linkLabel: "Verify on NZBN",
+      },
+    ] as const,
     /** What we optimise for — pairs with the About section story */
     principles: {
       dos: [
@@ -799,6 +825,12 @@ export const siteConfig = {
     "Tradies & contractors",
     "New local shops",
   ],
+
+  /**
+   * Named client quotes for a future homepage section (business type, city, quote).
+   * Empty until you have permission to publish — keeps a typed slot for copy + layout later.
+   */
+  clientTestimonials: [] as const,
 } as const;
 
 /** FAQ and client comms — always derived from `siteConfig.packages` delivery fields. */

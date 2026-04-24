@@ -376,6 +376,7 @@ export function HeroSection() {
         </div>
       </div>
       <div className="crisp-header__slider-scrim" aria-hidden />
+      <div className="crisp-header__grain" aria-hidden />
 
       <div className="crisp-loader" aria-hidden>
         <div className="crisp-loader__wrap">
@@ -393,7 +394,7 @@ export function HeroSection() {
                       <img
                         loading="eager"
                         src={img.src}
-                        alt=""
+                        alt={img.alt}
                         width={1920}
                         height={1280}
                         className="crisp-loader__cover-img"
@@ -430,7 +431,7 @@ export function HeroSection() {
                         <img
                           loading="eager"
                           src={img.src}
-                          alt=""
+                          alt={img.alt}
                           width={1920}
                           height={1280}
                           className="crisp-loader__cover-img is--scale-down"

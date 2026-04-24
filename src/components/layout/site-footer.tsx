@@ -144,7 +144,7 @@ export function SiteFooter({ className }: { className?: string }) {
                   {siteConfig.name}
                 </Link>
                 <p className="max-w-[30ch] text-sm leading-relaxed text-muted-foreground text-pretty">
-                  {siteConfig.description}
+                  {siteConfig.companyBlurb}
                 </p>
                 <div className="flex gap-2 pt-1">
                   {socialLinks.map(({ title, href, svg }) => (
