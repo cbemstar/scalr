@@ -1,9 +1,9 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { clsx } from 'clsx'
+import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-function cn(...inputs: any[]) { return twMerge(clsx(inputs)) }
+function cn(...inputs: ClassValue[]) { return twMerge(clsx(inputs)) }
 
 type Direction = 'TOP' | 'LEFT' | 'BOTTOM' | 'RIGHT'
 
@@ -34,19 +34,19 @@ export function HoverBorderGradient({
     className?: string
     duration?: number
     clockwise?: boolean
-  } & React.HTMLAttributes<HTMLElement> & Record<string, any>
+  } & React.HTMLAttributes<HTMLElement>
 >) {
   const [hovered, setHovered] = useState<boolean>(false)
   const [direction, setDirection] = useState<Direction>('BOTTOM')
 
-  const rotateDirection = (currentDirection: Direction): Direction => {
+  const rotateDirection = useCallback((currentDirection: Direction): Direction => {
     const directions: Direction[] = ['TOP', 'LEFT', 'BOTTOM', 'RIGHT']
     const currentIndex = directions.indexOf(currentDirection)
     const nextIndex = clockwise
       ? (currentIndex - 1 + directions.length) % directions.length
       : (currentIndex + 1) % directions.length
     return directions[nextIndex]
-  }
+  }, [clockwise])
 
   useEffect(() => {
     if (!hovered) {
@@ -55,7 +55,7 @@ export function HoverBorderGradient({
       }, duration * 1000)
       return () => clearInterval(interval)
     }
-  }, [hovered])
+  }, [duration, hovered, rotateDirection])
 
   return (
     <Element

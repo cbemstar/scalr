@@ -1,12 +1,65 @@
 "use client"
 
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from "react"
+import Link from "next/link"
 import posthog from "posthog-js"
 import { FadeIn } from "@/components/common/fade-in"
 import { MultistepInquiryForm } from "@/components/ui/multistep-form"
+import { Button } from "@/components/ui/button"
 import { siteConfig } from "@/config/site"
-import { Phone } from "lucide-react"
+import { cn } from "@/lib/utils"
+import { Maximize2, Phone, ShieldCheck, X } from "lucide-react"
 
 export function FinalCTASection() {
+  const [focusMode, setFocusMode] = useState(false)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+  const focusTitleId = useId()
+
+  useEffect(() => {
+    if (!focusMode) return
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = "hidden"
+    return () => {
+      document.body.style.overflow = prevOverflow
+    }
+  }, [focusMode])
+
+  /* `main` is z-10 — traps the focus overlay below the nav (z-100). See globals.css `html[data-inquiry-focus]`. */
+  useLayoutEffect(() => {
+    if (!focusMode) return
+    const html = document.documentElement
+    html.setAttribute("data-inquiry-focus", "")
+    return () => {
+      html.removeAttribute("data-inquiry-focus")
+    }
+  }, [focusMode])
+
+  useEffect(() => {
+    if (!focusMode) return
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setFocusMode(false)
+        posthog.capture("inquiry_form_focus_mode_exited", { reason: "escape" })
+      }
+    }
+    window.addEventListener("keydown", onKeyDown)
+    return () => window.removeEventListener("keydown", onKeyDown)
+  }, [focusMode])
+
+  useEffect(() => {
+    if (focusMode) closeButtonRef.current?.focus()
+  }, [focusMode])
+
+  const enterFocusMode = useCallback(() => {
+    setFocusMode(true)
+    posthog.capture("inquiry_form_focus_mode_entered")
+  }, [])
+
+  const exitFocusMode = useCallback(() => {
+    setFocusMode(false)
+    posthog.capture("inquiry_form_focus_mode_exited", { reason: "close" })
+  }, [])
+
   return (
     <section
       id="contact"
@@ -68,15 +121,123 @@ export function FinalCTASection() {
                   </a>
                 </div>
               </div>
+
+              <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-muted/15 px-4 py-3">
+                <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                <div className="min-w-0 space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground">NZ registered business</p>
+                  <p className="text-sm leading-snug text-foreground">
+                    <a
+                      href={siteConfig.business.nzbnPublicUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-mono text-[0.95em] underline-offset-2 hover:underline"
+                      onClick={() => posthog.capture("nzbn_verify_clicked", { source: "contact" })}
+                    >
+                      NZBN {siteConfig.business.nzbn}
+                    </a>
+                    <span className="mx-1.5 text-muted-foreground/80" aria-hidden>
+                      ·
+                    </span>
+                    <Link
+                      href={siteConfig.legal.business}
+                      className="underline-offset-2 hover:underline"
+                      onClick={() =>
+                        posthog.capture("business_details_clicked", { source: "contact" })
+                      }
+                    >
+                      Business details
+                    </Link>
+                  </p>
+                </div>
+              </div>
             </div>
           </FadeIn>
 
-          {/* Right — Form */}
-          <FadeIn delay={0.08}>
-            <div className="rounded-2xl border border-border/70 bg-background p-6 shadow-sm sm:p-8">
-              <MultistepInquiryForm />
+          {/* Right — Form: no FadeIn wrapper — framer-motion `transform` breaks `fixed` + flex scrollport */}
+          <div className="relative">
+            {focusMode ? (
+              <div
+                className="min-h-[min(85vh,720px)] rounded-2xl border border-transparent"
+                aria-hidden
+              />
+            ) : null}
+            <div
+              className={cn(
+                "transition-[box-shadow,background-color] duration-200",
+                focusMode
+                  ? "fixed inset-0 z-[120] flex h-[100dvh] max-h-[100dvh] min-h-0 flex-col overflow-hidden bg-background shadow-[0_0_0_1px_rgba(0,0,0,0.06)] dark:shadow-[0_0_0_1px_rgba(255,255,255,0.08)]"
+                  : "rounded-2xl border border-border/70 bg-background p-6 shadow-sm sm:p-8"
+              )}
+              role={focusMode ? "dialog" : undefined}
+              aria-modal={focusMode ? true : undefined}
+              aria-labelledby={focusMode ? focusTitleId : undefined}
+            >
+              {focusMode ? (
+                <header className="flex shrink-0 items-start justify-between gap-3 border-b border-border/60 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] sm:px-6">
+                  <div className="min-w-0 space-y-0.5">
+                    <p
+                      id={focusTitleId}
+                      className="font-heading text-base font-semibold tracking-tight text-foreground"
+                    >
+                      {siteConfig.name} — project brief
+                    </p>
+                    <p className="text-xs leading-snug text-muted-foreground">
+                      Same questions as below — fewer distractions so you can think clearly. Press{" "}
+                      <kbd className="rounded border border-border/80 bg-muted/50 px-1 font-mono text-[10px]">
+                        Esc
+                      </kbd>{" "}
+                      or close to return.
+                    </p>
+                  </div>
+                  <Button
+                    ref={closeButtonRef}
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="shrink-0 rounded-full"
+                    onClick={exitFocusMode}
+                    aria-label="Exit focus mode and return to the page"
+                  >
+                    <X className="size-5" strokeWidth={2} />
+                  </Button>
+                </header>
+              ) : (
+                <div className="mb-5 flex flex-col gap-3 border-b border-border/40 pb-5 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-sm leading-snug text-muted-foreground">
+                    Want a calmer screen while you work through the brief?
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="shrink-0 gap-2 self-start sm:self-auto"
+                    onClick={enterFocusMode}
+                  >
+                    <Maximize2 className="size-3.5" aria-hidden />
+                    Focus mode
+                  </Button>
+                </div>
+              )}
+
+              <div
+                {...(focusMode ? { "data-lenis-prevent": "" as const } : {})}
+                className={cn(
+                  focusMode &&
+                    "min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 [-webkit-overflow-scrolling:touch] sm:px-8"
+                )}
+              >
+                <div
+                  className={cn(
+                    "min-w-0",
+                    focusMode && "mx-auto w-full max-w-xl min-h-0"
+                  )}
+                >
+                  <MultistepInquiryForm />
+                </div>
+              </div>
             </div>
-          </FadeIn>
+          </div>
         </div>
       </div>
     </section>

@@ -6,6 +6,7 @@ type SiteConfig = typeof siteConfig
 export function buildOrganizationJsonLd(config: SiteConfig) {
   const url = config.url
   const { business } = config
+  const socialProfiles = Object.values(config.social)
   return {
     "@context": "https://schema.org",
     "@type": ["Organization", "LocalBusiness"],
@@ -32,7 +33,7 @@ export function buildOrganizationJsonLd(config: SiteConfig) {
       "@type": "Country",
       name: "New Zealand",
     },
-    sameAs: [config.social.linkedin],
+    sameAs: socialProfiles,
   }
 }
 

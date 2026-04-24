@@ -3,13 +3,14 @@
 /* Scroll during hero intro is locked from HeroSection (documentElement) so layout + :has() cannot desync. */
 
 .crisp-header {
-  --crisp-bg: #0c1110;
-  --crisp-fg: #f5f7f6;
-  --crisp-fg-muted: rgb(245 247 246 / 78%);
-  --crisp-surface-strong: rgb(8 13 12 / 82%);
-  --crisp-surface: rgb(11 17 16 / 68%);
+  /* Spring Meadow — dark hero shell (forest night) */
+  --crisp-bg: #0f1814;
+  --crisp-fg: #f3f7f4;
+  --crisp-fg-muted: rgb(243 247 244 / 78%);
+  --crisp-surface-strong: rgb(12 20 16 / 82%);
+  --crisp-surface: rgb(14 22 18 / 68%);
   --crisp-border: rgb(255 255 255 / 14%);
-  --crisp-fade: #0c1110;
+  --crisp-fade: #0f1814;
   --crisp-scrim-target-opacity: 0.84;
   --crisp-trust: rgb(245 247 246 / 64%);
   --crisp-footnote: rgb(245 247 246 / 52%);
@@ -30,25 +31,25 @@
 
 /* Light theme: matches `html` without `.dark` (ThemeProvider / system light). */
 :root:not(.dark) .crisp-header {
-  --crisp-bg: #eef1ef;
-  --crisp-fg: #0f1714;
-  --crisp-fg-muted: rgb(15 23 20 / 72%);
+  --crisp-bg: #f0f8f4;
+  --crisp-fg: #152a1f;
+  --crisp-fg-muted: rgb(21 42 31 / 72%);
   --crisp-surface-strong: rgb(255 255 255 / 90%);
   --crisp-surface: rgb(255 255 255 / 78%);
-  --crisp-border: rgb(15 40 32 / 12%);
-  --crisp-fade: #eef1ef;
+  --crisp-border: rgb(18 58 42 / 12%);
+  --crisp-fade: #f0f8f4;
   --crisp-scrim-target-opacity: 0.7;
-  --crisp-trust: rgb(15 23 20 / 58%);
-  --crisp-footnote: rgb(15 23 20 / 48%);
-  --crisp-eyebrow-fg: rgb(15 23 20 / 72%);
-  --crisp-eyebrow-border: rgb(15 40 32 / 14%);
+  --crisp-trust: rgb(21 42 31 / 58%);
+  --crisp-footnote: rgb(21 42 31 / 48%);
+  --crisp-eyebrow-fg: rgb(21 42 31 / 72%);
+  --crisp-eyebrow-border: rgb(18 58 42 / 14%);
   --crisp-eyebrow-bg: rgb(255 255 255 / 72%);
-  --crisp-btn-secondary-border: rgb(15 40 32 / 18%);
+  --crisp-btn-secondary-border: rgb(18 58 42 / 18%);
   --crisp-btn-secondary-bg: rgb(255 255 255 / 55%);
   --crisp-btn-secondary-bg-hover: rgb(255 255 255 / 82%);
   --crisp-btn-primary-shadow:
-    0 1px 2px rgb(15 40 32 / 8%),
-    0 12px 32px rgb(15 40 32 / 12%);
+    0 1px 2px rgb(18 58 42 / 8%),
+    0 12px 32px rgb(18 58 42 / 12%);
 }
 
 /*
@@ -254,6 +255,29 @@
 .crisp-header:not(.is--loading) .crisp-header__slider-scrim {
   opacity: var(--crisp-scrim-target-opacity);
   visibility: visible;
+}
+
+/* Subtle film grain over the scrim — adds depth without fighting the GLSL layer */
+.crisp-header__grain {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 180px 180px;
+}
+
+.crisp-header:not(.is--loading) .crisp-header__grain {
+  opacity: 0.07;
+  visibility: visible;
+}
+
+:root:not(.dark) .crisp-header:not(.is--loading) .crisp-header__grain {
+  opacity: 0.05;
+  mix-blend-mode: multiply;
 }
 
 .crisp-header__content {

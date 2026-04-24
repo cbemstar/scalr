@@ -764,6 +764,8 @@ export const siteConfig = {
 
   // ─── Social Links ─────────────────────────────────────────────────────────────
   social: {
+    instagram: "https://www.instagram.com/scalr.co.nz",
+    facebook: "https://www.facebook.com/profile.php?id=61569263782437",
     linkedin: "https://www.linkedin.com/in/cbemstar/",
   },
 
@@ -771,7 +773,11 @@ export const siteConfig = {
   founder: {
     name: "Karan",
     jobTitle: "Founder",
-    sameAs: ["https://www.linkedin.com/in/cbemstar/"],
+    sameAs: [
+      "https://www.instagram.com/scalr.co.nz",
+      "https://www.facebook.com/profile.php?id=61569263782437",
+      "https://www.linkedin.com/in/cbemstar/",
+    ],
   },
 
   /** ISO date for legal documents (update when policies change) */

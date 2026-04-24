@@ -1,27 +1,12 @@
 "use client"
 
 import { motion, type Variants } from "framer-motion"
-import type { ElementType, ReactNode } from "react"
+import type { ReactNode } from "react"
 
 import { cn } from "@/lib/utils"
 
-const motionByTag: Record<string, ElementType> = {
-  div: motion.div,
-  h1: motion.h1,
-  h2: motion.h2,
-  h3: motion.h3,
-  p: motion.p,
-  span: motion.span,
-  button: motion.button,
-  a: motion.a,
-}
-
-function motionFor(as: string) {
-  return motionByTag[as] ?? motion.div
-}
-
 export type TimelineContentProps = {
-  as?: keyof typeof motionByTag | (string & {})
+  as?: "div" | "h1" | "h2" | "h3" | "p" | "span" | "button" | "a"
   /** Passed to variant functions as `custom` (stagger index). */
   animationNum?: number
   /** Reserved for scroll-root patterns; intersection uses the viewport. */
@@ -42,18 +27,32 @@ export function TimelineContent({
   className,
   children,
 }: TimelineContentProps) {
-  const Motion = motionFor(as)
+  const motionProps = {
+    className: cn(className),
+    custom: animationNum,
+    variants: customVariants,
+    initial: "hidden",
+    whileInView: "visible",
+    viewport: { once: true, amount: 0.35, margin: "0px 0px -10% 0px" },
+    children,
+  } as const
 
-  return (
-    <Motion
-      className={cn(className)}
-      custom={animationNum}
-      variants={customVariants}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.35, margin: "0px 0px -10% 0px" }}
-    >
-      {children}
-    </Motion>
-  )
+  switch (as) {
+    case "h1":
+      return <motion.h1 {...motionProps} />
+    case "h2":
+      return <motion.h2 {...motionProps} />
+    case "h3":
+      return <motion.h3 {...motionProps} />
+    case "p":
+      return <motion.p {...motionProps} />
+    case "span":
+      return <motion.span {...motionProps} />
+    case "button":
+      return <motion.button {...motionProps} />
+    case "a":
+      return <motion.a {...motionProps} />
+    case "div":
+      return <motion.div {...motionProps} />
+  }
 }

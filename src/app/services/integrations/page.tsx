@@ -32,7 +32,7 @@ export default function IntegrationsPage() {
       )}
     >
       <SiteHeader />
-      <main className="flex-1">
+      <main className="relative z-10 flex-1">
         <article className="lp-section border-b border-border/40 bg-muted/15">
           <div className="lp-shell max-w-3xl">
             <p className="lp-kicker mb-3">{pitch.kicker}</p>
@@ -71,7 +71,7 @@ export default function IntegrationsPage() {
           </div>
         </article>
       </main>
-      <SiteFooter />
+      <SiteFooter className="relative z-0" />
     </div>
   )
 }

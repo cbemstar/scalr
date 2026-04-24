@@ -1,11 +1,17 @@
 "use client"
 
-import { useState, useCallback, useRef, useEffect } from "react"
+import { useState, useCallback, useRef, useEffect, useLayoutEffect, useMemo } from "react"
 import Link from "next/link"
 import posthog from "posthog-js"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowLeft, ArrowRight, Check, Loader2, Phone } from "lucide-react"
 import { TurnstileField } from "@/components/common/turnstile-field"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -21,6 +27,10 @@ import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { cn } from "@/lib/utils"
 import { siteConfig } from "@/config/site"
+
+/** Browser-local draft for resume (see cookies / privacy copy). */
+const INQUIRY_DRAFT_STORAGE_KEY = "nz-web-studio-inquiry-draft-v1"
+const ADDON_PREVIEW_COUNT = 3
 
 const BUSINESS_TYPES = [
   { value: "cafe-bakery", label: "Café or Bakery" },
@@ -150,6 +160,24 @@ const INITIAL_DATA: FormData = {
   message: "",
 }
 
+function readInquiryDraftFromStorage(): { step: number; data: FormData } | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = localStorage.getItem(INQUIRY_DRAFT_STORAGE_KEY)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as { step?: unknown; data?: unknown }
+    if (typeof parsed.step !== "number" || !parsed.data || typeof parsed.data !== "object") {
+      return null
+    }
+    return {
+      step: parsed.step,
+      data: { ...INITIAL_DATA, ...(parsed.data as FormData) },
+    }
+  } catch {
+    return null
+  }
+}
+
 type ProjectIntent = FormData["projectIntent"]
 
 function totalStepsForIntent(intent: ProjectIntent): number {
@@ -174,6 +202,12 @@ function stepKind(intent: ProjectIntent, step: number): string {
   return names[step] ?? "project_intent"
 }
 
+/** Rough remaining time copy for the progress row (honesty over precision). */
+function approximateMinutesRemaining(step: number, totalSteps: number): number {
+  const remainingSteps = Math.max(0, totalSteps - step - 1)
+  return Math.max(1, Math.round(remainingSteps * 0.75))
+}
+
 function moduleMatchesBusiness(
   typical: readonly string[],
   businessType: string
@@ -189,6 +223,94 @@ function sortModulesForBusiness(businessType: string) {
     const bHit = moduleMatchesBusiness(b.typicalForBusinessTypes, businessType) ? 1 : 0
     return bHit - aHit
   })
+}
+
+function scrollFormBehavior(): ScrollBehavior {
+  if (typeof window === "undefined") return "smooth"
+  return window.matchMedia("(max-width: 640px)").matches ? "auto" : "smooth"
+}
+
+type IntegrationModule = (typeof siteConfig.integrationModules)[number]
+
+function IntegrationModuleChecklist({
+  modules,
+  businessType,
+  selectedIntegrationModules,
+  onToggleModule,
+}: {
+  modules: IntegrationModule[]
+  businessType: string
+  selectedIntegrationModules: string[]
+  onToggleModule: (id: string) => void
+}) {
+  const previewCount = ADDON_PREVIEW_COUNT
+  const hasMore = modules.length > previewCount
+  const [userExpandedAll, setUserExpandedAll] = useState(false)
+
+  const selectionRequiresFullList = useMemo(
+    () =>
+      hasMore &&
+      modules.slice(previewCount).some((m) => selectedIntegrationModules.includes(m.id)),
+    [hasMore, modules, previewCount, selectedIntegrationModules]
+  )
+
+  const showFullList = !hasMore || userExpandedAll || selectionRequiresFullList
+  const visibleModules = showFullList ? modules : modules.slice(0, previewCount)
+
+  return (
+    <div className="space-y-3">
+      <div className="grid gap-2">
+        {visibleModules.map((m) => {
+          const suggested =
+            businessType && moduleMatchesBusiness(m.typicalForBusinessTypes, businessType)
+          return (
+            <label
+              key={m.id}
+              className={cn(
+                "flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
+                selectedIntegrationModules.includes(m.id)
+                  ? "border-primary bg-primary/[0.06] ring-1 ring-primary/30"
+                  : "border-border/70 bg-background hover:border-primary/30"
+              )}
+            >
+              <Checkbox
+                className="mt-0.5"
+                checked={selectedIntegrationModules.includes(m.id)}
+                onCheckedChange={() => onToggleModule(m.id)}
+              />
+              <span className="flex-1">
+                <span className="text-sm font-medium text-foreground">{m.label}</span>
+                {suggested ? (
+                  <span className="ml-2 text-[10px] font-medium uppercase tracking-wide text-primary">
+                    Often paired
+                  </span>
+                ) : null}
+                <span className="mt-0.5 block text-xs text-muted-foreground">{m.outcome}</span>
+                <span className="mt-1 block font-mono text-[11px] text-muted-foreground">
+                  from ${m.fromPrice.toLocaleString()} NZD
+                </span>
+              </span>
+            </label>
+          )
+        })}
+      </div>
+      {hasMore && !showFullList ? (
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={() => {
+            setUserExpandedAll(true)
+            posthog.capture("inquiry_form_field_expanded", {
+              field: "integration_addons_all",
+            })
+          }}
+        >
+          See all add-ons ({modules.length})
+        </Button>
+      ) : null}
+    </div>
+  )
 }
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""
@@ -276,6 +398,10 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
   const formStartedRef = useRef(false)
+  const formAnchorRef = useRef<HTMLDivElement>(null)
+  const prevStepKindKeyRef = useRef<string | null>(null)
+  const stepStartedAtRef = useRef(Date.now())
+  const [draftOfferVisible, setDraftOfferVisible] = useState(false)
 
   const totalSteps = totalStepsForIntent(data.projectIntent)
   const lastStepIndex = totalSteps - 1
@@ -286,8 +412,55 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
     }
   }, [step, lastStepIndex])
 
+  useEffect(() => {
+    const draft = readInquiryDraftFromStorage()
+    if (draft && (draft.data.projectIntent || draft.step > 0)) {
+      setDraftOfferVisible(true)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (submitted) return
+    if (!formStartedRef.current && step === 0 && !data.projectIntent) return
+    const id = window.setTimeout(() => {
+      try {
+        localStorage.setItem(
+          INQUIRY_DRAFT_STORAGE_KEY,
+          JSON.stringify({ step, data, savedAt: Date.now() })
+        )
+      } catch {
+        /* storage full or disabled */
+      }
+    }, 500)
+    return () => window.clearTimeout(id)
+  }, [step, data, submitted])
+
+  const restoreDraft = useCallback(() => {
+    const draft = readInquiryDraftFromStorage()
+    if (!draft) return
+    const max = totalStepsForIntent(draft.data.projectIntent) - 1
+    setData(draft.data)
+    setStep(Math.min(Math.max(0, draft.step), max))
+    setDraftOfferVisible(false)
+    formStartedRef.current = true
+    posthog.capture("inquiry_form_draft_restored")
+  }, [])
+
+  const discardDraftAndReset = useCallback(() => {
+    try {
+      localStorage.removeItem(INQUIRY_DRAFT_STORAGE_KEY)
+    } catch {
+      /* ignore */
+    }
+    setData(INITIAL_DATA)
+    setStep(0)
+    setDraftOfferVisible(false)
+    formStartedRef.current = false
+  }, [])
+
   const update = useCallback(
     <K extends keyof FormData>(field: K, value: FormData[K]) => {
+      setDraftOfferVisible((show) => (show ? false : show))
       setData((prev) => {
         if (!formStartedRef.current) {
           formStartedRef.current = true
@@ -300,6 +473,25 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
   )
 
   const kind = stepKind(data.projectIntent, step)
+
+  useEffect(() => {
+    stepStartedAtRef.current = Date.now()
+  }, [step, kind])
+
+  useLayoutEffect(() => {
+    if (submitted) return
+    const key = `${step}-${kind}`
+    if (prevStepKindKeyRef.current === null) {
+      prevStepKindKeyRef.current = key
+      return
+    }
+    if (prevStepKindKeyRef.current === key) return
+    prevStepKindKeyRef.current = key
+    formAnchorRef.current?.scrollIntoView({
+      block: "start",
+      behavior: scrollFormBehavior(),
+    })
+  }, [step, kind, submitted])
 
   const canAdvance = (() => {
     if (!data.projectIntent) {
@@ -340,10 +532,12 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
   const goNext = () => {
     if (!canAdvance) return
     if (step < lastStepIndex) {
+      const duration_ms = Date.now() - stepStartedAtRef.current
       posthog.capture("inquiry_form_step_completed", {
         step_number: step,
         step_name: kind,
         project_intent: data.projectIntent,
+        duration_ms,
       })
       setDirection(1)
       setStep((s) => s + 1)
@@ -389,6 +583,7 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
     setSubmitting(true)
     setSubmitError(null)
     const payload = buildSubmitPayload()
+    const duration_ms = Date.now() - stepStartedAtRef.current
     posthog.capture("inquiry_form_submitted", {
       project_intent: data.projectIntent,
       business_type: data.businessType,
@@ -397,6 +592,7 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
       platform_preference: payload.platformPreference,
       timeline: data.timeline,
       current_site: data.currentSite,
+      duration_ms,
     })
     try {
       const res = await fetch("/api/inquiry", {
@@ -414,6 +610,11 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
             "Something went wrong sending your details. Please try again."
         )
         return
+      }
+      try {
+        localStorage.removeItem(INQUIRY_DRAFT_STORAGE_KEY)
+      } catch {
+        /* ignore */
       }
       setSubmitted(true)
     } catch {
@@ -463,15 +664,37 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
   const atFinalStep = Boolean(data.projectIntent) && step === lastStepIndex
 
   return (
-    <div className={cn("w-full", className)}>
-      <div className="mb-6">
+    <div ref={formAnchorRef} className={cn("w-full", className)}>
+      {draftOfferVisible ? (
+        <div className="mb-4 flex flex-col gap-3 rounded-xl border border-primary/25 bg-primary/[0.05] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm text-foreground">
+            You have a saved project brief on this device. Resume where you left off, or start
+            fresh.
+          </p>
+          <div className="flex shrink-0 flex-wrap gap-2">
+            <Button type="button" size="sm" onClick={restoreDraft}>
+              Resume
+            </Button>
+            <Button type="button" size="sm" variant="outline" onClick={discardDraftAndReset}>
+              Start fresh
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      <div className="mb-6 flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
         <StepIndicator
           current={step}
           total={data.projectIntent ? totalSteps : 1}
         />
+        {data.projectIntent ? (
+          <p className="text-xs tabular-nums text-muted-foreground">
+            About {approximateMinutesRemaining(step, totalSteps)} min left
+          </p>
+        ) : null}
       </div>
 
-      <div className="relative min-h-[320px] overflow-hidden">
+      <div className="relative min-h-[320px] overflow-x-hidden">
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
             key={`${step}-${kind}`}
@@ -501,6 +724,11 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
                 businessType={data.businessType}
                 selectedIntegrationModules={data.selectedIntegrationModules}
                 onToggleIntegrationModule={(id) => {
+                  setDraftOfferVisible(false)
+                  if (!formStartedRef.current) {
+                    formStartedRef.current = true
+                    posthog.capture("inquiry_form_started")
+                  }
                   setData((prev) => {
                     const has = prev.selectedIntegrationModules.includes(id)
                     const selectedIntegrationModules = has
@@ -519,6 +747,11 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
                 toolsNotes={data.toolsNotes}
                 onSprint={(v) => update("integrationSprintId", v)}
                 onToggleModule={(id) => {
+                  setDraftOfferVisible(false)
+                  if (!formStartedRef.current) {
+                    formStartedRef.current = true
+                    posthog.capture("inquiry_form_started")
+                  }
                   setData((prev) => {
                     const has = prev.selectedIntegrationModules.includes(id)
                     const selectedIntegrationModules = has
@@ -568,47 +801,56 @@ export function MultistepInquiryForm({ className }: { className?: string }) {
         </p>
       )}
 
-      <div className="mt-8 flex flex-col-reverse items-stretch justify-between gap-3 sm:flex-row sm:items-center">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={goPrev}
-          disabled={step === 0}
-          className={cn("w-full sm:w-auto", step === 0 && "invisible")}
+      <div className="-mx-6 mt-8 sm:-mx-8">
+        <div
+          className={cn(
+            "sticky bottom-0 z-10 flex flex-col-reverse items-stretch justify-between gap-3",
+            "border-t border-border/60 bg-background/95 px-6 py-4 backdrop-blur-md",
+            "pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:static sm:border-0 sm:bg-transparent sm:px-8 sm:py-0 sm:backdrop-blur-none",
+            "sm:flex-row sm:items-center"
+          )}
         >
-          <ArrowLeft className="size-4" />
-          Back
-        </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={goPrev}
+            disabled={step === 0}
+            className={cn("w-full sm:w-auto", step === 0 && "invisible")}
+          >
+            <ArrowLeft className="size-4" />
+            Back
+          </Button>
 
-        {!atFinalStep ? (
-          <Button
-            variant="default"
-            size="cta"
-            onClick={goNext}
-            disabled={!canAdvance}
-            className="w-full sm:w-auto"
-          >
-            Continue
-            <ArrowRight className="size-4" />
-          </Button>
-        ) : (
-          <Button
-            variant="default"
-            size="cta"
-            onClick={handleSubmit}
-            disabled={!canAdvance || submitting}
-            className="w-full sm:w-auto"
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Sending…
-              </>
-            ) : (
-              "Send My Project Brief"
-            )}
-          </Button>
-        )}
+          {!atFinalStep ? (
+            <Button
+              variant="default"
+              size="cta"
+              onClick={goNext}
+              disabled={!canAdvance}
+              className="w-full sm:w-auto"
+            >
+              Continue
+              <ArrowRight className="size-4" />
+            </Button>
+          ) : (
+            <Button
+              variant="default"
+              size="cta"
+              onClick={handleSubmit}
+              disabled={!canAdvance || submitting}
+              className="w-full sm:w-auto"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Sending…
+                </>
+              ) : (
+                "Send My Project Brief"
+              )}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -624,7 +866,7 @@ function StepProjectIntent({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="font-heading text-xl font-semibold tracking-tight">
+        <h3 className="font-heading scroll-mt-28 text-xl font-semibold tracking-tight">
           What are you looking for?
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -666,7 +908,7 @@ function StepBusinessType({
   return (
     <div className="space-y-4">
       <div>
-        <h3 className="font-heading text-xl font-semibold tracking-tight">
+        <h3 className="font-heading scroll-mt-28 text-xl font-semibold tracking-tight">
           What kind of business do you run?
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -713,7 +955,7 @@ function StepIntegration({
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="font-heading text-xl font-semibold tracking-tight">
+        <h3 className="font-heading scroll-mt-28 text-xl font-semibold tracking-tight">
           Sprint &amp; add-ons
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -748,41 +990,12 @@ function StepIntegration({
         <p className="text-sm font-medium text-foreground">
           Interested add-ons <span className="font-normal text-muted-foreground">(optional)</span>
         </p>
-        <div className="grid gap-2">
-          {modules.map((m) => {
-            const suggested =
-              businessType && moduleMatchesBusiness(m.typicalForBusinessTypes, businessType)
-            return (
-              <label
-                key={m.id}
-                className={cn(
-                  "flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
-                  selectedIntegrationModules.includes(m.id)
-                    ? "border-primary bg-primary/[0.06] ring-1 ring-primary/30"
-                    : "border-border/70 bg-background hover:border-primary/30"
-                )}
-              >
-                <Checkbox
-                  className="mt-0.5"
-                  checked={selectedIntegrationModules.includes(m.id)}
-                  onCheckedChange={() => onToggleModule(m.id)}
-                />
-                <span className="flex-1">
-                  <span className="text-sm font-medium text-foreground">{m.label}</span>
-                  {suggested ? (
-                    <span className="ml-2 text-[10px] font-medium uppercase tracking-wide text-primary">
-                      Often paired
-                    </span>
-                  ) : null}
-                  <span className="mt-0.5 block text-xs text-muted-foreground">{m.outcome}</span>
-                  <span className="mt-1 block font-mono text-[11px] text-muted-foreground">
-                    from ${m.fromPrice.toLocaleString()} NZD
-                  </span>
-                </span>
-              </label>
-            )
-          })}
-        </div>
+        <IntegrationModuleChecklist
+          modules={modules}
+          businessType={businessType}
+          selectedIntegrationModules={selectedIntegrationModules}
+          onToggleModule={onToggleModule}
+        />
       </div>
 
       <div className="space-y-2">
@@ -818,31 +1031,44 @@ function StepPackage({
     value.startsWith("shopify:") ? "ecommerce" : "standard"
   )
 
-  useEffect(() => {
-    if (!value) return
-    if (value.startsWith("shopify:")) setBuildType("ecommerce")
-    else if (value.startsWith("standard:")) setBuildType("standard")
-  }, [value])
+  const packageDerivedBuild: "standard" | "ecommerce" | null = value.startsWith("shopify:")
+    ? "ecommerce"
+    : value.startsWith("standard:")
+      ? "standard"
+      : null
+
+  const effectiveBuildType = packageDerivedBuild ?? buildType
 
   const activeOptions =
-    buildType === "standard" ? STANDARD_PACKAGE_OPTIONS : ECOMMERCE_PACKAGE_OPTIONS
+    effectiveBuildType === "standard" ? STANDARD_PACKAGE_OPTIONS : ECOMMERCE_PACKAGE_OPTIONS
   const selected = activeOptions.find((o) => o.value === value)
   const selectValue =
     value && activeOptions.some((o) => o.value === value) ? value : undefined
 
   const setCommerceMode = (nextCommerce: boolean) => {
     const nextType = nextCommerce ? "ecommerce" : "standard"
-    if (nextType === buildType) return
+    if (nextType === effectiveBuildType) return
     setBuildType(nextType)
     onChange("")
   }
 
   const showPlanPicker = value !== PACKAGE_INTEREST_UNSURE
 
+  const packageHeadingRef = useRef<HTMLDivElement>(null)
+  const prevShowPlanPickerRef = useRef(showPlanPicker)
+  useLayoutEffect(() => {
+    if (prevShowPlanPickerRef.current === showPlanPicker) return
+    prevShowPlanPickerRef.current = showPlanPicker
+    packageHeadingRef.current?.scrollIntoView({
+      block: "start",
+      behavior: scrollFormBehavior(),
+    })
+  }, [showPlanPicker])
+
   return (
     <div className="space-y-5">
-      <div>
-        <h3 className="font-heading text-xl font-semibold tracking-tight">
+      <div ref={packageHeadingRef}>
+        <h3 className="font-heading scroll-mt-28 text-xl font-semibold tracking-tight">
           Which package interests you?
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -881,13 +1107,13 @@ function StepPackage({
               <button
                 type="button"
                 onClick={() => {
-                  if (buildType === "standard") return
+                  if (effectiveBuildType === "standard") return
                   setCommerceMode(false)
                   posthog.capture("inquiry_package_mode_changed", { mode: "standard_sites" })
                 }}
                 className={cn(
                   "min-h-9 flex-1 rounded-lg px-3 py-2 text-center text-sm transition-colors sm:flex-none sm:px-4",
-                  buildType === "standard"
+                  effectiveBuildType === "standard"
                     ? "bg-background font-semibold text-foreground shadow-sm ring-1 ring-border/80"
                     : "text-muted-foreground hover:text-foreground"
                 )}
@@ -895,9 +1121,9 @@ function StepPackage({
                 Standard Sites
               </button>
               <Switch
-                checked={buildType === "ecommerce"}
+                checked={effectiveBuildType === "ecommerce"}
                 onCheckedChange={(checked) => {
-                  if (checked === (buildType === "ecommerce")) return
+                  if (checked === (effectiveBuildType === "ecommerce")) return
                   setCommerceMode(checked)
                   posthog.capture("inquiry_package_mode_changed", {
                     mode: checked ? "ecommerce" : "standard_sites",
@@ -905,7 +1131,7 @@ function StepPackage({
                 }}
                 className="shrink-0"
                 aria-label={
-                  buildType === "ecommerce"
+                  effectiveBuildType === "ecommerce"
                     ? "Switch to Standard Sites packages"
                     : "Switch to Ecommerce packages"
                 }
@@ -913,13 +1139,13 @@ function StepPackage({
               <button
                 type="button"
                 onClick={() => {
-                  if (buildType === "ecommerce") return
+                  if (effectiveBuildType === "ecommerce") return
                   setCommerceMode(true)
                   posthog.capture("inquiry_package_mode_changed", { mode: "ecommerce" })
                 }}
                 className={cn(
                   "min-h-9 flex-1 rounded-lg px-3 py-2 text-center text-sm transition-colors sm:flex-none sm:px-4",
-                  buildType === "ecommerce"
+                  effectiveBuildType === "ecommerce"
                     ? "bg-background font-semibold text-foreground shadow-sm ring-1 ring-border/80"
                     : "text-muted-foreground hover:text-foreground"
                 )}
@@ -972,40 +1198,13 @@ function StepPackage({
           From-prices on Pricing — typical for your industry are highlighted. We confirm scope before
           work starts.
         </p>
-        <div className="mt-3 grid gap-2">
-          {sortModulesForBusiness(businessType).map((m) => {
-            const suggested =
-              businessType && moduleMatchesBusiness(m.typicalForBusinessTypes, businessType)
-            return (
-              <label
-                key={m.id}
-                className={cn(
-                  "flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 text-left transition-colors",
-                  selectedIntegrationModules.includes(m.id)
-                    ? "border-primary bg-primary/[0.06] ring-1 ring-primary/30"
-                    : "border-border/70 bg-background hover:border-primary/30"
-                )}
-              >
-                <Checkbox
-                  className="mt-0.5"
-                  checked={selectedIntegrationModules.includes(m.id)}
-                  onCheckedChange={() => onToggleIntegrationModule(m.id)}
-                />
-                <span className="flex-1">
-                  <span className="text-sm font-medium text-foreground">{m.label}</span>
-                  {suggested ? (
-                    <span className="ml-2 text-[10px] font-medium uppercase tracking-wide text-primary">
-                      Often paired
-                    </span>
-                  ) : null}
-                  <span className="mt-0.5 block text-xs text-muted-foreground">{m.outcome}</span>
-                  <span className="mt-1 block font-mono text-[11px] text-muted-foreground">
-                    from ${m.fromPrice.toLocaleString()} NZD
-                  </span>
-                </span>
-              </label>
-            )
-          })}
+        <div className="mt-3">
+          <IntegrationModuleChecklist
+            modules={sortModulesForBusiness(businessType)}
+            businessType={businessType}
+            selectedIntegrationModules={selectedIntegrationModules}
+            onToggleModule={onToggleIntegrationModule}
+          />
         </div>
       </div>
     </div>
@@ -1028,11 +1227,23 @@ function StepProjectDetails({
   onWebsiteUrl: (v: string) => void
 }) {
   const showWebsiteUrl = currentSite !== "" && currentSite !== "none"
+  const urlFieldRef = useRef<HTMLDivElement>(null)
+  const prevShowWebsiteUrlRef = useRef(showWebsiteUrl)
+  useLayoutEffect(() => {
+    if (prevShowWebsiteUrlRef.current === showWebsiteUrl) return
+    prevShowWebsiteUrlRef.current = showWebsiteUrl
+    if (showWebsiteUrl) {
+      urlFieldRef.current?.scrollIntoView({
+        block: "nearest",
+        behavior: scrollFormBehavior(),
+      })
+    }
+  }, [showWebsiteUrl])
 
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="font-heading text-xl font-semibold tracking-tight">
+        <h3 className="font-heading scroll-mt-28 text-xl font-semibold tracking-tight">
           A bit about your project
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -1081,7 +1292,7 @@ function StepProjectDetails({
       </div>
 
       {showWebsiteUrl && (
-        <div className="space-y-2">
+        <div ref={urlFieldRef} className="space-y-2">
           <Label htmlFor="inquiry-website-url">
             Current website URL{" "}
             <span className="font-normal text-muted-foreground">(optional)</span>
@@ -1119,65 +1330,92 @@ function StepDiscovery({
   onContent: (v: string) => void
   onCopy: (v: string) => void
 }) {
+  const defaultOpenSection = useMemo((): "platform" | "content" | "copy" => {
+    if (!platformPreference) return "platform"
+    if (!contentReadiness) return "content"
+    return "copy"
+  }, [platformPreference, contentReadiness])
+
   return (
     <div className="space-y-6">
       <div>
-        <h3 className="font-heading text-xl font-semibold tracking-tight">
+        <h3 className="font-heading scroll-mt-28 text-xl font-semibold tracking-tight">
           Platform & content readiness
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          A quick filter so I can scope delivery and support correctly. Don&apos;t guess — each
-          section includes a not-sure or recommend-for-me option.
+          One question at a time — open each section below. Don&apos;t guess: every group has a
+          not-sure or recommend-for-me option.
         </p>
       </div>
 
-      <div className="space-y-3">
-        <p className="text-sm font-medium text-foreground">
-          Do you have a platform preference?
-        </p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {PLATFORM_OPTIONS.map((opt) => (
-            <OptionCard
-              key={opt.value}
-              selected={platformPreference === opt.value}
-              onClick={() => onPlatform(opt.value)}
-              label={opt.label}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <p className="text-sm font-medium text-foreground">
-          Can you share content and images for the site?
-        </p>
-        <div className="grid gap-2">
-          {CONTENT_OPTIONS.map((opt) => (
-            <OptionCard
-              key={opt.value}
-              selected={contentReadiness === opt.value}
-              onClick={() => onContent(opt.value)}
-              label={opt.label}
-            />
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-3">
-        <p className="text-sm font-medium text-foreground">
-          How about copywriting support?
-        </p>
-        <div className="grid gap-2 sm:grid-cols-2">
-          {COPY_OPTIONS.map((opt) => (
-            <OptionCard
-              key={opt.value}
-              selected={copywritingSupport === opt.value}
-              onClick={() => onCopy(opt.value)}
-              label={opt.label}
-            />
-          ))}
-        </div>
-      </div>
+      <Accordion
+        key={defaultOpenSection}
+        type="single"
+        collapsible
+        defaultValue={defaultOpenSection}
+        className="w-full rounded-xl border border-border/60 px-3 sm:px-4"
+      >
+        <AccordionItem value="platform" className="border-border/60">
+          <AccordionTrigger className="py-3.5 text-left text-sm font-medium text-foreground hover:no-underline">
+            1. Platform preference
+          </AccordionTrigger>
+          <AccordionContent>
+            <p className="mb-3 text-xs text-muted-foreground sm:hidden">
+              Do you have a platform in mind?
+            </p>
+            <div className="grid gap-2 pb-2 sm:grid-cols-2">
+              {PLATFORM_OPTIONS.map((opt) => (
+                <OptionCard
+                  key={opt.value}
+                  selected={platformPreference === opt.value}
+                  onClick={() => onPlatform(opt.value)}
+                  label={opt.label}
+                />
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="content" className="border-border/60">
+          <AccordionTrigger className="py-3.5 text-left text-sm font-medium text-foreground hover:no-underline">
+            2. Content &amp; images
+          </AccordionTrigger>
+          <AccordionContent>
+            <p className="mb-3 text-xs text-muted-foreground sm:hidden">
+              Can you share content and images for the site?
+            </p>
+            <div className="grid gap-2 pb-2">
+              {CONTENT_OPTIONS.map((opt) => (
+                <OptionCard
+                  key={opt.value}
+                  selected={contentReadiness === opt.value}
+                  onClick={() => onContent(opt.value)}
+                  label={opt.label}
+                />
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="copy" className="border-0">
+          <AccordionTrigger className="py-3.5 text-left text-sm font-medium text-foreground hover:no-underline">
+            3. Copywriting support
+          </AccordionTrigger>
+          <AccordionContent>
+            <p className="mb-3 text-xs text-muted-foreground sm:hidden">
+              How about copywriting support?
+            </p>
+            <div className="grid gap-2 pb-2 sm:grid-cols-2">
+              {COPY_OPTIONS.map((opt) => (
+                <OptionCard
+                  key={opt.value}
+                  selected={copywritingSupport === opt.value}
+                  onClick={() => onCopy(opt.value)}
+                  label={opt.label}
+                />
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   )
 }
@@ -1196,7 +1434,7 @@ function StepContact({
   return (
     <div className="space-y-5">
       <div>
-        <h3 className="font-heading text-xl font-semibold tracking-tight">
+        <h3 className="font-heading scroll-mt-28 text-xl font-semibold tracking-tight">
           How can I reach you?
         </h3>
         <p className="mt-1 text-sm text-muted-foreground">

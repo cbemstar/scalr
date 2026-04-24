@@ -24,6 +24,10 @@ type PortfolioItem = {
   href: string
   niche: string
   description: string
+  /** Why the project existed — one line, no metrics required */
+  challenge: string
+  /** What we delivered — scope-level, honest */
+  outcome: string
   tags: string[]
   /** Local path under public/ */
   imageSrc: string
@@ -46,6 +50,10 @@ const portfolioItems: PortfolioItem[] = [
     niche: "Home builder",
     description:
       "Showcase site for a home-building brand — clear layouts, strong visuals, and structure built to guide visitors toward enquiry.",
+    challenge:
+      "Present a premium builder brand online without a bloated CMS or generic template feel.",
+    outcome:
+      "Visual-first layouts and enquiry paths aligned with how people shortlist home builders.",
     tags: ["Webflow", "Brand showcase"],
     imageSrc: "/images/portfolio/signature-homes.webp",
     imageAlt: "Signature Homes website — hero imagery of plans and building",
@@ -59,6 +67,8 @@ const portfolioItems: PortfolioItem[] = [
     niche: "Hospitality",
     description:
       "Restaurant and venue presence with menus, atmosphere, and booking paths that match how people decide where to eat.",
+    challenge: "Convey venue atmosphere and make the next step (book or visit) obvious on mobile.",
+    outcome: "Hospitality-led structure, menus, and paths that match how diners compare venues.",
     tags: ["Webflow", "Hospitality"],
     imageSrc: "/images/portfolio/madras-square.png",
     imageAlt: "Madras Square — Open Graph preview from the live site",
@@ -72,6 +82,8 @@ const portfolioItems: PortfolioItem[] = [
     niche: "Trades & licensing",
     description:
       "Trust-led site for licensed trades — messaging and structure aimed at people comparing providers before they call.",
+    challenge: "Earn trust before the phone call — licensing and credibility are the main filter.",
+    outcome: "Credibility-first messaging and lead-focused layout for comparison-stage visitors.",
     tags: ["Webflow", "Lead generation"],
     imageSrc: "/images/portfolio/ask-licensed.png",
     imageAlt: "Ask for Licensed — Open Graph preview from the live site",
@@ -85,6 +97,8 @@ const portfolioItems: PortfolioItem[] = [
     niche: "Ecommerce",
     description:
       "Product-led ecommerce experience on Webflow — built to browse, compare, and buy without friction.",
+    challenge: "Jewellery ecommerce that feels brand-led — not a one-size catalogue skin.",
+    outcome: "Browse-and-buy flows on Webflow with imagery and structure tuned for products.",
     tags: ["Webflow", "Ecommerce"],
     imageSrc: "/images/portfolio/made-of-gold.jpg",
     imageAlt: "Made of Gold jewellery — product photography from the live store",
@@ -100,6 +114,8 @@ const portfolioItems: PortfolioItem[] = [
     niche: "Resources",
     description:
       "A resources directory built with React and Next.js, deployed on Vercel — fast search, clear categories, built to scale.",
+    challenge: "Ship a searchable directory that stays fast as the list grows.",
+    outcome: "Next.js on Vercel with category-led IA and search that stays responsive.",
     tags: ["Next.js", "Vercel", "Directory"],
     imageSrc: "/images/portfolio/the-stash.png",
     imageAlt: "The Stash — Open Graph image from thestash.xyz",
@@ -138,6 +154,25 @@ function PortfolioMedia({
         priority={priority}
       />
     </AspectRatio>
+  )
+}
+
+function PortfolioCaseLines({ item }: { item: PortfolioItem }) {
+  return (
+    <div className="mt-4 space-y-3 border-t border-border/50 pt-4">
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+          Challenge
+        </p>
+        <p className="mt-1 text-sm leading-relaxed text-foreground">{item.challenge}</p>
+      </div>
+      <div>
+        <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+          What we shipped
+        </p>
+        <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{item.outcome}</p>
+      </div>
+    </div>
   )
 }
 
@@ -188,6 +223,7 @@ function FeaturedPortfolioCard({ item }: { item: PortfolioItem }) {
             <CardDescription className="text-pretty text-sm leading-relaxed sm:text-base">
               {item.description}
             </CardDescription>
+            <PortfolioCaseLines item={item} />
           </CardHeader>
           <CardFooter className="mt-auto flex-wrap items-center justify-between gap-3 px-6 pb-6 pt-0">
             <PortfolioTags item={item} />
@@ -222,6 +258,7 @@ function PortfolioCard({ item }: { item: PortfolioItem }) {
           </CardAction>
           <CardTitle className="text-lg text-balance">{item.title}</CardTitle>
           <CardDescription className="text-pretty leading-relaxed">{item.description}</CardDescription>
+          <PortfolioCaseLines item={item} />
         </CardHeader>
         <CardFooter className="flex-wrap items-center justify-between gap-3">
           <PortfolioTags item={item} />
@@ -244,8 +281,8 @@ export function PortfolioSection() {
             <p className="lp-kicker mb-3">Portfolio</p>
             <h2 className="lp-title text-balance">Real sites, live today.</h2>
             <p className="lp-lead mt-4 text-pretty">
-              A sample of work across Webflow builds and a custom Next.js app — click through to see
-              the full experience.
+              A sample of work across Webflow builds and a custom Next.js app — each with the brief
+              we solved and what shipped. Open the live sites for the full experience.
             </p>
           </div>
         </FadeIn>

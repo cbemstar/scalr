@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import type { HTMLMotionProps, Variants } from "motion/react";
 import { motion, useAnimation, useReducedMotion } from "motion/react";
 import { forwardRef, useCallback, useImperativeHandle, useRef } from "react";
+import type { MouseEvent } from "react";
 
 export interface EyeIconHandle {
   startAnimation: () => void
@@ -54,25 +55,25 @@ const EyeIcon = forwardRef<EyeIconHandle, EyeIconProps>(
   });
 
   const handleEnter = useCallback(
-   (e?: React.MouseEvent<HTMLDivElement>) => {
+   (e: MouseEvent<HTMLDivElement>) => {
     if (!isAnimated || reduced) return;
     if (!isControlled.current) {
      eyeControls.start("blink");
      pupilControls.start("scan");
     } else {
-     onMouseEnter?.(e as any);
+     onMouseEnter?.(e);
     }
    },
    [eyeControls, pupilControls, onMouseEnter, reduced, isAnimated],
   );
 
   const handleLeave = useCallback(
-   (e: React.MouseEvent<HTMLDivElement>) => {
+   (e: MouseEvent<HTMLDivElement>) => {
     if (!isControlled.current) {
      eyeControls.start("open");
      pupilControls.start("center");
     } else {
-     onMouseLeave?.(e as any);
+     onMouseLeave?.(e);
     }
    },
    [eyeControls, pupilControls, onMouseLeave],

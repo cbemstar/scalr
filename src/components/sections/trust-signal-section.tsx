@@ -1,7 +1,7 @@
 "use client"
 
 import { FadeIn } from "@/components/common/fade-in"
-import { Testimonials } from "@/components/ui/testimonials"
+import { ResearchTrustCards } from "@/components/ui/research-trust-cards"
 import { siteConfig } from "@/config/site"
 
 /** InternetNZ / Yabble research strip — below hero so the fold stays light. */
@@ -28,7 +28,7 @@ export function TrustSignalSection() {
           </FadeIn>
 
           <FadeIn delay={0.06}>
-            <Testimonials
+            <ResearchTrustCards
               sourceUrl={h.url}
               sourceLabel={h.linkLabel}
               sourceTitleAttr={h.titleAttr}

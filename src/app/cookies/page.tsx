@@ -49,6 +49,10 @@ export default function CookiesPage() {
           </a>
           .
         </li>
+        <li>
+          <strong>Project brief draft:</strong> if you start the contact form, your browser may save
+          an in-progress brief in <code className="mx-1 rounded bg-muted px-1.5 py-0.5 font-mono text-sm text-foreground">localStorage</code> so you can resume on the same device. It is not sent to us until you submit.
+        </li>
       </ul>
 
       <h2>Your choices</h2>

@@ -22,7 +22,7 @@ export function LegalPageShell({ title, lead, children, className }: LegalPageSh
       )}
     >
       <SiteHeader />
-      <main className="lp-hero-surface flex-1">
+      <main className="relative z-10 flex-1 lp-hero-surface">
         <div className="lp-section">
           <div className="lp-shell max-w-3xl">
             <nav aria-label="Breadcrumb" className="mb-10 text-sm text-muted-foreground">
@@ -48,7 +48,7 @@ export function LegalPageShell({ title, lead, children, className }: LegalPageSh
           </div>
         </div>
       </main>
-      <SiteFooter />
+      <SiteFooter className="relative z-0" />
     </div>
   )
 }

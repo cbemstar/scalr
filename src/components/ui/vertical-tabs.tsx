@@ -91,7 +91,9 @@ export function VerticalTabs({
   const [isPaused, setIsPaused] = useState(false)
   const ignoreScrollSyncUntil = useRef(0)
 
-  activeIndexRef.current = activeIndex
+  useEffect(() => {
+    activeIndexRef.current = activeIndex
+  }, [activeIndex])
 
   const handleNext = useCallback(() => {
     if (items.length === 0) return
@@ -107,13 +109,13 @@ export function VerticalTabs({
     setActiveIndex((prev) => (prev - 1 + items.length) % items.length)
   }, [items.length])
 
-  const handleTabClick = (index: number) => {
+  const handleTabClick = useCallback((index: number) => {
     if (index === activeIndex) return
     ignoreScrollSyncUntil.current = Date.now() + 700
     setDirection(index > activeIndex ? 1 : -1)
     setActiveIndex(index)
     setIsPaused(false)
-  }
+  }, [activeIndex])
 
   useEffect(() => {
     if (autoPlayDuration === false || isPaused || items.length <= 1) return

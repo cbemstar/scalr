@@ -2,7 +2,7 @@
 
 import type { LenisOptions } from "lenis"
 import { ReactLenis } from "lenis/react"
-import { useLayoutEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 function shouldPreventLenis(node: Node) {
   if (!(node instanceof HTMLElement)) return false
@@ -18,11 +18,14 @@ function shouldPreventLenis(node: Node) {
 }
 
 export function LenisProvider({ children }: { children: React.ReactNode }) {
-  const [reduceMotion, setReduceMotion] = useState(false)
+  const [reduceMotion, setReduceMotion] = useState(() =>
+    typeof window === "undefined"
+      ? false
+      : window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  )
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     const mq = window.matchMedia("(prefers-reduced-motion: reduce)")
-    setReduceMotion(mq.matches)
     const onChange = () => setReduceMotion(mq.matches)
     mq.addEventListener("change", onChange)
     return () => mq.removeEventListener("change", onChange)

@@ -11,19 +11,19 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 
-export type TestimonialSupporting = {
+export type ResearchSupportingStat = {
   eyebrow: string
   headline: string
   body: string
 }
 
-export type TestimonialsProps = {
+export type ResearchTrustCardsProps = {
   sourceUrl: string
   sourceLabel: string
   sourceTitleAttr: string
   primaryBeforeLink: string
   primaryAfterLink: string
-  supporting: readonly TestimonialSupporting[]
+  supporting: readonly ResearchSupportingStat[]
   attributionName: string
   attributionDetail: string
   /** Optional machine-readable publication period for research citations */
@@ -31,10 +31,9 @@ export type TestimonialsProps = {
 }
 
 /**
- * Bento-style research / trust strip (Card + Avatar pattern).
- * Inspired by community testimonial layouts; content is NZ research, not client quotes.
+ * Bento-style cards for third-party research citations (not client testimonials).
  */
-export function Testimonials({
+export function ResearchTrustCards({
   sourceUrl,
   sourceLabel,
   sourceTitleAttr,
@@ -44,7 +43,7 @@ export function Testimonials({
   attributionName,
   attributionDetail,
   attributionDate,
-}: TestimonialsProps) {
+}: ResearchTrustCardsProps) {
   return (
     <div
       className={cn(

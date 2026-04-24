@@ -33,13 +33,12 @@ interface PreloaderProps {
 
 export default function Preloader({ onComplete }: PreloaderProps) {
   const [index, setIndex] = useState(0)
-  const [dimension, setDimension] = useState({ width: 0, height: 0 })
+  const [dimension] = useState(() => ({
+    width: typeof window === "undefined" ? 0 : window.innerWidth,
+    height: typeof window === "undefined" ? 0 : window.innerHeight,
+  }))
   const [isExiting, setIsExiting] = useState(false)
   const loaderRef = useRef<LoaderIconHandle>(null)
-
-  useEffect(() => {
-    setDimension({ width: window.innerWidth, height: window.innerHeight })
-  }, [])
 
   useEffect(() => {
     loaderRef.current?.startAnimation()

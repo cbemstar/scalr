@@ -117,49 +117,52 @@
 }
 
 :root {
+  /* Body: DM Sans (next/font). Headings: Funnel Sans (layout `<link>`). */
   --font-sans: ui-sans-serif, system-ui, sans-serif;
-  --font-heading: ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Funnel Sans", var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.25 0.031 165.6);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.25 0.031 165.6);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.25 0.031 165.6);
-  --primary: oklch(0.508 0.105 165.6);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.955 0.01 165.6);
-  --secondary-foreground: oklch(0.25 0.052 165.6);
-  --muted: oklch(0.97 0.002 165.6);
-  --muted-foreground: oklch(0.52 0.021 165.6);
-  --accent: oklch(0.965 0.003 165.6);
-  --accent-foreground: oklch(0.25 0.031 165.6);
+  /* Spring Meadow — light */
+  --background: oklch(0.985 0.012 135);
+  --foreground: oklch(0.27 0.042 145);
+  --card: oklch(0.995 0.008 130);
+  --card-foreground: oklch(0.27 0.042 145);
+  --popover: oklch(0.995 0.008 130);
+  --popover-foreground: oklch(0.27 0.042 145);
+  --primary: oklch(0.46 0.125 142);
+  --primary-foreground: oklch(0.99 0.01 135);
+  --secondary: oklch(0.94 0.035 128);
+  --secondary-foreground: oklch(0.3 0.05 145);
+  --muted: oklch(0.965 0.018 130);
+  --muted-foreground: oklch(0.48 0.035 145);
+  --accent: oklch(0.94 0.055 95);
+  --accent-foreground: oklch(0.28 0.05 145);
   --destructive: oklch(0.584 0.239 28.5);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.925 0.005 165.6);
-  --input: oklch(0.925 0.005 165.6);
-  --ring: oklch(0.508 0.105 165.6 / 0.9);
-  --chart-1: oklch(0.25 0.105 165.6);
-  --chart-2: oklch(0.35 0.105 165.6);
-  --chart-3: oklch(0.55 0.105 165.6);
-  --chart-4: oklch(0.75 0.105 165.6);
-  --chart-5: oklch(0.85 0.105 165.6);
-  --sidebar: oklch(0.984 0.002 165.6);
-  --sidebar-foreground: oklch(0.25 0.031 165.6);
-  --sidebar-primary: oklch(0.508 0.105 165.6);
-  --sidebar-primary-foreground: oklch(1 0 0);
-  --sidebar-accent: oklch(0.965 0.003 165.6);
-  --sidebar-accent-foreground: oklch(0.25 0.031 165.6);
-  --sidebar-border: oklch(0.925 0.005 165.6);
-  --sidebar-ring: oklch(0.925 0.005 165.6);
-  --radius: 0.75rem;
-  --shadow-2xs: 0 1px 0 0 oklch(0.55 0.016 165.6 / 0.05);
-  --shadow-xs: 0 1px 2px 0 oklch(0.55 0.016 165.6 / 0.05);
-  --shadow-sm: 0 1px 3px 0 oklch(0.55 0.016 165.6 / 0.1), 0 1px 2px -1px oklch(0.55 0.016 165.6 / 0.1);
-  --shadow-md: 0 4px 6px -1px oklch(0.55 0.016 165.6 / 0.1), 0 2px 4px -2px oklch(0.55 0.016 165.6 / 0.1);
-  --shadow-lg: 0 10px 15px -3px oklch(0.55 0.016 165.6 / 0.1), 0 4px 6px -4px oklch(0.55 0.016 165.6 / 0.1);
-  --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0.55 0.016 165.6 / 0.1);
-  --shadow-2xl: 0 25px 50px -12px oklch(0.55 0.016 165.6 / 0.15);
+  --border: oklch(0.9 0.025 135);
+  --input: oklch(0.9 0.025 135);
+  --ring: oklch(0.46 0.125 142 / 0.88);
+  --chart-1: oklch(0.42 0.12 142);
+  --chart-2: oklch(0.52 0.11 138);
+  --chart-3: oklch(0.62 0.09 135);
+  --chart-4: oklch(0.78 0.06 125);
+  --chart-5: oklch(0.88 0.04 115);
+  --sidebar: oklch(0.975 0.014 132);
+  --sidebar-foreground: oklch(0.27 0.042 145);
+  --sidebar-primary: oklch(0.46 0.125 142);
+  --sidebar-primary-foreground: oklch(0.99 0.01 135);
+  --sidebar-accent: oklch(0.94 0.055 95);
+  --sidebar-accent-foreground: oklch(0.28 0.05 145);
+  --sidebar-border: oklch(0.9 0.025 135);
+  --sidebar-ring: oklch(0.9 0.025 135);
+  /* Basic roundness (~8px) */
+  --radius: 0.5rem;
+  --shadow-2xs: 0 1px 0 0 oklch(0.45 0.06 142 / 0.06);
+  --shadow-xs: 0 1px 2px 0 oklch(0.45 0.06 142 / 0.06);
+  --shadow-sm: 0 1px 3px 0 oklch(0.45 0.06 142 / 0.1), 0 1px 2px -1px oklch(0.45 0.06 142 / 0.1);
+  --shadow-md: 0 4px 6px -1px oklch(0.45 0.06 142 / 0.1), 0 2px 4px -2px oklch(0.45 0.06 142 / 0.1);
+  --shadow-lg: 0 10px 15px -3px oklch(0.45 0.06 142 / 0.1), 0 4px 6px -4px oklch(0.45 0.06 142 / 0.1);
+  --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 0.1), 0 8px 10px -6px oklch(0.45 0.06 142 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px oklch(0.45 0.06 142 / 0.14);
   --color-dark: #131313;
   --color-neutral-100: #f5f5f5;
   --color-neutral-200: #e5e5e5;
@@ -188,38 +191,38 @@
 }
 
 .dark {
-  --background: oklch(0.15 0.01 165.6);
-  --foreground: oklch(0.98 0 0);
-  --card: oklch(0.17 0.01 165.6);
-  --card-foreground: oklch(0.98 0 0);
-  --popover: oklch(0.18 0.01 165.6);
-  --popover-foreground: oklch(0.98 0 0);
-  --primary: oklch(0.508 0.105 165.6);
-  --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.588 0.105 165.6 / 0.25);
-  --secondary-foreground: oklch(0.9 0.105 165.6);
-  --muted: oklch(0.25 0.007 165.6);
-  --muted-foreground: oklch(0.75 0.016 165.6);
-  --accent: oklch(0.38 0.01 165.6);
-  --accent-foreground: oklch(0.98 0 0);
+  --background: oklch(0.16 0.028 145);
+  --foreground: oklch(0.97 0.015 135);
+  --card: oklch(0.19 0.025 145);
+  --card-foreground: oklch(0.97 0.015 135);
+  --popover: oklch(0.2 0.026 145);
+  --popover-foreground: oklch(0.97 0.015 135);
+  --primary: oklch(0.62 0.13 142);
+  --primary-foreground: oklch(0.99 0.01 135);
+  --secondary: oklch(0.28 0.04 145);
+  --secondary-foreground: oklch(0.92 0.03 130);
+  --muted: oklch(0.25 0.022 145);
+  --muted-foreground: oklch(0.74 0.03 135);
+  --accent: oklch(0.32 0.045 95);
+  --accent-foreground: oklch(0.96 0.02 130);
   --destructive: oklch(0.69 0.2 23.9);
   --destructive-foreground: oklch(0 0 0);
-  --border: oklch(0.29 0.007 165.6);
-  --input: oklch(0.29 0.007 165.6);
-  --ring: oklch(0.588 0.105 165.6);
-  --chart-1: oklch(0.35 0.105 165.6);
-  --chart-2: oklch(0.55 0.105 165.6);
-  --chart-3: oklch(0.75 0.105 165.6);
-  --chart-4: oklch(0.9 0.105 165.6);
-  --chart-5: oklch(0.99 0.105 165.6);
-  --sidebar: oklch(0.11 0.007 165.6);
-  --sidebar-foreground: oklch(0.98 0 0);
-  --sidebar-primary: oklch(1 0 0);
-  --sidebar-primary-foreground: oklch(0.2 0.007 165.6);
-  --sidebar-accent: oklch(0.24 0.007 165.6);
-  --sidebar-accent-foreground: oklch(0.98 0 0);
-  --sidebar-border: oklch(0.28 0.007 165.6);
-  --sidebar-ring: oklch(0.588 0.105 165.6);
+  --border: oklch(0.3 0.028 145);
+  --input: oklch(0.3 0.028 145);
+  --ring: oklch(0.62 0.13 142);
+  --chart-1: oklch(0.62 0.13 142);
+  --chart-2: oklch(0.55 0.11 138);
+  --chart-3: oklch(0.48 0.09 135);
+  --chart-4: oklch(0.72 0.07 125);
+  --chart-5: oklch(0.82 0.05 115);
+  --sidebar: oklch(0.14 0.024 145);
+  --sidebar-foreground: oklch(0.97 0.015 135);
+  --sidebar-primary: oklch(0.62 0.13 142);
+  --sidebar-primary-foreground: oklch(0.99 0.01 135);
+  --sidebar-accent: oklch(0.28 0.04 145);
+  --sidebar-accent-foreground: oklch(0.96 0.02 130);
+  --sidebar-border: oklch(0.3 0.028 145);
+  --sidebar-ring: oklch(0.62 0.13 142);
   --shadow-2xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
   --shadow-xs: 0 1px 3px 0 hsl(0 0% 0% / 0.05);
   --shadow-sm: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px -1px hsl(0 0% 0% / 0.1);
@@ -236,6 +239,8 @@
   body {
     @apply bg-background text-foreground;
     overflow-x: clip;
+    line-height: 1.55;
+    font-feature-settings: "kern" 1, "liga" 1;
   }
   html {
     @apply font-sans;
@@ -262,7 +267,7 @@
 /*
  * “Imagine this instead” — contrast-first tokens (WCAG 2.1 AA-oriented).
  *
- * Surfaces are intentionally OPAQUE (hue ~165.6, brand primary family). Translucent
+ * Surfaces are intentionally OPAQUE (hue ~142, brand primary family). Translucent
  * panels over `html` light bg were washing to near-white behind copy and cards, which
  * made light ink fail 4.5:1 for body / kicker / foot.
  *
@@ -275,18 +280,18 @@
  * Decorative wash uses color-mix into --dream-surface-shell, never “transparent to page”.
  */
 .dream-state-scope {
-  --dream-surface-shell: oklch(0.2 0.044 165.6);
-  --dream-surface-stack: oklch(0.17 0.042 165.6);
-  --dream-surface-card: oklch(0.155 0.04 165.6);
-  --dream-text: oklch(0.985 0.005 165.6);
-  --dream-body: oklch(0.9 0.024 165.6);
-  --dream-kicker: oklch(0.82 0.042 165.6);
-  --dream-foot: oklch(0.8 0.038 165.6);
+  --dream-surface-shell: oklch(0.2 0.044 142);
+  --dream-surface-stack: oklch(0.17 0.042 142);
+  --dream-surface-card: oklch(0.155 0.04 142);
+  --dream-text: oklch(0.985 0.005 142);
+  --dream-body: oklch(0.9 0.024 142);
+  --dream-kicker: oklch(0.82 0.042 142);
+  --dream-foot: oklch(0.8 0.038 142);
   --dream-border: oklch(1 0 0 / 0.2);
   --dream-border-soft: oklch(1 0 0 / 0.11);
   --dream-card-sheen-top: oklch(1 0 0 / 0.1);
   --dream-card-sheen-bot: oklch(1 0 0 / 0.02);
-  --dream-shadow-deep: oklch(0.12 0.045 165.6 / 0.5);
+  --dream-shadow-deep: oklch(0.12 0.045 142 / 0.5);
   --dream-stack-vignette: oklch(0 0 0 / 0.2);
   --dream-control-bg: oklch(1 0 0 / 0.09);
   --dream-control-bg-hover: oklch(1 0 0 / 0.15);
@@ -297,24 +302,24 @@
 
 .dark .dream-state-scope {
   /* Slightly above page bg (~0.15 L) so the block reads as a lifted band */
-  --dream-surface-shell: oklch(0.225 0.048 165.6);
-  --dream-surface-stack: oklch(0.19 0.045 165.6);
-  --dream-surface-card: oklch(0.175 0.042 165.6);
-  --dream-text: oklch(0.97 0.01 165.6);
-  --dream-body: oklch(0.86 0.03 165.6);
-  --dream-kicker: oklch(0.76 0.045 165.6);
-  --dream-foot: oklch(0.74 0.042 165.6);
+  --dream-surface-shell: oklch(0.225 0.048 142);
+  --dream-surface-stack: oklch(0.19 0.045 142);
+  --dream-surface-card: oklch(0.175 0.042 142);
+  --dream-text: oklch(0.97 0.01 142);
+  --dream-body: oklch(0.86 0.03 142);
+  --dream-kicker: oklch(0.76 0.045 142);
+  --dream-foot: oklch(0.74 0.042 142);
   --dream-border: color-mix(in oklch, var(--primary) 32%, oklch(1 0 0 / 0.14));
   --dream-border-soft: oklch(1 0 0 / 0.09);
   --dream-card-sheen-top: oklch(1 0 0 / 0.12);
   --dream-card-sheen-bot: oklch(1 0 0 / 0.03);
-  --dream-shadow-deep: oklch(0.04 0.02 165.6 / 0.65);
+  --dream-shadow-deep: oklch(0.04 0.02 142 / 0.65);
   --dream-stack-vignette: oklch(0 0 0 / 0.45);
   --dream-control-bg: oklch(1 0 0 / 0.07);
   --dream-control-bg-hover: oklch(1 0 0 / 0.12);
   --dream-control-border: oklch(1 0 0 / 0.14);
   --dream-card-glow-1: color-mix(in oklch, var(--primary) 44%, transparent);
-  --dream-card-glow-2: color-mix(in oklch, var(--primary) 14%, oklch(0.82 0.06 165 / 0.12));
+  --dream-card-glow-2: color-mix(in oklch, var(--primary) 14%, oklch(0.82 0.06 142 / 0.12));
 }
 
 .dream-state-scope .dream-state-wash {
@@ -350,6 +355,15 @@
       color-mix(in oklch, var(--primary) 16%, var(--dream-surface-shell)) 0%,
       var(--dream-surface-shell) 100%
     );
+}
+
+/*
+ * Inquiry form focus mode (FinalCTA): `main` is `z-10` so page sections stack correctly,
+ * but that traps fixed descendants below the kinetic nav (`z-index: 100`). Toggle via
+ * `data-inquiry-focus` on `<html>` (set in `final-cta.tsx`) so the overlay can paint above.
+ */
+html[data-inquiry-focus] main {
+  z-index: 150;
 }
 
 @layer components {

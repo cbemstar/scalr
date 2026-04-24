@@ -32,7 +32,7 @@ export default function Home() {
     >
       <JsonLd data={buildHomeExtraJsonLdGraph(siteConfig)} />
       <SiteHeader />
-      <main className="flex-1">
+      <main className="relative z-10 flex-1">
         {/* Section 1: Hero — stop the scroll, drive one action */}
         <HeroSection />
 
@@ -70,7 +70,8 @@ export default function Home() {
         {/* Section 10: Final CTA — last chance to convert */}
         <FinalCTASection />
       </main>
-      <SiteFooter />
+      {/* z-0 so sticky footer reveal never paints over the contact form (main is z-10). */}
+      <SiteFooter className="relative z-0" />
     </div>
   );
 }

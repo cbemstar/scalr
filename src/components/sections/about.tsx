@@ -4,7 +4,8 @@
 "use client"
 
 import { LinkedinLogoIcon } from "@phosphor-icons/react/dist/ssr"
-import { ArrowUpRight, Phone } from "lucide-react"
+import { ArrowUpRight, Phone, ShieldCheck } from "lucide-react"
+import Link from "next/link"
 import { useRef } from "react"
 import type { Variants } from "framer-motion"
 
@@ -119,8 +120,39 @@ export function AboutSection() {
             .
           </TimelineContent>
 
+          <FadeIn delay={0.02}>
+            <ul className="mt-8 grid gap-3 sm:grid-cols-3">
+              {siteConfig.about.credentials.map((c) => (
+                <li
+                  key={c.title + c.eyebrow}
+                  className="rounded-2xl border border-border/70 bg-muted/20 px-4 py-4 ring-1 ring-foreground/[0.04]"
+                >
+                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                    {c.eyebrow}
+                  </p>
+                  <p className="mt-2 font-heading text-lg font-semibold tracking-tight text-foreground">
+                    {c.title}
+                  </p>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground text-pretty">{c.body}</p>
+                  {"href" in c && c.href ? (
+                    <Link
+                      href={c.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-primary underline-offset-2 hover:underline"
+                      onClick={() => posthog.capture("nzbn_verify_clicked", { source: "about" })}
+                    >
+                      <ShieldCheck className="size-3.5 shrink-0" aria-hidden />
+                      {c.linkLabel}
+                    </Link>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+          </FadeIn>
+
           <FadeIn delay={0.04}>
-            <p className="lp-lead mt-4 max-w-2xl text-pretty">
+            <p className="lp-lead mt-8 max-w-2xl text-pretty">
               I&apos;m {siteConfig.founder.name} — I&apos;ve spent 6+ years in digital marketing —
               campaigns, funnels, and why people click. Small businesses with great offers were
               losing to competitors with better sites. So I build pages with a goal on every screen,
