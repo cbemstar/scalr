@@ -79,28 +79,35 @@ export function SterlingGateKineticNavigation({
   const { resolvedTheme } = useTheme()
   const lenis = useLenis()
 
-  /** Lenis captures wheel/touch on the root — stop it while the drawer is open so the page does not move behind the menu. */
-  useEffect(() => {
-    if (!lenis || !isMenuOpen) return
-    lenis.stop()
-    return () => {
-      lenis.start()
-    }
-  }, [isMenuOpen, lenis])
-
-  /** Lock document scroll (Lenis + native) while the overlay is open. */
+  /** Lock both Lenis and the native document scroll so touch gestures stay inside the drawer. */
   useEffect(() => {
     if (!isMenuOpen) return
+    lenis?.stop()
+
     const html = document.documentElement
+    const scrollY = window.scrollY
     const prevHtml = html.style.overflow
     const prevBody = document.body.style.overflow
+    const prevBodyPosition = document.body.style.position
+    const prevBodyTop = document.body.style.top
+    const prevBodyWidth = document.body.style.width
+
     html.style.overflow = "hidden"
     document.body.style.overflow = "hidden"
+    document.body.style.position = "fixed"
+    document.body.style.top = `-${scrollY}px`
+    document.body.style.width = "100%"
+
     return () => {
       html.style.overflow = prevHtml
       document.body.style.overflow = prevBody
+      document.body.style.position = prevBodyPosition
+      document.body.style.top = prevBodyTop
+      document.body.style.width = prevBodyWidth
+      window.scrollTo(0, scrollY)
+      lenis?.start()
     }
-  }, [isMenuOpen])
+  }, [isMenuOpen, lenis])
 
   useLayoutEffect(() => {
     const root = containerRef.current
@@ -490,14 +497,14 @@ export function SterlingGateKineticNavigation({
 
       <section
         className="fullscreen-menu-container"
-        aria-hidden={!isMenuOpen}
+        {...(!isMenuOpen ? { "aria-hidden": true as const } : {})}
       >
         <div
           id="site-kinetic-nav-overlay"
           data-nav="closed"
           className="nav-overlay-wrapper"
           role="dialog"
-          aria-hidden={!isMenuOpen}
+          {...(!isMenuOpen ? { "aria-hidden": true as const } : {})}
           aria-label="Site navigation"
           {...(isMenuOpen ? { "aria-modal": true as const } : {})}
         >
