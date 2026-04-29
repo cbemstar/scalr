@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
-import { DM_Sans, Funnel_Sans, Geist_Mono } from "next/font/google";
+import { DM_Sans, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { PostHogEnsure } from "@/components/providers/posthog-ensure";
 import { LenisProvider } from "@/components/providers/lenis-provider";
@@ -26,15 +26,6 @@ const dmSans = DM_Sans({
 const geistMono = Geist_Mono({
   subsets: ["latin"],
   variable: "--font-mono",
-  display: "swap",
-});
-
-/** Headings — same face as prior Google `<link>`, loaded via next/font for one less render-blocking hop. */
-const funnelSans = Funnel_Sans({
-  subsets: ["latin"],
-  weight: "variable",
-  style: ["normal", "italic"],
-  variable: "--font-heading",
   display: "swap",
 });
 
@@ -97,13 +88,16 @@ export default async function RootLayout({
       className={cn(
         "h-full antialiased font-sans",
         dmSans.variable,
-        funnelSans.variable,
         geistMono.variable,
         scalrLogo.variable
       )}
       suppressHydrationWarning
     >
       <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Funnel+Sans:ital,wght@0,400..800;1,400..800&display=swap"
+        />
         <Script id="google-tag-manager" strategy="afterInteractive">
           {`(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],

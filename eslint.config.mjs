@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Local rollback snapshots — not deployed source.
+    ".restore-points/**",
   ]),
 ]);
 

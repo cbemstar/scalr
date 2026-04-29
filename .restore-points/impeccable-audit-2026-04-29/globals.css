@@ -117,8 +117,9 @@
 }
 
 :root {
-  /* Body: DM Sans (next/font). Headings: Funnel Sans (`funnelSans.variable` on `<html>`). */
+  /* Body: DM Sans (next/font). Headings: Funnel Sans (layout `<link>`). */
   --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-heading: "Funnel Sans", var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   /* Spring Meadow — light */
   --background: oklch(0.985 0.012 135);
@@ -256,7 +257,7 @@
     color-scheme: dark;
   }
   .font-heading {
-    font-family: var(--font-heading), var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-heading), var(--font-sans), ui-sans-serif, sans-serif;
   }
   .section-eyebrow {
     @apply text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground;

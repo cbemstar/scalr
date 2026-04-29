@@ -302,6 +302,21 @@
   visibility: hidden;
 }
 
+/* No cinematic intro → keep copy readable before JS skips GSAP (pairs with prefersReduced branch in HeroSection). */
+@media (prefers-reduced-motion: reduce) {
+  .crisp-header.is--loading .crisp-loader {
+    display: none !important;
+  }
+  .crisp-header.is--loading .crisp-header__slider-scrim {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .crisp-header.is--loading .crisp-header__intro-stagger {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
 .crisp-header__layout {
   width: min(100%, 42rem);
   margin-inline: auto;
