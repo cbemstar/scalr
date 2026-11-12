@@ -66,7 +66,7 @@ export function V2Header() {
               href="#contact"
               className="group inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-medium text-primary-foreground transition-transform active:scale-[0.97]"
             >
-              Start your project
+              Book a strategy call
               <ArrowUpRight
                 aria-hidden
                 className="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"

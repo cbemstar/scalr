@@ -1,28 +1,32 @@
 import type { Metadata } from "next"
-import { Bricolage_Grotesque, Instrument_Sans } from "next/font/google"
+import { Host_Grotesk, Newsreader } from "next/font/google"
 
 import { cn } from "@/lib/utils"
 import "./v2.css"
 
-const display = Bricolage_Grotesque({
+/** Primary face — headings and body. */
+const sans = Host_Grotesk({
   subsets: ["latin"],
   weight: "variable",
-  axes: ["opsz", "wdth"],
-  variable: "--font-v2-display",
+  style: ["normal", "italic"],
+  variable: "--font-v2-sans",
   display: "swap",
 })
 
-const body = Instrument_Sans({
+/** Editorial accent — a few italic words per page, never body copy. */
+const serif = Newsreader({
   subsets: ["latin"],
   weight: "variable",
-  variable: "--font-v2-body",
+  style: ["italic"],
+  axes: ["opsz"],
+  variable: "--font-v2-serif",
   display: "swap",
 })
 
 export const metadata: Metadata = {
-  title: "Websites for NZ small businesses",
+  title: "Webflow & Google Ads agency",
   description:
-    "Marketer-led web design and builds for New Zealand cafés, tradies, salons, clinics and local shops. Websites, Shopify, local SEO and integrations — based in Christchurch.",
+    "Scalr is a New Zealand Webflow and Google Ads agency. High-converting Webflow sites, Google Ads management and email marketing — one team, one strategy.",
   // Preview of the redesign: keep it out of search until it replaces "/".
   robots: { index: false, follow: true },
   alternates: { canonical: "/" },
@@ -33,8 +37,8 @@ export default function V2Layout({ children }: { children: React.ReactNode }) {
     <div
       className={cn(
         "scalr-v2 relative flex min-h-dvh flex-col",
-        display.variable,
-        body.variable
+        sans.variable,
+        serif.variable
       )}
     >
       {children}

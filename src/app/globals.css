@@ -33,6 +33,9 @@
   --color-focus-ring: var(--focus-ring);
   --color-highlight: var(--highlight);
   --color-glow: var(--glow);
+  --color-item-secondary: var(--item-secondary);
+  --color-item-secondary-hover: var(--item-secondary-hover);
+  --color-item-selected: var(--item-selected);
   --font-display: var(--font-display);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);

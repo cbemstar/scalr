@@ -1,87 +1,103 @@
 /*
- * Scalr v2 — scoped design tokens.
+ * Scalr v2 — scoped design tokens (agency direction).
  * Everything lives under .scalr-v2 so the v1 site's tokens are untouched.
  * Role names follow Craftwork's "Blank" component library (brand, overlay, glow,
  * highlight, focus-ring) so the copied components render as designed.
  *
- * Palette: warm paper + ink, one accent — pōhutukawa red.
+ * Palette: cool white + ink, one accent — cobalt.
+ * Type: Host Grotesk (everything) + Newsreader italic (rare editorial accents).
  */
 
 .scalr-v2 {
-  --v2-paper: #f3efe6;
-  --v2-paper-2: #ebe5d8;
-  --v2-ink: #15140f;
-  --v2-ink-2: #3d3a31;
-  --v2-pohutukawa: #c4321b; /* 5.3:1 on paper */
-  --v2-pohutukawa-soft: #f6d9cf;
+  --v2-ink: #0a0c10;
+  --v2-cobalt: #2645f5; /* 6.4:1 on white */
 
-  --radius: 0.875rem;
-  --background: var(--v2-paper);
+  --radius: 0.75rem;
+  --background: #f6f6f4;
   --foreground: var(--v2-ink);
-  --card: #faf8f2;
+  --card: #ffffff;
   --card-foreground: var(--v2-ink);
-  --popover: #fffdf8;
+  --popover: #ffffff;
   --popover-foreground: var(--v2-ink);
   --primary: var(--v2-ink);
-  --primary-foreground: var(--v2-paper);
-  --secondary: var(--v2-paper-2);
+  --primary-foreground: #ffffff;
+  --secondary: #ececea;
   --secondary-foreground: var(--v2-ink);
-  --muted: var(--v2-paper-2);
-  --muted-foreground: #5c574b;
-  --accent: var(--v2-pohutukawa-soft);
+  --muted: #eeeeeb;
+  --muted-foreground: #5b5f68;
+  --accent: #e8ecff;
   --accent-foreground: var(--v2-ink);
-  --border: color-mix(in oklab, var(--v2-ink) 12%, transparent);
+  --border: color-mix(in oklab, var(--v2-ink) 11%, transparent);
   --input: color-mix(in oklab, var(--v2-ink) 16%, transparent);
-  --ring: var(--v2-pohutukawa);
+  --ring: var(--v2-cobalt);
 
-  --brand: var(--v2-pohutukawa);
-  --brand-foreground: #fff8f3;
+  --brand: var(--v2-cobalt);
+  --brand-foreground: #ffffff;
   --overlay: color-mix(in oklab, var(--v2-ink) 60%, transparent);
   --overlay-foreground: #ffffff;
-  --focus-ring: color-mix(in oklab, var(--v2-pohutukawa) 30%, transparent);
+  --focus-ring: color-mix(in oklab, var(--v2-cobalt) 30%, transparent);
   --highlight: #ffffff;
-  --glow: color-mix(in oklab, var(--v2-pohutukawa) 10%, transparent);
+  --glow: color-mix(in oklab, var(--v2-cobalt) 10%, transparent);
+  --item-secondary: color-mix(in oklab, var(--v2-ink) 5%, transparent);
+  --item-secondary-hover: color-mix(in oklab, var(--v2-ink) 9%, transparent);
+  --item-selected: color-mix(in oklab, var(--v2-cobalt) 8%, transparent);
 
-  --font-display: var(--font-v2-display), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-v2-sans), ui-sans-serif, system-ui, sans-serif;
 
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-v2-body), ui-sans-serif, system-ui, sans-serif;
-  font-feature-settings: "ss01", "cv11";
+  font-family: var(--font-v2-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
 .dark .scalr-v2 {
-  --background: #12110d;
-  --foreground: #f1ece1;
-  --card: #1b1a15;
-  --card-foreground: #f1ece1;
-  --popover: #24221c;
-  --popover-foreground: #f1ece1;
-  --primary: #f1ece1;
-  --primary-foreground: #12110d;
-  --secondary: #24221c;
-  --secondary-foreground: #f1ece1;
-  --muted: #24221c;
-  --muted-foreground: #a7a194;
-  --accent: #3a1d15;
-  --accent-foreground: #f1ece1;
-  --border: color-mix(in oklab, #ffffff 11%, transparent);
+  --background: #08090c;
+  --foreground: #eef0f4;
+  --card: #111318;
+  --card-foreground: #eef0f4;
+  --popover: #15181e;
+  --popover-foreground: #eef0f4;
+  --primary: #eef0f4;
+  --primary-foreground: #08090c;
+  --secondary: #181b21;
+  --secondary-foreground: #eef0f4;
+  --muted: #0f1115;
+  --muted-foreground: #9aa0ab;
+  --accent: #141a3a;
+  --accent-foreground: #eef0f4;
+  --border: color-mix(in oklab, #ffffff 10%, transparent);
   --input: color-mix(in oklab, #ffffff 16%, transparent);
-  --ring: #ff6a4d;
+  --ring: #6f86ff;
 
-  --brand: #ff6a4d;
-  --brand-foreground: #1a0c07;
+  --brand: #6f86ff;
+  --brand-foreground: #05070d;
   --overlay: color-mix(in oklab, #000 65%, transparent);
-  --highlight: color-mix(in oklab, #ffffff 7%, transparent);
-  --glow: color-mix(in oklab, #ff6a4d 16%, transparent);
-  --focus-ring: color-mix(in oklab, #ff6a4d 35%, transparent);
+  --highlight: color-mix(in oklab, #ffffff 6%, transparent);
+  --glow: color-mix(in oklab, #6f86ff 16%, transparent);
+  --focus-ring: color-mix(in oklab, #6f86ff 35%, transparent);
+  --item-secondary: color-mix(in oklab, #ffffff 8%, transparent);
+  --item-secondary-hover: color-mix(in oklab, #ffffff 13%, transparent);
+  --item-selected: color-mix(in oklab, #6f86ff 18%, transparent);
 }
 
 .scalr-v2 .v2-display {
   font-family: var(--font-display);
-  font-variation-settings: "opsz" 96;
-  letter-spacing: -0.035em;
-  line-height: 0.95;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+}
+
+.scalr-v2 .v2-serif {
+  font-family: var(--font-v2-serif), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Hairline grid used behind the hero */
+.scalr-v2 .v2-grid {
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: 64px 64px;
 }
 
 .scalr-v2 ::selection {
@@ -110,4 +126,11 @@
   to {
     transform: translateY(calc(-100% - var(--gap)));
   }
+}
+
+/* draggable-marquee */
+@media (prefers-reduced-motion: reduce) {
+  .obsidian-draggable-marquee { overflow-x: auto; }
+  .obsidian-draggable-marquee > div { transform: none !important; }
+  .obsidian-draggable-marquee [data-marquee-copy="duplicate"] { display: none; }
 }
