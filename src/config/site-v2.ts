@@ -3,203 +3,198 @@
  *   1. Webflow design & development
  *   2. Google Ads management
  *   3. Email templates & marketing
- * Single source of truth for everything the /v2 page says. No pricing by design.
  *
- * Benchmarks: every figure carries its source. Re-check before launch and when
- * each report's next edition ships.
+ * The page is written as a conversion journey (see src/app/v2/page.tsx for the
+ * section-by-section rationale): promise → problem → stakes → guide & solution →
+ * offer → plan → proof → risk reversal → objections → final ask.
+ *
+ * Copy rules: no promised results (no "ads that pay for themselves"), no features
+ * we don't offer, one CTA wording everywhere ("Book a free strategy call").
+ * Benchmarks carry their source; re-check before launch.
  */
 import { siteConfig } from "@/config/site"
+
+const CTA_LABEL = "Book a free strategy call"
+const CTA_HREF = "#contact"
 
 export const v2 = {
   contact: siteConfig.contact,
   social: siteConfig.social,
   business: siteConfig.business,
+  cta: { label: CTA_LABEL, href: CTA_HREF },
 
   nav: [
+    { label: "The problem", href: "#problem" },
     { label: "Services", href: "#services" },
-    { label: "How it works", href: "#system" },
-    { label: "Approach", href: "#approach" },
+    { label: "How it works", href: "#plan" },
     { label: "FAQ", href: "#faq" },
   ],
 
+  /** 1 — Hero: who it's for, the outcome they want, one action. */
   hero: {
     kicker: "Webflow & Google Ads agency · New Zealand",
-    // Rendered as: "Paid traffic that lands," / "converts" (annotated) / "and comes back."
-    headlineStart: "Paid traffic that lands,",
-    headlineMark: "converts",
-    headlineEnd: "and comes back.",
+    headlineStart: "Get more enquiries from the traffic",
+    headlineMark: "you're already",
+    headlineEnd: "paying for.",
     lead:
-      "Scalr builds high-converting Webflow sites, runs Google Ads that pay for themselves, and designs the emails that turn one-off visitors into repeat customers — one team, one strategy, one set of numbers.",
-    primaryCta: { label: "Book a strategy call", href: "#contact" },
-    secondaryCta: { label: "Explore services", href: "#services" },
-    trust: ["Founder-led", "Christchurch-based, NZ-wide", "Month-to-month ads management"],
+      "Scalr plans your Google Ads, builds the Webflow pages they land on and writes the emails that follow up — so every step from click to customer works together.",
+    secondary: { label: "See how it works", href: "#problem" },
+    reassurance: ["Founder-led", "No lock-in contracts", "You own every account"],
+    path: ["Google Ads", "Webflow page", "Email follow-up"],
   },
 
-  platforms: [
-    "Webflow",
-    "Google Ads",
-    "Google Analytics 4",
-    "Google Tag Manager",
-    "Looker Studio",
-    "Klaviyo",
-    "Mailchimp",
-    "HubSpot",
-    "Search Console",
-  ],
-
-  services: {
-    kicker: "Services",
-    title: "Three disciplines. One growth system.",
-    lead:
-      "We don't do everything. We do the three things that move the needle for service businesses and online brands — and we make them work together.",
+  /** 2 — Problem: name the pains in the visitor's own words. */
+  problem: {
+    kicker: "Sound familiar?",
+    title: "Most businesses don't have a traffic problem. They have a leak.",
     items: [
       {
-        id: "webflow",
-        number: "01",
-        name: "Webflow design & development",
-        short: "Webflow",
-        summary:
-          "Fast, flexible Webflow sites and campaign landing pages, designed to convert and easy for your team to update.",
-        deliverables: [
-          "Conversion-led UX, copy and design",
-          "Custom Webflow build with CMS",
-          "Campaign landing pages that match your ads",
-          "Migrations from WordPress, Wix and Squarespace",
-          "Speed, SEO and tracking set up from day one",
-          "Editor training so you're never stuck",
-        ],
-        outcome: "A site your ads can rely on — and your team can actually edit.",
+        tag: "Google Ads",
+        title: "You're paying for clicks, but the phone isn't ringing.",
+        body: "Budget goes out every day. It's hard to tell which keywords bring real enquiries and which just burn money.",
       },
       {
-        id: "google-ads",
-        number: "02",
-        name: "Google Ads management",
-        short: "Google Ads",
-        summary:
-          "Search and Performance Max campaigns built around profit, with tracking you can trust and reporting you can read.",
-        deliverables: [
-          "Account audit and keyword research",
-          "Search, Performance Max and remarketing campaigns",
-          "GA4, Tag Manager and enhanced conversions",
-          "Ad copy and landing-page testing",
-          "Weekly optimisation, monthly reporting",
-          "Clear cost-per-lead and return-on-ad-spend targets",
-        ],
-        outcome: "Every dollar tracked to a lead, a booking or a sale.",
+        tag: "Website",
+        title: "People land on your site, then leave without a word.",
+        body: "The page is slow, generic or unclear about what to do next — so visitors you paid for go back to Google.",
       },
       {
-        id: "email",
-        number: "03",
-        name: "Email templates & marketing",
-        short: "Email",
-        summary:
-          "On-brand email templates and automated flows that follow up while you sleep — in Klaviyo, Mailchimp or HubSpot.",
-        deliverables: [
-          "Custom, responsive email templates",
-          "Welcome, follow-up and abandoned-cart flows",
-          "Campaign and newsletter design",
-          "Lead capture wired from your site and ads",
-          "List segmentation and deliverability checks",
-          "Performance reporting tied to revenue",
-        ],
-        outcome: "More value from every lead you've already paid for.",
+        tag: "Email",
+        title: "Leads come in, then go quiet.",
+        body: "There's no follow-up, or it's a one-off reply. The people who were interested drift to whoever got back to them first.",
       },
     ],
   },
 
-  system: {
-    kicker: "How it works",
-    title: "Ads bring the click. Webflow wins it. Email brings them back.",
+  /** 3 — Stakes: make the cost of the leak concrete, with sourced numbers. */
+  stakes: {
+    kicker: "What it costs",
+    title: "On average, 92 of every 100 paid clicks leave without converting.",
     lead:
-      "Most businesses hire three different suppliers for this and wonder why the numbers never line up. We run it as one funnel, so every change is measured end to end.",
-    steps: [
-      { label: "Search", detail: "Google Ads" },
-      { label: "Click", detail: "Matched message" },
-      { label: "Land", detail: "Webflow page" },
-      { label: "Convert", detail: "Lead or sale" },
-      { label: "Nurture", detail: "Email flows" },
-    ],
-  },
-
-  benchmarks: {
-    kicker: "The bar we work against",
-    title: "Industry averages are the floor, not the goal.",
-    items: [
+      "That's what an 8.18% conversion rate looks like. Each step that leaks — the ad, the page, the follow-up — multiplies the waste. Fixing one in isolation rarely fixes the result.",
+    benchmarks: [
       {
         value: 8.18,
         decimals: 2,
         suffix: "%",
-        label: "Average Google Ads conversion rate across industries.",
-        source: "LocaliQ / WordStream Google Ads Benchmarks 2026",
+        label: "average Google Ads conversion rate",
+        source: "LocaliQ / WordStream, 2026",
         href: "https://localiq.com/blog/search-advertising-benchmarks/",
       },
       {
         value: 66.69,
         decimals: 2,
         prefix: "US$",
-        label: "Average cost per lead from search ads.",
-        source: "LocaliQ / WordStream Google Ads Benchmarks 2026",
+        label: "average cost per lead from search ads",
+        source: "LocaliQ / WordStream, 2026",
         href: "https://localiq.com/blog/search-advertising-benchmarks/",
-      },
-      {
-        value: 6.6,
-        decimals: 1,
-        suffix: "%",
-        label: "Median landing page conversion rate.",
-        source: "Unbounce Conversion Benchmark Report",
-        href: "https://unbounce.com/conversion-benchmark-report/",
       },
       {
         value: 36,
         decimals: 0,
         prefix: "$",
-        label: "Average return for every $1 spent on email marketing.",
+        label: "average return per $1 spent on email",
         source: "Litmus, State of Email",
         href: "https://www.litmus.com/resources/email-marketing-roi",
       },
     ],
-    footnote:
-      "Benchmarks are mostly US data and vary widely by industry. We set your targets from your own numbers in the first month.",
+    footnote: "Industry averages, mostly US data. Your numbers will differ — we start by measuring them.",
   },
 
-  approach: {
-    kicker: "Approach",
-    title: "A clear process, from audit to compounding results.",
+  /** 4 — Guide & solution: empathy + one joined-up approach. */
+  solution: {
+    kicker: "The fix",
+    title: "One team looking after the whole journey.",
+    lead:
+      "Most businesses hire one supplier for ads, another for the website and nobody for follow-up — then wonder why the numbers never line up. We plan all three together, so the message in your ad matches the page, and the page hands every lead to an email sequence.",
+    steps: [
+      { label: "Search", detail: "Someone looks for what you do" },
+      { label: "Ad", detail: "A message that matches their search" },
+      { label: "Page", detail: "A Webflow page built for that ad" },
+      { label: "Enquiry", detail: "One clear next step" },
+      { label: "Follow-up", detail: "Emails that keep you front of mind" },
+    ],
+  },
+
+  /** 5 — Offer: the three services, scannable. */
+  services: {
+    kicker: "Services",
+    title: "Three services. Planned together, or one at a time.",
+    items: [
+      {
+        id: "google-ads",
+        number: "01",
+        name: "Google Ads management",
+        short: "Google Ads",
+        summary: "Search and Performance Max campaigns built around your cost-per-lead goals.",
+        deliverables: [
+          "Account audit and keyword research",
+          "Campaign build and ad copy",
+          "Conversion tracking with GA4 and Tag Manager",
+          "Ongoing optimisation and a monthly report",
+        ],
+      },
+      {
+        id: "webflow",
+        number: "02",
+        name: "Webflow design & development",
+        short: "Webflow",
+        summary: "Fast Webflow sites and campaign landing pages that make the next step obvious.",
+        deliverables: [
+          "Conversion-focused copy, UX and design",
+          "Custom Webflow build with CMS",
+          "Landing pages matched to your ads",
+          "Training so your team can edit with confidence",
+        ],
+      },
+      {
+        id: "email",
+        number: "03",
+        name: "Email templates & marketing",
+        short: "Email",
+        summary: "On-brand templates and automated follow-up in Klaviyo, Mailchimp or HubSpot.",
+        deliverables: [
+          "Custom, responsive email templates",
+          "Welcome and follow-up sequences",
+          "Newsletter and campaign design",
+          "Sign-up forms wired to your site and ads",
+        ],
+      },
+    ],
+    tools: ["Webflow", "Google Ads", "Google Analytics 4", "Tag Manager", "Klaviyo", "Mailchimp", "HubSpot"],
+  },
+
+  /** 6 — Plan: three steps that remove the fear of starting. */
+  plan: {
+    kicker: "How it works",
+    title: "Getting started is simple.",
     steps: [
       {
-        title: "Audit & strategy",
-        timing: "Week 1",
-        body: "We review your site, ad account, tracking and email setup, then agree goals, targets and a 90-day plan.",
+        title: "Book a free strategy call",
+        body: "30 minutes on video. We look at your ads, website and follow-up together and find where enquiries are being lost.",
       },
       {
-        title: "Build & set up",
-        timing: "Weeks 2–5",
-        body: "Webflow pages, campaigns, conversion tracking and email templates are designed, built and tested together.",
+        title: "Get a clear, written plan",
+        body: "You receive a plan with priorities, timelines and a fixed quote. No obligation, and no jargon.",
       },
       {
-        title: "Launch",
-        timing: "Week 6",
-        body: "Campaigns go live with landing pages and follow-up flows already in place — no leaks between the steps.",
-      },
-      {
-        title: "Optimise monthly",
-        timing: "Ongoing",
-        body: "Weekly ad optimisation, landing-page tests and monthly reporting, all tied to cost per lead and revenue.",
+        title: "We build, launch and improve",
+        body: "We set everything up, launch, then keep refining based on what your results show — with a plain-English report each month.",
       },
     ],
   },
 
+  /** 7 — Proof & authority: why us, honestly. */
   compare: {
     kicker: "Why Scalr",
-    title: "Specialists, not a generalist agency.",
+    title: "Specialists in three things, not a generalist agency.",
     columns: ["Scalr", "Typical agency", "Doing it yourself"],
     rows: [
       { label: "Ads, website and email planned together", values: [true, "Rarely", false] },
-      { label: "You work with the founder, not an account manager", values: [true, "Rarely", "—"] },
+      { label: "You work directly with the founder", values: [true, "Rarely", "—"] },
       { label: "Conversion tracking set up and checked", values: [true, "Sometimes", "Often missed"] },
       { label: "You own every account and asset", values: [true, "Sometimes", true] },
       { label: "Month-to-month ads management", values: [true, "Often 6–12 month terms", "—"] },
-      { label: "Your time each week", values: ["A quick check-in", "Meetings & briefs", "Hours of learning"] },
     ],
   },
 
@@ -207,55 +202,60 @@ export const v2 = {
     name: "Karan",
     role: "Founder, Scalr",
     quote:
-      "I started Scalr after years in digital marketing watching good ad budgets land on slow, confusing websites. We fix the whole path — the ad, the page and the follow-up — and we measure it like it's our own money.",
+      "I started Scalr after years in digital marketing watching good ad budgets land on slow, confusing pages with no follow-up. We look after the whole path — the ad, the page and the emails after — and we treat your budget like it's our own.",
     credentials: ["6+ years in digital marketing", "NZBN-registered business", "Based in Ōtautahi Christchurch"],
   },
 
+  /** 8 — Risk reversal: what they can count on. */
+  assurances: [
+    { title: "No lock-in contracts", body: "Ads management is month to month after setup." },
+    { title: "You own everything", body: "Ad accounts, website, email lists and data stay in your name." },
+    { title: "Fixed quotes for projects", body: "Websites and email templates are quoted up front, in writing." },
+    { title: "Plain-English reporting", body: "A monthly summary of what we spent, what it brought in and what's next." },
+  ],
+
+  /** 9 — Objections. */
   faq: [
     {
-      q: "Do you only work with Webflow?",
-      a: "For websites, yes. We specialise in Webflow because it's fast, secure and easy for your team to edit — ideal for landing pages that need to change with your campaigns. If you're on another platform, we can migrate you.",
-    },
-    {
-      q: "Can you take over our existing Google Ads account?",
-      a: "Yes. We start with an audit of your account and tracking, fix what's leaking budget, then rebuild or restructure campaigns as needed. You keep full ownership of the account throughout.",
+      q: "Can you guarantee results from Google Ads?",
+      a: "No one honestly can — results depend on your market, offer and budget. What we can promise is a properly tracked setup, regular optimisation and clear reporting, so you always know what your spend is doing.",
     },
     {
       q: "Do I need all three services?",
-      a: "No. Plenty of clients start with one — often Google Ads or a Webflow build. They work best together, so we'll show you where the gaps are, but you choose what we take on.",
+      a: "No. Many clients start with one — often Google Ads or a Webflow landing page. They work best together, so we'll show you where the gaps are, but you choose what we take on.",
+    },
+    {
+      q: "Can you take over our existing Google Ads account?",
+      a: "Yes. We start with an audit, fix what's wasting budget, then restructure campaigns as needed. You keep full ownership of the account throughout.",
+    },
+    {
+      q: "Why Webflow?",
+      a: "Webflow sites are fast, secure and easy for your team to update — ideal for landing pages that need to change with your campaigns. If you're on another platform, we can migrate you.",
     },
     {
       q: "How much does it cost?",
-      a: "Webflow builds and email template projects are quoted as fixed projects. Google Ads management is a monthly fee, separate from your ad spend. After a strategy call you'll get a written proposal with exact numbers.",
+      a: "Webflow builds and email templates are fixed-price projects. Google Ads management is a monthly fee, separate from your ad spend. After the strategy call you'll get a written quote with exact numbers.",
     },
     {
-      q: "Is there a lock-in contract?",
-      a: "No. Ads management is month to month after the initial setup. We'd rather keep you with results than with paperwork.",
-    },
-    {
-      q: "Which email platforms do you work with?",
-      a: "Mostly Klaviyo, Mailchimp and HubSpot. We design templates that work across inboxes and devices, and set up automated flows on the platform you already use.",
-    },
-    {
-      q: "How do you report on results?",
-      a: "A live dashboard plus a monthly summary in plain English: what we spent, what it brought in, what we changed and what's next.",
+      q: "Which email platforms do you use?",
+      a: "Mostly Klaviyo, Mailchimp and HubSpot. We work on the platform you already have, or help you choose one.",
     },
     {
       q: "Do you work outside Christchurch?",
-      a: "Yes — we work with businesses across New Zealand, with calls over video and phone.",
+      a: "Yes — we work with businesses across New Zealand over video and phone.",
     },
   ],
 
-  cta: {
-    kicker: "Let's talk",
-    title: "Get a free audit of your ads, site and email.",
-    lead:
-      "Book a 30-minute strategy call. We'll look at where your traffic comes from, where it drops off, and what we'd fix first — whether or not you work with us.",
-    primary: {
-      label: "Book a strategy call",
-      href: `mailto:${siteConfig.contact.email}?subject=Strategy%20call%20%E2%80%94%20Scalr`,
-    },
-    secondary: { label: "Email us", href: `mailto:${siteConfig.contact.email}` },
+  /** 10 — Final ask: restate the outcome, say exactly what happens next. */
+  final: {
+    kicker: "Next step",
+    title: "Find out where your enquiries are leaking.",
+    lead: "In a free 30-minute call we'll look at your ads, website and follow-up together — whether or not you work with us.",
+    next: [
+      "We review your ads, landing pages and emails",
+      "You get the three changes we'd make first",
+      "If it's a fit, a written plan and fixed quote follow",
+    ],
     note: "We reply within one New Zealand business day.",
   },
 } as const

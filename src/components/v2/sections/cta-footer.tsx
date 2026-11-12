@@ -1,75 +1,80 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowRight, Mail, MapPin, Phone } from "lucide-react"
+import { ArrowRight, Mail, Phone } from "lucide-react"
 
 import { AnimatedGradient } from "@/components/v2/craftwork/animated-gradient"
 import { TextAnimate } from "@/components/v2/craftwork/text-animate"
 import { siteConfig } from "@/config/site"
 import { v2 } from "@/config/site-v2"
 
+/**
+ * Final ask — restate the outcome, remove uncertainty by saying exactly what
+ * happens next, and repeat the same CTA wording used since the hero.
+ */
 export function V2Cta() {
-  const { cta, contact } = v2
+  const { final, cta, contact } = v2
+  const mailto = `mailto:${contact.email}?subject=Free%20strategy%20call%20%E2%80%94%20Scalr`
   return (
-    <section id="contact" aria-labelledby="cta-title" className="scroll-mt-20 px-4 pb-16 sm:px-6 sm:pb-24 lg:px-8">
+    <section id="contact" aria-labelledby="cta-title" className="scroll-mt-20 px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
       <div className="relative isolate mx-auto max-w-7xl overflow-hidden rounded-[2rem] bg-[var(--v2-ink)] text-white">
         <AnimatedGradient
-          className="absolute inset-0 -z-10 opacity-90"
+          className="absolute inset-0 -z-10 opacity-80"
           config={{
             preset: "custom",
             color1: "#05070d",
-            color2: "#14204f",
+            color2: "#101a44",
             color3: "#2645f5",
             rotation: -30,
-            speed: 18,
-            swirl: 0.4,
-            softness: 0.9,
+            speed: 14,
+            swirl: 0.3,
+            softness: 1,
           }}
-          noise={{ opacity: 0.12 }}
+          noise={{ opacity: 0.1 }}
         />
-        <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgb(5_7_13/0.85),rgb(5_7_13/0.35)_70%)]" />
+        <div aria-hidden className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgb(5_7_13/0.92),rgb(5_7_13/0.55)_75%)]" />
 
-        <div className="grid gap-12 px-6 py-16 sm:px-12 sm:py-24 lg:grid-cols-12 lg:items-end">
-          <div className="flex flex-col gap-6 lg:col-span-8">
-            <p className="font-mono text-[11px] tracking-[0.16em] text-white/60 uppercase">{cta.kicker}</p>
+        <div className="grid gap-12 px-6 py-16 sm:px-12 sm:py-20 lg:grid-cols-12 lg:items-center">
+          <div className="flex flex-col gap-6 lg:col-span-7">
+            <p className="font-mono text-[11px] tracking-[0.16em] text-white/60 uppercase">{final.kicker}</p>
             <TextAnimate
               as="h2"
               id="cta-title"
               by="word"
               animation="blurInUp"
               once
-              className="v2-display text-[clamp(2.5rem,5.6vw,5rem)] font-medium text-balance"
+              className="v2-display text-[clamp(2.4rem,5vw,4.5rem)] font-medium text-balance"
             >
-              {cta.title}
+              {final.title}
             </TextAnimate>
-            <p className="max-w-xl text-lg text-pretty text-white/75">{cta.lead}</p>
-            <div className="flex flex-wrap gap-3">
-              <a href={cta.primary.href} className="group inline-flex h-12 items-center gap-2 rounded-full bg-white px-6 font-medium text-[var(--v2-ink)] transition-transform active:scale-[0.97]">
-                {cta.primary.label}
+            <p className="max-w-xl text-lg text-pretty text-white/75">{final.lead}</p>
+            <div className="flex flex-wrap items-center gap-4">
+              <a href={mailto} className="group inline-flex h-13 items-center gap-2 rounded-full bg-white px-7 font-medium text-[var(--v2-ink)] transition-transform active:scale-[0.97]">
+                {cta.label}
                 <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-1" />
               </a>
-              <a href={cta.secondary.href} className="inline-flex h-12 items-center gap-2 rounded-full border border-white/25 px-6 font-medium transition-colors hover:bg-white/10">
-                <Mail aria-hidden className="size-4" /> {cta.secondary.label}
+              <a href={`tel:${contact.phone.replace(/\s/g, "")}`} className="inline-flex items-center gap-2 text-sm text-white/80 hover:text-white">
+                <Phone aria-hidden className="size-4" /> or call {contact.phone}
               </a>
             </div>
-            <p className="text-sm text-white/60">{cta.note}</p>
+            <p className="text-sm text-white/55">{final.note}</p>
           </div>
 
-          <ul className="flex flex-col gap-4 border-t border-white/15 pt-6 text-sm lg:col-span-4 lg:border-t-0 lg:border-l lg:pt-0 lg:pl-8">
-            <li>
-              <a href={`mailto:${contact.email}`} className="flex items-center gap-3 hover:underline">
-                <Mail aria-hidden className="size-4 text-white/60" /> {contact.email}
-              </a>
-            </li>
-            <li>
-              <a href={`tel:${contact.phone.replace(/\s/g, "")}`} className="flex items-center gap-3 hover:underline">
-                <Phone aria-hidden className="size-4 text-white/60" /> {contact.phone}
-              </a>
-            </li>
-            <li className="flex items-center gap-3">
-              <MapPin aria-hidden className="size-4 text-white/60" /> {contact.location}
-            </li>
-          </ul>
+          <div className="rounded-2xl border border-white/12 bg-white/[0.04] p-6 backdrop-blur-sm sm:p-8 lg:col-span-5">
+            <p className="font-mono text-[11px] tracking-[0.16em] text-white/60 uppercase">What happens on the call</p>
+            <ol className="mt-5 flex flex-col gap-4">
+              {final.next.map((n, i) => (
+                <li key={n} className="flex items-start gap-3">
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-white/10 font-mono text-xs">{i + 1}</span>
+                  <span className="pt-0.5 text-white/90">{n}</span>
+                </li>
+              ))}
+            </ol>
+            <p className="mt-6 flex items-center gap-2 border-t border-white/10 pt-5 text-sm text-white/70">
+              <Mail aria-hidden className="size-4" />
+              <a href={`mailto:${contact.email}`} className="hover:text-white hover:underline">{contact.email}</a>
+            </p>
+          </div>
         </div>
       </div>
     </section>
@@ -87,8 +92,8 @@ export function V2Footer() {
     {
       title: "Company",
       links: [
-        { label: "How it works", href: "#system" },
-        { label: "Approach", href: "#approach" },
+        { label: "The problem", href: "#problem" },
+        { label: "How it works", href: "#plan" },
         { label: "FAQ", href: "#faq" },
         { label: "Contact", href: "#contact" },
       ],

@@ -13,7 +13,7 @@ const BEAMS = [[0, 1], [1, 2], [2, 3], [3, 4]] as const
 
 /** The funnel as one connected pipeline: Search → Click → Land → Convert → Nurture. */
 export function V2System() {
-  const { system } = v2
+  const system = v2.solution
   const container = React.useRef<HTMLDivElement>(null)
   const r0 = React.useRef<HTMLDivElement>(null)
   const r1 = React.useRef<HTMLDivElement>(null)
@@ -24,12 +24,12 @@ export function V2System() {
 
   return (
     <section
-      id="system"
-      aria-labelledby="system-title"
+      id="solution"
+      aria-labelledby="solution-title"
       className="scroll-mt-20 bg-[var(--v2-ink)] py-24 text-white sm:py-32"
     >
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading id="system-title" index="02" kicker={system.kicker} title={system.title} lead={system.lead} inverted />
+        <SectionHeading id="solution-title" index="03" kicker={system.kicker} title={system.title} lead={system.lead} inverted />
 
         <div
           ref={container}
@@ -76,17 +76,6 @@ export function V2System() {
           ))}
         </div>
 
-        <div className="mt-6 grid gap-px overflow-hidden rounded-2xl border border-white/10 bg-white/10 text-sm sm:grid-cols-3">
-          {v2.services.items.map((s) => (
-            <a key={s.id} href={`#service-${s.id}`} className="group flex items-center justify-between gap-3 bg-[var(--v2-ink)] px-5 py-4 transition-colors hover:bg-white/[0.04]">
-              <span>
-                <span className="mr-3 font-mono text-xs text-white/45">{s.number}</span>
-                {s.short}
-              </span>
-              <span aria-hidden className="text-white/40 transition-transform group-hover:translate-x-1">→</span>
-            </a>
-          ))}
-        </div>
       </div>
     </section>
   )

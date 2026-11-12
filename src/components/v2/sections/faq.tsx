@@ -10,7 +10,7 @@ export function V2Faq() {
   return (
     <section id="faq" aria-labelledby="faq-title" className="scroll-mt-20 py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading id="faq-title" index="07" kicker="FAQ" title="Questions we hear most." />
+        <SectionHeading id="faq-title" index="08" kicker="FAQ" title="Questions we hear most." />
 
         <AccordionPrimitive.Root type="single" collapsible className="mt-12 border-t border-border lg:ml-[calc(25%+0.625rem)]">
           {v2.faq.map((item, i) => (

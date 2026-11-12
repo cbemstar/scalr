@@ -7,7 +7,7 @@ export function V2Founder() {
     <section aria-label="A note from the founder" className="bg-muted py-24 sm:py-28">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-12 lg:px-8">
         <p className="border-t border-border pt-4 font-mono text-[11px] tracking-[0.16em] text-muted-foreground uppercase lg:col-span-3">
-          <span className="text-foreground">06</span> Founder-led
+          <span className="text-foreground">07</span> Founder-led
         </p>
         <BlurFade inView className="flex flex-col gap-10 lg:col-span-9">
           <blockquote className="v2-display text-[clamp(1.75rem,3.4vw,3rem)] leading-[1.12] font-normal text-balance">

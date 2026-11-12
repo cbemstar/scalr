@@ -1,4 +1,4 @@
-import { Check, Minus } from "lucide-react"
+import { ArrowRight, Check, Minus, ShieldCheck } from "lucide-react"
 
 import { BlurFade } from "@/components/v2/craftwork/blur-fade"
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from "@/components/v2/craftwork/table"
@@ -6,35 +6,61 @@ import { SectionHeading } from "@/components/v2/sections/section-heading"
 import { v2 } from "@/config/site-v2"
 import { cn } from "@/lib/utils"
 
-/** Process as a numbered timeline. */
-export function V2Approach() {
-  const { approach } = v2
+/**
+ * Plan — three steps that make starting feel safe and obvious. Ends on the CTA.
+ */
+export function V2Plan() {
+  const { plan, cta } = v2
   return (
-    <section id="approach" aria-labelledby="approach-title" className="scroll-mt-20 border-t border-border bg-card py-24 sm:py-32">
+    <section id="plan" aria-labelledby="plan-title" className="scroll-mt-20 border-t border-border bg-card py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading id="approach-title" index="04" kicker={approach.kicker} title={approach.title} />
+        <SectionHeading id="plan-title" index="05" kicker={plan.kicker} title={plan.title} />
 
-        <ol className="relative mt-16 grid gap-10 lg:grid-cols-4 lg:gap-6">
-          <span aria-hidden className="absolute top-5 right-0 left-0 hidden h-px bg-border lg:block" />
-          {approach.steps.map((step, i) => (
+        <ol className="relative mt-16 grid gap-10 lg:grid-cols-3 lg:gap-8">
+          <span aria-hidden className="absolute top-6 right-0 left-0 hidden h-px bg-border lg:block" />
+          {plan.steps.map((step, i) => (
             <li key={step.title} className="relative">
               <BlurFade inView delay={i * 0.1} className="flex flex-col gap-4">
-                <div className="flex items-center gap-3">
-                  <span className={cn(
-                    "z-10 flex size-10 items-center justify-center rounded-full border font-mono text-sm",
-                    i === 0 ? "border-transparent bg-brand text-brand-foreground" : "border-border bg-card"
-                  )}>
-                    {i + 1}
-                  </span>
-                  <span className="rounded-full bg-muted px-2.5 py-1 font-mono text-[10px] tracking-wide text-muted-foreground uppercase">{step.timing}</span>
-                </div>
+                <span className={cn(
+                  "z-10 flex size-12 items-center justify-center rounded-full border font-mono text-base",
+                  i === 0 ? "border-transparent bg-brand text-brand-foreground" : "border-border bg-card"
+                )}>
+                  {i + 1}
+                </span>
                 <h3 className="v2-display text-2xl font-medium">{step.title}</h3>
-                <p className="text-sm text-pretty text-muted-foreground">{step.body}</p>
+                <p className="max-w-sm text-pretty text-muted-foreground">{step.body}</p>
               </BlurFade>
             </li>
           ))}
         </ol>
+
+        <div className="mt-14 flex flex-col items-start gap-3 sm:flex-row sm:items-center lg:ml-[calc(25%+0.625rem)]">
+          <a href={cta.href} className="group inline-flex h-12 items-center gap-2 rounded-full bg-primary px-6 font-medium text-primary-foreground transition-transform active:scale-[0.97]">
+            {cta.label}
+            <ArrowRight aria-hidden className="size-4 transition-transform group-hover:translate-x-1" />
+          </a>
+          <p className="text-sm text-muted-foreground">30 minutes · No obligation</p>
+        </div>
       </div>
+    </section>
+  )
+}
+
+/** Risk reversal — what clients can count on. */
+export function V2Assurances() {
+  return (
+    <section aria-label="What you can count on" className="border-y border-border bg-card">
+      <ul className="mx-auto grid max-w-7xl divide-y divide-border px-4 sm:grid-cols-2 sm:divide-y-0 sm:px-6 lg:grid-cols-4 lg:divide-x lg:px-8">
+        {v2.assurances.map((a) => (
+          <li key={a.title} className="flex gap-3 py-8 sm:px-6 lg:first:pl-0">
+            <ShieldCheck aria-hidden className="mt-0.5 size-5 shrink-0 text-brand" />
+            <div>
+              <p className="font-medium">{a.title}</p>
+              <p className="mt-1 text-sm text-muted-foreground">{a.body}</p>
+            </div>
+          </li>
+        ))}
+      </ul>
     </section>
   )
 }
@@ -61,7 +87,7 @@ export function V2Compare() {
   return (
     <section aria-labelledby="compare-title" className="py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <SectionHeading id="compare-title" index="05" kicker={compare.kicker} title={compare.title} />
+        <SectionHeading id="compare-title" index="06" kicker={compare.kicker} title={compare.title} />
 
         <BlurFade inView className="mt-14 overflow-hidden rounded-3xl border border-border bg-card">
           <Table className="min-w-[640px] text-left">
