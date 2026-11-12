@@ -1,0 +1,113 @@
+/*
+ * Scalr v2 — scoped design tokens.
+ * Everything lives under .scalr-v2 so the v1 site's tokens are untouched.
+ * Role names follow Craftwork's "Blank" component library (brand, overlay, glow,
+ * highlight, focus-ring) so the copied components render as designed.
+ *
+ * Palette: warm paper + ink, one accent — pōhutukawa red.
+ */
+
+.scalr-v2 {
+  --v2-paper: #f3efe6;
+  --v2-paper-2: #ebe5d8;
+  --v2-ink: #15140f;
+  --v2-ink-2: #3d3a31;
+  --v2-pohutukawa: #c4321b; /* 5.3:1 on paper */
+  --v2-pohutukawa-soft: #f6d9cf;
+
+  --radius: 0.875rem;
+  --background: var(--v2-paper);
+  --foreground: var(--v2-ink);
+  --card: #faf8f2;
+  --card-foreground: var(--v2-ink);
+  --popover: #fffdf8;
+  --popover-foreground: var(--v2-ink);
+  --primary: var(--v2-ink);
+  --primary-foreground: var(--v2-paper);
+  --secondary: var(--v2-paper-2);
+  --secondary-foreground: var(--v2-ink);
+  --muted: var(--v2-paper-2);
+  --muted-foreground: #5c574b;
+  --accent: var(--v2-pohutukawa-soft);
+  --accent-foreground: var(--v2-ink);
+  --border: color-mix(in oklab, var(--v2-ink) 12%, transparent);
+  --input: color-mix(in oklab, var(--v2-ink) 16%, transparent);
+  --ring: var(--v2-pohutukawa);
+
+  --brand: var(--v2-pohutukawa);
+  --brand-foreground: #fff8f3;
+  --overlay: color-mix(in oklab, var(--v2-ink) 60%, transparent);
+  --overlay-foreground: #ffffff;
+  --focus-ring: color-mix(in oklab, var(--v2-pohutukawa) 30%, transparent);
+  --highlight: #ffffff;
+  --glow: color-mix(in oklab, var(--v2-pohutukawa) 10%, transparent);
+
+  --font-display: var(--font-v2-display), ui-sans-serif, system-ui, sans-serif;
+
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-v2-body), ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: "ss01", "cv11";
+}
+
+.dark .scalr-v2 {
+  --background: #12110d;
+  --foreground: #f1ece1;
+  --card: #1b1a15;
+  --card-foreground: #f1ece1;
+  --popover: #24221c;
+  --popover-foreground: #f1ece1;
+  --primary: #f1ece1;
+  --primary-foreground: #12110d;
+  --secondary: #24221c;
+  --secondary-foreground: #f1ece1;
+  --muted: #24221c;
+  --muted-foreground: #a7a194;
+  --accent: #3a1d15;
+  --accent-foreground: #f1ece1;
+  --border: color-mix(in oklab, #ffffff 11%, transparent);
+  --input: color-mix(in oklab, #ffffff 16%, transparent);
+  --ring: #ff6a4d;
+
+  --brand: #ff6a4d;
+  --brand-foreground: #1a0c07;
+  --overlay: color-mix(in oklab, #000 65%, transparent);
+  --highlight: color-mix(in oklab, #ffffff 7%, transparent);
+  --glow: color-mix(in oklab, #ff6a4d 16%, transparent);
+  --focus-ring: color-mix(in oklab, #ff6a4d 35%, transparent);
+}
+
+.scalr-v2 .v2-display {
+  font-family: var(--font-display);
+  font-variation-settings: "opsz" 96;
+  letter-spacing: -0.035em;
+  line-height: 0.95;
+}
+
+.scalr-v2 ::selection {
+  background: var(--brand);
+  color: var(--brand-foreground);
+}
+
+.scalr-v2 :focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+@keyframes cw-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes cw-marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}
