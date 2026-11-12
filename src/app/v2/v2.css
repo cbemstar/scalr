@@ -1,0 +1,129 @@
+/*
+ * Scalr v2 — scoped design tokens (agency direction).
+ * Everything lives under .scalr-v2 so the v1 site's tokens are untouched.
+ * Role names follow Craftwork's "Blank" component library (brand, overlay, glow,
+ * highlight, focus-ring) so the copied components render as designed.
+ *
+ * Palette: cool white + ink, one accent — cobalt.
+ * Type: Host Grotesk (everything) + Newsreader italic (rare editorial accents).
+ */
+
+.scalr-v2 {
+  --v2-ink: #0a0c10;
+  --v2-cobalt: #2645f5; /* 6.4:1 on white */
+
+  --radius: 0.75rem;
+  --background: #f6f6f4;
+  --foreground: var(--v2-ink);
+  --card: #ffffff;
+  --card-foreground: var(--v2-ink);
+  --popover: #ffffff;
+  --popover-foreground: var(--v2-ink);
+  --primary: var(--v2-ink);
+  --primary-foreground: #ffffff;
+  --secondary: #ececea;
+  --secondary-foreground: var(--v2-ink);
+  --muted: #eeeeeb;
+  --muted-foreground: #5b5f68;
+  --accent: #e8ecff;
+  --accent-foreground: var(--v2-ink);
+  --border: color-mix(in oklab, var(--v2-ink) 11%, transparent);
+  --input: color-mix(in oklab, var(--v2-ink) 16%, transparent);
+  --ring: var(--v2-cobalt);
+
+  --brand: var(--v2-cobalt);
+  --brand-foreground: #ffffff;
+  --overlay: color-mix(in oklab, var(--v2-ink) 60%, transparent);
+  --overlay-foreground: #ffffff;
+  --focus-ring: color-mix(in oklab, var(--v2-cobalt) 30%, transparent);
+  --highlight: #ffffff;
+  --glow: color-mix(in oklab, var(--v2-cobalt) 10%, transparent);
+  --item-secondary: color-mix(in oklab, var(--v2-ink) 5%, transparent);
+  --item-secondary-hover: color-mix(in oklab, var(--v2-ink) 9%, transparent);
+  --item-selected: color-mix(in oklab, var(--v2-cobalt) 8%, transparent);
+
+  --font-display: var(--font-v2-sans), ui-sans-serif, system-ui, sans-serif;
+
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-v2-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+.dark .scalr-v2 {
+  --background: #08090c;
+  --foreground: #eef0f4;
+  --card: #111318;
+  --card-foreground: #eef0f4;
+  --popover: #15181e;
+  --popover-foreground: #eef0f4;
+  --primary: #eef0f4;
+  --primary-foreground: #08090c;
+  --secondary: #181b21;
+  --secondary-foreground: #eef0f4;
+  --muted: #0f1115;
+  --muted-foreground: #9aa0ab;
+  --accent: #141a3a;
+  --accent-foreground: #eef0f4;
+  --border: color-mix(in oklab, #ffffff 10%, transparent);
+  --input: color-mix(in oklab, #ffffff 16%, transparent);
+  --ring: #6f86ff;
+
+  --brand: #6f86ff;
+  --brand-foreground: #05070d;
+  --overlay: color-mix(in oklab, #000 65%, transparent);
+  --highlight: color-mix(in oklab, #ffffff 6%, transparent);
+  --glow: color-mix(in oklab, #6f86ff 16%, transparent);
+  --focus-ring: color-mix(in oklab, #6f86ff 35%, transparent);
+  --item-secondary: color-mix(in oklab, #ffffff 8%, transparent);
+  --item-secondary-hover: color-mix(in oklab, #ffffff 13%, transparent);
+  --item-selected: color-mix(in oklab, #6f86ff 18%, transparent);
+}
+
+.scalr-v2 .v2-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+}
+
+.scalr-v2 .v2-serif {
+  font-family: var(--font-v2-serif), Georgia, serif;
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+
+/* Hairline grid used behind the hero */
+.scalr-v2 .v2-grid {
+  background-image:
+    linear-gradient(to right, var(--border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--border) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+.scalr-v2 ::selection {
+  background: var(--brand);
+  color: var(--brand-foreground);
+}
+
+.scalr-v2 :focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+@keyframes cw-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+  }
+}
+
+@keyframes cw-marquee-vertical {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+  }
+}

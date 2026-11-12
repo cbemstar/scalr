@@ -25,6 +25,18 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+  /* Craftwork "Blank" roles — only defined inside .scalr-v2 (see src/app/v2/v2.css) */
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-overlay: var(--overlay);
+  --color-overlay-foreground: var(--overlay-foreground);
+  --color-focus-ring: var(--focus-ring);
+  --color-highlight: var(--highlight);
+  --color-glow: var(--glow);
+  --color-item-secondary: var(--item-secondary);
+  --color-item-secondary-hover: var(--item-secondary-hover);
+  --color-item-selected: var(--item-selected);
+  --font-display: var(--font-display);
   --color-chart-1: var(--chart-1);
   --color-chart-2: var(--chart-2);
   --color-chart-3: var(--chart-3);
